@@ -26,32 +26,28 @@ class Ticket(models.Model):
     eth_transaction_hash = models.CharField(max_length=100, blank=True, null=True)
     eth_token_id = models.CharField(max_length=100, blank=True, null=True)
 
-    # QR Code
-    qr_code = models.ImageField(upload_to='qrcodes/', blank=True, null=True)
+    def get_qr_base64(self):
+        from django.core.signing import Signer
+        import json
+        import base64
+        from io import BytesIO
 
+        signer = Signer()
+        signed_token = signer.sign(str(self.id))
+        payload = json.dumps({"token": signed_token})
+
+        qr = qrcode.QRCode(version=1, box_size=10, border=1) # border=1 para mejor lectura en moviles
+        qr.add_data(payload)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode('utf-8')
     def __str__(self):
         return str(self.id)
 
     def save(self, *args, **kwargs):
-        # Generate Cryptographic QR code
-        if not self.qr_code:
-            from django.core.signing import Signer
-            import json
-            
-            signer = Signer()
-            signed_token = signer.sign(str(self.id))
-            payload = json.dumps({"token": signed_token})
-
-            qr = qrcode.QRCode(version=1, box_size=10, border=5)
-            qr.add_data(payload)
-            qr.make(fit=True)
-            img = qr.make_image(fill_color="black", back_color="white")
-            
-            buffer = BytesIO()
-            img.save(buffer, format="PNG")
-            file_name = f'ticket_{self.id}.png'
-            self.qr_code.save(file_name, File(buffer), save=False)
-            
         if not self.eth_transaction_hash:
             from core.blockchain import register_ticket_on_blockchain
             tx_hash, token_id = register_ticket_on_blockchain(self.id)

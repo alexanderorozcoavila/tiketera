@@ -167,11 +167,14 @@
         }
 
         function startScanner() {
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                statusMsg.innerHTML = `<p class="red-text"><b>Advertencia de Seguridad:</b> Android y Chrome requieren HTTPS para encender la cámara.</p>`;
+            }
             resultOverlay.style.display = 'none';
             html5QrCode.start({ facingMode: "environment" }, qrConfig, onScanSuccess)
                 .catch((err) => {
                     console.error("Starting scanner failed", err);
-                    statusMsg.innerHTML = `<p class="red-text">Error: No se pudo acceder a la cámara. Asegúrate de dar permisos.</p>`;
+                    statusMsg.innerHTML = `<p class="red-text">Error: No se pudo acceder a la cámara trasera. Asegúrate de dar permisos a la web o usar una conexión segura (HTTPS).</p>`;
                 });
         }
 

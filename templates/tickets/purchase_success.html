@@ -8,10 +8,8 @@
                 <span class="card-title">¡Compra Exitosa!</span>
                 <p>Tu boleto para <b>{{ ticket.ticket_type.event.title }}</b> ha sido generado.</p>
                 <div style="margin-top: 20px;">
-                    {% if ticket.qr_code %}
-                        <img src="{{ ticket.qr_code.url }}" alt="Código QR del Boleto" style="width: 250px; border: 1px solid #eee;">
-                    {% else %}
-                        <p class="red-text">Error generando QR</p>
+                    {% if ticket.id %}
+                        <img src="data:image/png;base64,{{ ticket.get_qr_base64 }}" alt="Código QR del Boleto" style="width: 250px; border: 1px solid #eee;">
                     {% endif %}
                 </div>
                 <p style="margin-top: 15px; font-family: monospace;">UUID: {{ ticket.id }}</p>
@@ -20,6 +18,7 @@
                 </p>
             </div>
             <div class="card-action">
+                <a href="{% url 'download_ticket' ticket.id %}" target="_blank" class="btn green darken-2" style="margin-right: 10px;"><i class="material-icons left">picture_as_pdf</i>Descargar Boleto PDF</a>
                 <a href="/" class="btn blue darken-2">Volver a Eventos</a>
             </div>
         </div>
