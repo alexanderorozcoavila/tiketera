@@ -1,68 +1,196 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikeTera - Eventos</title>
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Material Icons -->
+    <title>TikeTera - Tickets Premium</title>
+    <!-- Materialize CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
-        body { display: flex; min-height: 100vh; flex-direction: column; background-color: #f5f5f5;}
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
         main { flex: 1 0 auto; }
-        .card-panel.error { background-color: #f44336 !important; }
-        .card-panel.success { background-color: #4CAF50 !important; }
+        
+        nav {
+            background: rgba(11, 12, 16, 0.85) !important;
+            backdrop-filter: blur(15px);
+            box-shadow: none;
+            border-bottom: 1px solid rgba(102,252,241,0.15);
+        }
+        .brand-logo { color: #66fcf1 !important; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;}
+        .brand-logo span { color: #fff; font-weight: 300;}
+        
+        .card {
+            background: #1f2833;
+            border-radius: 15px;
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(102, 252, 241, 0.15);
+            border-color: rgba(102, 252, 241, 0.4);
+        }
+        .card .card-content { color: #e2e2e2; }
+        .card .card-title { font-weight: 800; color: #66fcf1; letter-spacing: 0.5px;}
+        
+        .btn, .btn-large, .btn-small {
+            background: linear-gradient(45deg, #1f2833, #45a247);
+            border-radius: 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(69, 162, 71, 0.3);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn:hover, .btn-large:hover, .btn-small:hover {
+            background: linear-gradient(45deg, #45a247, #1f2833);
+            box-shadow: 0 0 20px rgba(102, 252, 241, 0.6);
+            transform: scale(1.02);
+            color: #fff;
+        }
+        .btn.grey { background: #4a4e69 !important; box-shadow: none; border: none;}
+        .btn.red { background: linear-gradient(45deg, #e53935, #b71c1c) !important; }
+        
+        /* Form Inputs Customization */
+        input[type=text], input[type=password], input[type=email], input[type=number], textarea.materialize-textarea {
+            color: #fff !important;
+            border-bottom: 1px solid #45a247 !important;
+        }
+        input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
+            border-bottom: 1px solid #66fcf1 !important;
+            box-shadow: 0 1px 0 0 #66fcf1 !important;
+        }
+        [type="radio"]:checked+span:after, [type="radio"].with-gap:checked+span:after {
+            background-color: #66fcf1;
+            border: 2px solid #66fcf1;
+        }
+        
+        /* Collections / Lists */
+        .collection { border: 1px solid rgba(102,252,241,0.2); border-radius: 10px; overflow: hidden;}
+        .collection .collection-item { background-color: #1a222a; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c5c6c7; }
+        
+        /* Hero Banner */
+        #hero-banner {
+            background: linear-gradient(135deg, rgba(11,12,16,0.9) 0%, rgba(31,40,51,0.7) 100%), url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=2070') center/cover;
+            min-height: 45vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            border-bottom: 1px solid rgba(102,252,241,0.2);
+        }
+        #hero-banner::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+            background: linear-gradient(to bottom, transparent, #0b0c10);
+        }
+        #hero-banner h1 { font-weight: 800; color: #fff; text-shadow: 0 0 30px rgba(102,252,241,0.8); font-size: 4rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;}
+        #hero-banner h1 span { color: #66fcf1; }
+        #hero-banner h5 { color: #c5c6c7; font-weight: 300; letter-spacing: 1px; }
+        
+        /* Footer */
+        .page-footer { background-color: #0b0c10 !important; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;}
     </style>
 </head>
 <body>
-    <nav class="blue darken-2">
-        <div class="nav-wrapper container">
-            <a href="/" class="brand-logo"><i class="material-icons">local_activity</i>TikeTera</a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="/">Eventos</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'my_tickets' %}">Mis Boletos</a></li>
-                    <li><a href="#!"><i class="material-icons left">person</i>{{ user.username }}</a></li>
-                    <li>
-                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-flat white-text" style="text-transform:none; margin-top:15px;"><i class="material-icons right">exit_to_app</i>Salir</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
-                    <li><a href="{% url 'register' %}">Registrarse</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-    
-    <main class="container section">
+    <header>
+        <nav>
+            <div class="nav-wrapper container">
+                <a href="/" class="brand-logo">Tike<span>Tera</span></a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="/">Descubrir</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'my_tickets' %}" style="color: #66fcf1; font-weight:bold;">Mis Boletos</a></li>
+                        <li><a href="{% url 'profile' %}"><i class="material-icons left">account_circle</i>Mi Perfil</a></li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-flat white-text" style="text-transform:none; margin-top:15px; font-weight:bold; padding:0 15px;"><i class="material-icons right">exit_to_app</i>Salir</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Ingresar</a></li>
+                        <li><a href="{% url 'register' %}" class="btn" style="height:36px; line-height:36px; margin-top:14px;">Registrarse</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <ul class="sidenav" id="mobile-demo" style="background-color: #1f2833;">
+            <li><a href="/" class="white-text">Descubrir</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'my_tickets' %}" class="white-text">Mis Boletos</a></li>
+                <li><a href="{% url 'profile' %}" class="white-text">Mi Perfil</a></li>
+                <li>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-flat white-text" style="width:100%; text-align:left;">Salir</button>
+                    </form>
+                </li>
+            {% else %}
+                <li><a href="{% url 'login' %}" class="white-text">Ingresar</a></li>
+                <li><a href="{% url 'register' %}" class="white-text">Registrarse</a></li>
+            {% endif %}
+        </ul>
+    </header>
+
+    <main>
         {% if messages %}
+            <div class="container" style="margin-top: 20px;">
             {% for message in messages %}
-                <div class="card-panel {{ message.tags }} white-text">{{ message }}</div>
+                <div class="card-panel {% if message.tags == 'error' %}red{% elif message.tags == 'warning' %}orange{% else %}green{% endif %} lighten-2 white-text" style="border-radius: 8px; padding: 15px;">
+                    {{ message }}
+                </div>
             {% endfor %}
+            </div>
         {% endif %}
-        
+
         {% block content %}{% endblock %}
     </main>
-    
-    <footer class="page-footer blue darken-3">
-        <div class="footer-copyright">
-            <div class="container">
-                © 2026 TikeTera
-                <a class="grey-text text-lighten-4 right" href="/admin/">Admin Panel</a>
+
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text" style="font-weight: 800;">Tike<span style="color:#66fcf1">Tera</span></h5>
+                    <p class="grey-text text-lighten-1">La experiencia definitiva en gestión de eventos y boletos impulsada por Web3 y transacciones seguras.</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Enlaces</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="#!">Términos y Condiciones</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Privacidad</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Soporte Ticketera</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright" style="background-color: #050608 !important;">
+            <div class="container center-align grey-text text-darken-1">
+                © {% now "Y" %} TikeTera - Todos los derechos reservados
             </div>
         </div>
     </footer>
-    
-    <!-- Compiled and minified JavaScript -->
+
+    <!-- Materialize JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var selects = document.querySelectorAll('select');
-            M.FormSelect.init(selects);
+            var elems = document.querySelectorAll('.sidenav');
+            M.Sidenav.init(elems);
         });
     </script>
 </body>

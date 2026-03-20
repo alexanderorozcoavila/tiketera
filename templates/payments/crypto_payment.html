@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col s12 m8 offset-m2 l6 offset-l3 center-align">
+        <div class="card" style="margin-top: 50px;">
+            <div class="card-content">
+                <span class="card-title">Pago con Criptomonedas (Web3)</span>
+                <p>Monto a transferir: <b>0.012 ETH</b> (Equivalente a ${{ ticket_type.price }})</p>
+                <br>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ethereum:0x0000000000000000000000000000000000000000" alt="QR Wallet" style="margin: 15px 0;">
+                <p>Billetera Destino: <br> <code style="word-break: break-all;">0x0000000000000000000000000000000000000000</code></p>
+            </div>
+            <div class="card-action">
+                <form action="{% url 'crypto_success' %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn green" type="submit" style="width:100%;">
+                        He enviado los fondos (Simular Validación)
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

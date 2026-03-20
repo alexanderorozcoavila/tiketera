@@ -13,6 +13,20 @@
                 <br>
                 <form method="post">
                     {% csrf_token %}
+                    <p style="margin-bottom: 20px;"><b>Selecciona método de pago:</b></p>
+                    <p>
+                        <label>
+                            <input name="payment_method" type="radio" value="webpay" checked />
+                            <span>Webpay Plus (Tarjetas)</span>
+                        </label>
+                    </p>
+                    <p>
+                        <label>
+                            <input name="payment_method" type="radio" value="crypto" />
+                            <span>Criptomonedas (Web3)</span>
+                        </label>
+                    </p>
+                    <br>
                     <button type="submit" class="btn green waves-effect waves-light w-100">
                         Confirmar y Pagar
                         <i class="material-icons right">payment</i>

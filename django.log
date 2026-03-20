@@ -768,3 +768,311 @@ Not Found: /.well-known/appspecific/com.chrome.devtools.json
 "GET / HTTP/1.1" 200 3650
 Not Found: /.well-known/appspecific/com.chrome.devtools.json
 "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 3031
+/Users/omar/app-tiketera/users/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/omar/app-tiketera/users/forms.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket ece3c4b3-aaa4-440b-b2f6-54118a9e2c82 on blockchain.
+Registered ticket ece3c4b3-aaa4-440b-b2f6-54118a9e2c82 on blockchain.
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 245802b7-1bd8-4f2e-aaaf-061cb5dd8908 on blockchain.
+Registered ticket 245802b7-1bd8-4f2e-aaaf-061cb5dd8908 on blockchain.
+Bad Request: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 24ad612b-f29d-4550-a320-e8a00f4ca29e on blockchain.
+Registered ticket 24ad612b-f29d-4550-a320-e8a00f4ca29e on blockchain.
+Forbidden: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 6778d2fb-2c26-4929-ae80-5cab75012cc9 on blockchain.
+Registered ticket 6778d2fb-2c26-4929-ae80-5cab75012cc9 on blockchain.
+Bad Request: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket a41abfe9-b5c8-4079-9a12-d4ce89cc1d44 on blockchain.
+Registered ticket a41abfe9-b5c8-4079-9a12-d4ce89cc1d44 on blockchain.
+Forbidden: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket ad9f3a56-fe3c-446a-aa7b-764927491254 on blockchain.
+Registered ticket ad9f3a56-fe3c-446a-aa7b-764927491254 on blockchain.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 10439
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 3140
+"GET /evento/2/ HTTP/1.1" 200 10418
+"GET /admin/events/event/2/change/ HTTP/1.1" 200 20101
+"GET /static/admin/css/base.css HTTP/1.1" 304 0
+"GET /static/admin/js/calendar.js HTTP/1.1" 304 0
+"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/css/forms.css HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+"GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 304 0
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+"GET /static/admin/js/theme.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+"GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+"GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-calendar.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-clock.svg HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 10439
+"GET /static/admin/img/calendar-icons.svg HTTP/1.1" 304 0
+"POST /admin/events/event/2/change/ HTTP/1.1" 302 0
+"GET /admin/events/event/ HTTP/1.1" 200 12493
+"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+"GET /static/admin/js/filters.js HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+"GET /admin/events/event/1/change/ HTTP/1.1" 200 19996
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"POST /admin/events/event/1/change/ HTTP/1.1" 302 0
+"GET /admin/events/event/ HTTP/1.1" 200 12478
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET / HTTP/1.1" 200 10651
+"GET /media/events/images.jpeg HTTP/1.1" 200 12844
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 200 182625
+"GET /admin/payments/paymentmethod/ HTTP/1.1" 200 10961
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/payments/transaction/ HTTP/1.1" 200 10942
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/payments/paymentmethod/ HTTP/1.1" 200 10961
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/payments/paymentmethod/add/ HTTP/1.1" 200 12254
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/payments/paymentmethod/ HTTP/1.1" 200 10961
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/payments/transaction/ HTTP/1.1" 200 10942
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /accounts/register/ HTTP/1.1" 200 9590
+"POST /accounts/register/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 9167
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 11668
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 304 0
+"GET /media/events/images.jpeg HTTP/1.1" 304 0
+"GET /evento/1/ HTTP/1.1" 200 11689
+"GET /tickets/buy/1/ HTTP/1.1" 200 10253
+Registered ticket ac392b49-ff03-46db-b824-478d75659061 on blockchain.
+Registered ticket ac392b49-ff03-46db-b824-478d75659061 on blockchain.
+"POST /tickets/buy/1/ HTTP/1.1" 302 0
+"GET /tickets/success/ac392b49-ff03-46db-b824-478d75659061/ HTTP/1.1" 200 10021
+"GET /media/qrcodes/ticket_ac392b49-ff03-46db-b824-478d75659061.png HTTP/1.1" 200 1070
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 9736
+"GET /media/qrcodes/ticket_ac392b49-ff03-46db-b824-478d75659061.png HTTP/1.1" 304 0
+"POST /tickets/api/validate/ HTTP/1.1" 200 124
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 15471
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/core/sitesettings/ HTTP/1.1" 200 11997
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/core/sitesettings/1/change/ HTTP/1.1" 200 13244
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"POST /admin/core/sitesettings/1/change/ HTTP/1.1" 302 0
+"GET /admin/core/sitesettings/ HTTP/1.1" 200 12222
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 9736
+"GET /media/qrcodes/ticket_ac392b49-ff03-46db-b824-478d75659061.png HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 11668
+"GET /media/events/images.jpeg HTTP/1.1" 304 0
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 304 0
+"GET /evento/2/ HTTP/1.1" 200 11784
+"GET /tickets/buy/2/ HTTP/1.1" 200 10283
+"POST /tickets/buy/2/ HTTP/1.1" 302 0
+Internal Server Error: /payments/webpay/init/2/
+Traceback (most recent call last):
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/Users/omar/app-tiketera/payments/views.py", line 23, in webpay_init
+    response = Transaction().create(buy_order, session_id, amount, return_url)
+TypeError: __init__() missing 1 required positional argument: 'options'
+"GET /payments/webpay/init/2/ HTTP/1.1" 500 71217
+"GET /tickets/buy/2/ HTTP/1.1" 200 10283
+"POST /tickets/buy/2/ HTTP/1.1" 302 0
+"GET /payments/crypto/init/2/ HTTP/1.1" 200 9773
+"POST /payments/crypto/success/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 11975
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 304 0
+"GET /media/events/images.jpeg HTTP/1.1" 304 0
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 9736
+"GET /media/qrcodes/ticket_ac392b49-ff03-46db-b824-478d75659061.png HTTP/1.1" 304 0
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 9736
+"GET / HTTP/1.1" 200 11668
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 9736
+/Users/omar/app-tiketera/payments/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 11668
+"GET /media/events/images.jpeg HTTP/1.1" 304 0
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 304 0
+"GET /evento/2/ HTTP/1.1" 200 11784
+"GET /tickets/buy/2/ HTTP/1.1" 200 10283
+"POST /tickets/buy/2/ HTTP/1.1" 302 0
+"GET /payments/webpay/init/2/ HTTP/1.1" 200 9318
+"GET /payments/webpay/return/?TBK_TOKEN=01ab14e63a0632e94e9cd2862bfc7ae02c7828d62393f32129597ed9a71bab56&TBK_ORDEN_COMPRA=3d6a3262-0c1f-4304-b272-f&TBK_ID_SESION=4 HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 11972
+"GET /evento/2/ HTTP/1.1" 200 11784
+"GET /tickets/buy/2/ HTTP/1.1" 200 10283
+"POST /tickets/buy/2/ HTTP/1.1" 302 0
+"GET /payments/webpay/init/2/ HTTP/1.1" 200 9318
+Registered ticket 234cc427-1362-4f2c-b1fb-b50ce03803d5 on blockchain.
+Registered ticket 234cc427-1362-4f2c-b1fb-b50ce03803d5 on blockchain.
+"GET /payments/webpay/return/?token_ws=01ab74e97d9d856f1e4f71edf61845297af0321a2d1239d73d4f9bce7623cb12 HTTP/1.1" 302 0
+"GET /tickets/success/234cc427-1362-4f2c-b1fb-b50ce03803d5/ HTTP/1.1" 200 10009
+"GET /media/qrcodes/ticket_234cc427-1362-4f2c-b1fb-b50ce03803d5.png HTTP/1.1" 200 1066
+"GET / HTTP/1.1" 200 11668
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 304 0
+"GET /media/events/images.jpeg HTTP/1.1" 304 0
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 10858
+"GET /media/qrcodes/ticket_234cc427-1362-4f2c-b1fb-b50ce03803d5.png HTTP/1.1" 304 0
+"GET /media/qrcodes/ticket_ac392b49-ff03-46db-b824-478d75659061.png HTTP/1.1" 304 0
+"GET /media/qrcodes/ticket_ac392b49-ff03-46db-b824-478d75659061.png HTTP/1.1" 200 1070
+"GET / HTTP/1.1" 200 11668
+"GET /evento/2/ HTTP/1.1" 200 11784
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 16064
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/css/base.css HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+"GET /static/admin/js/filters.js HTTP/1.1" 304 0
+"GET /static/admin/js/theme.js HTTP/1.1" 304 0
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+"POST /admin/tickets/ticket/ HTTP/1.1" 200 11770
+"GET /static/admin/js/cancel.js HTTP/1.1" 304 0
+"POST /admin/tickets/ticket/ HTTP/1.1" 302 0
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 12358
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 8849
+"GET / HTTP/1.1" 200 11668
+"GET /evento/2/ HTTP/1.1" 200 11784
+"GET /tickets/buy/2/ HTTP/1.1" 200 10283
+"POST /tickets/buy/2/ HTTP/1.1" 302 0
+"GET /payments/webpay/init/2/ HTTP/1.1" 200 9318
+Registered ticket 79ad2f68-ec3e-4278-a428-531c61f24212 on blockchain.
+Registered ticket 79ad2f68-ec3e-4278-a428-531c61f24212 on blockchain.
+"GET /payments/webpay/return/?token_ws=01ab043f6b70c8fe8015e9720f0b0e0083cd4883c413b9f4382d6cb094c82d42 HTTP/1.1" 302 0
+"GET /tickets/success/79ad2f68-ec3e-4278-a428-531c61f24212/ HTTP/1.1" 200 10009
+"GET /media/qrcodes/ticket_79ad2f68-ec3e-4278-a428-531c61f24212.png HTTP/1.1" 200 1044
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 9764
+"GET /media/qrcodes/ticket_79ad2f68-ec3e-4278-a428-531c61f24212.png HTTP/1.1" 304 0
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14344
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17654
+"GET /static/admin/css/forms.css HTTP/1.1" 304 0
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+"GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Invalid HTTP_HOST header: '192.168.1.93:3390'. You may need to add '192.168.1.93' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/utils/deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/http/request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.1.93:3390'. You may need to add '192.168.1.93' to ALLOWED_HOSTS.
+"GET / HTTP/1.1" 400 66855
+Invalid HTTP_HOST header: '192.168.1.93:3390'. You may need to add '192.168.1.93' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/utils/deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+  File "/Users/omar/app-tiketera/venv/lib/python3.9/site-packages/django/http/request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.1.93:3390'. You may need to add '192.168.1.93' to ALLOWED_HOSTS.
+"GET /favicon.ico HTTP/1.1" 400 66819
+/Users/omar/app-tiketera/tiketera/settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 10651
+"GET /media/events/images.jpeg HTTP/1.1" 200 12844
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 200 182625
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3032
+"GET / HTTP/1.1" 200 10651
+"GET /admin/ HTTP/1.1" 200 13653
+"GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2694
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2929
+"GET /static/admin/js/theme.js HTTP/1.1" 200 1943
+"GET /static/admin/css/responsive.css HTTP/1.1" 200 18559
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+"GET /static/admin/css/base.css HTTP/1.1" 200 21310
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+"GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3029
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14344
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+"GET /static/admin/js/core.js HTTP/1.1" 200 5682
+"GET /static/admin/css/changelists.css HTTP/1.1" 200 6566
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 8943
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+"GET /static/admin/js/actions.js HTTP/1.1" 200 7872
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 232381
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 292458
+"GET /static/admin/js/filters.js HTTP/1.1" 200 978
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17654
+"GET /static/admin/css/forms.css HTTP/1.1" 200 9090
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/css/widgets.css HTTP/1.1" 200 11921
+"GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+"GET /media/qrcodes/ticket_79ad2f68-ec3e-4278-a428-531c61f24212.png HTTP/1.1" 200 1044
+Method Not Allowed: /tickets/api/validate/
+"GET /tickets/api/validate/ HTTP/1.1" 405 42
+Method Not Allowed: /tickets/api/validate/
+"GET /tickets/api/validate/ HTTP/1.1" 405 42

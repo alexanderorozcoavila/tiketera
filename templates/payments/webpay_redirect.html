@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col s12 m8 offset-m2 l6 offset-l3 center-align">
+        <h4 style="margin-top: 50px;">Redirigiendo a Webpay...</h4>
+        <p>Por favor, no cierres esta ventana.</p>
+        <form id="webpayForm" action="{{ response.url }}" method="POST">
+            <input type="hidden" name="token_ws" value="{{ response.token }}">
+            <button class="btn blue" type="submit" style="margin-top:20px;">Si no redirige, haz click aquí</button>
+        </form>
+        <script>
+            setTimeout(function() {
+                document.getElementById('webpayForm').submit();
+            }, 500);
+        </script>
+    </div>
+</div>
+{% endblock %}

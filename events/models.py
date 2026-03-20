@@ -22,6 +22,7 @@ class Event(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     organizer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organized_events')
+    image = models.ImageField(upload_to='events/', blank=True, null=True)
     is_published = models.BooleanField(default=False)
 
     def __str__(self):

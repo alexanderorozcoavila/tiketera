@@ -27,10 +27,16 @@ def buy_ticket(request, ticket_type_id):
             ticket_type.save()
             messages.success(request, "¡Boleto generado exitosamente en modo Debug (Sin Pago)!")
             return redirect('ticket_success', ticket_id=ticket.id)
+        
+        # Payment flow logic
+        payment_method = request.POST.get('payment_method')
+        if payment_method == 'webpay':
+            return redirect('webpay_init', ticket_type_id=ticket_type.id)
+        elif payment_method == 'crypto':
+            return redirect('crypto_init', ticket_type_id=ticket_type.id)
         else:
-            # Normal payment flow (placeholder)
-            messages.warning(request, "Pasarela de pagos en construcción. Activa el modo Debug en el admin para continuar.")
-            return redirect('event_detail', pk=ticket_type.event.id)
+            messages.error(request, "Por favor seleccione un método de pago.")
+            return redirect('buy_ticket', ticket_type_id=ticket_type.id)
 
     return render(request, 'tickets/buy_ticket_confirm.html', {'ticket_type': ticket_type})
 

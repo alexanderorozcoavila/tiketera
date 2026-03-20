@@ -3,4 +3,4 @@ from django.db import models
 
 class User(AbstractUser):
     # Additional custom fields can be added here later
-    pass
+    telephone = models.CharField(max_length=20, blank=True, null=True)
