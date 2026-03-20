@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col s12 m8 offset-m2 l6 offset-l3">
+        <div class="card center-align">
+            <div class="card-content">
+                <i class="material-icons green-text" style="font-size: 80px;">check_circle</i>
+                <span class="card-title">¡Compra Exitosa!</span>
+                <p>Tu boleto para <b>{{ ticket.ticket_type.event.title }}</b> ha sido generado.</p>
+                <div style="margin-top: 20px;">
+                    {% if ticket.qr_code %}
+                        <img src="{{ ticket.qr_code.url }}" alt="Código QR del Boleto" style="width: 250px; border: 1px solid #eee;">
+                    {% else %}
+                        <p class="red-text">Error generando QR</p>
+                    {% endif %}
+                </div>
+                <p style="margin-top: 15px; font-family: monospace;">UUID: {{ ticket.id }}</p>
+                <p>
+                    <b>Blockchain Tx:</b> {{ ticket.eth_transaction_hash|default:"Pendiente" }}
+                </p>
+            </div>
+            <div class="card-action">
+                <a href="/" class="btn blue darken-2">Volver a Eventos</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

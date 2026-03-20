@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikeTera - Eventos</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { display: flex; min-height: 100vh; flex-direction: column; background-color: #f5f5f5;}
+        main { flex: 1 0 auto; }
+        .card-panel.error { background-color: #f44336 !important; }
+        .card-panel.success { background-color: #4CAF50 !important; }
+    </style>
+</head>
+<body>
+    <nav class="blue darken-2">
+        <div class="nav-wrapper container">
+            <a href="/" class="brand-logo"><i class="material-icons">local_activity</i>TikeTera</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="/">Eventos</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'my_tickets' %}">Mis Boletos</a></li>
+                    <li><a href="#!"><i class="material-icons left">person</i>{{ user.username }}</a></li>
+                    <li>
+                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-flat white-text" style="text-transform:none; margin-top:15px;"><i class="material-icons right">exit_to_app</i>Salir</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+                    <li><a href="{% url 'register' %}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container section">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="card-panel {{ message.tags }} white-text">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer class="page-footer blue darken-3">
+        <div class="footer-copyright">
+            <div class="container">
+                © 2026 TikeTera
+                <a class="grey-text text-lighten-4 right" href="/admin/">Admin Panel</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var selects = document.querySelectorAll('select');
+            M.FormSelect.init(selects);
+        });
+    </script>
+</body>
+</html>

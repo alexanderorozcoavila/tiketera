@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="center-align">Mis Boletos</h3>
+<div class="row">
+    {% for ticket in tickets %}
+    <div class="col s12 m6 l4">
+        <div class="card hoverable">
+            <div class="card-content center-align">
+                <span class="card-title"><b>{{ ticket.ticket_type.event.title }}</b></span>
+                <p>{{ ticket.ticket_type.name }}</p>
+                <p class="grey-text">{{ ticket.purchase_date|date:'d M Y H:i' }}</p>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                {% if ticket.qr_code %}
+                    <img src="{{ ticket.qr_code.url }}" alt="QR" style="width: 150px; border: 1px solid #ddd;">
+                {% else %}
+                    <p class="red-text">Sin código QR</p>
+                {% endif %}
+                <p style="font-size: 0.8em; margin-top: 10px; word-break: break-all;">
+                    TX: {{ ticket.eth_transaction_hash|default:"Pendiente" }}
+                </p>
+            </div>
+            <div class="card-action center-align">
+                {% if ticket.qr_code %}
+                <a href="{{ ticket.qr_code.url }}" download class="btn-small blue darken-2"><i class="material-icons left">file_download</i>Descargar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col s12 center-align">
+        <p class="grey-text" style="margin-bottom: 20px;">Aún no has comprado ningún boleto.</p>
+        <a href="/" class="btn blue">Ver Eventos</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
