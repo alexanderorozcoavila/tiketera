@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, TemplateView
 from django.contrib import messages
 from .models import TicketType, Ticket
 from core.models import SiteSettings
@@ -52,3 +52,9 @@ class MyTicketsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Ticket.objects.filter(buyer=self.request.user).order_by('-purchase_date')
+
+class TicketScannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'tickets/scanner.html'
+
+    def test_func(self):
+        return self.request.user.is_staff

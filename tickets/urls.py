@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import buy_ticket, ticket_success, MyTicketsView
+from .views import buy_ticket, ticket_success, MyTicketsView, TicketScannerView
 from .api_views import ValidateTicketView
 
 urlpatterns = [
@@ -7,4 +7,5 @@ urlpatterns = [
     path('success/<uuid:ticket_id>/', ticket_success, name='ticket_success'),
     path('mis-boletos/', MyTicketsView.as_view(), name='my_tickets'),
     path('api/validate/', ValidateTicketView.as_view(), name='api_validate_ticket'),
+    path('scan/', TicketScannerView.as_view(), name='ticket_scanner'),
 ]

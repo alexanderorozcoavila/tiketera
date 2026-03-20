@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="hero-banner" style="min-height: 30vh; background-image: linear-gradient(135deg, rgba(11,12,16,0.9) 0%, rgba(31,40,51,0.7) 100%), url('https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=2070');">
+    <div class="container center-align">
+        <h1 style="font-size: 3rem;">Escáner de <span>Boletos</span></h1>
+        <h5>Interfaz de Validación Premium</h5>
+    </div>
+</div>
+
+<div class="container" style="margin-top: -50px; position: relative; z-index: 10;">
+    <div class="row">
+        <div class="col s12 m8 offset-m2">
+            <div class="card" style="background: rgba(31, 40, 51, 0.95); backdrop-filter: blur(10px); border-radius: 20px;">
+                <div class="card-content">
+                    <div id="reader-container" style="position: relative;">
+                        <!-- QR Scanner Container -->
+                        <div id="reader" style="width: 100%; border-radius: 15px; overflow: hidden; border: 2px solid #45a247;"></div>
+                        
+                        <!-- Overlay for results -->
+                        <div id="result-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 12, 16, 0.9); border-radius: 15px; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 20;">
+                            <div id="result-icon" class="material-icons" style="font-size: 80px; margin-bottom: 20px;"></div>
+                            <h4 id="result-title" style="font-weight: 800; margin: 0;"></h4>
+                            <p id="result-message" style="font-size: 1.2rem; color: #c5c6c7; margin-top: 10px;"></p>
+                            
+                            <div id="result-details" style="margin-top: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; width: 100%; display: none;">
+                                <p id="detail-event" style="margin: 5px 0; font-weight: bold;"></p>
+                                <p id="detail-buyer" style="margin: 5px 0; color: #66fcf1;"></p>
+                            </div>
+
+                            <button id="rescan-btn" class="btn-large waves-effect waves-light" style="margin-top: 30px;">
+                                <i class="material-icons left">qr_code_scanner</i>Escanear otro
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="status-message" class="center-align" style="margin-top: 20px;">
+                        <p class="grey-text">Apunta la cámara al código QR del boleto</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Extra UI elements for the premium feel -->
+<div class="center-align" style="margin-bottom: 50px;">
+    <p class="grey-text text-darken-1" style="font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">
+        Modo de Validación Staff <i class="material-icons tiny">verified_user</i>
+    </p>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const html5QrCode = new Html5Qrcode("reader");
+        const resultOverlay = document.getElementById('result-overlay');
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const resultDetails = document.getElementById('result-details');
+        const detailEvent = document.getElementById('detail-event');
+        const detailBuyer = document.getElementById('detail-buyer');
+        const rescanBtn = document.getElementById('rescan-btn');
+        const statusMsg = document.getElementById('status-message');
+
+        const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // Stop scanning once we have a result
+            html5QrCode.stop().then(() => {
+                processToken(decodedText);
+            }).catch((err) => {
+                console.warn("Error stopping scanner", err);
+                processToken(decodedText);
+            });
+        }
+
+        function processToken(text) {
+            let token = "";
+            try {
+                // The QR code data is a JSON string: {"token": "..."}
+                const data = JSON.parse(text);
+                token = data.token;
+            } catch (e) {
+                // If not JSON, maybe it's the raw token
+                token = text;
+            }
+
+            if (!token) {
+                showResult('error', 'Código Inválido', 'El formato del código QR no es reconocido.');
+                return;
+            }
+
+            validateWithAPI(token);
+        }
+
+        function validateWithAPI(token) {
+            showLoading();
+
+            fetch("{% url 'api_validate_ticket' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ token: token })
+            })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                if (result.status === 200) {
+                    showResult('success', 'VÁLIDO', result.body.message, result.body);
+                } else {
+                    const msg = result.body.error || 'Error al validar el ticket';
+                    showResult('error', 'INVÁLIDO', msg);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showResult('error', 'ERROR', 'No se pudo conectar con el servidor.');
+            });
+        }
+
+        function showLoading() {
+            resultOverlay.style.display = 'flex';
+            resultOverlay.style.background = 'rgba(11, 12, 16, 0.8)';
+            resultIcon.innerHTML = 'sync';
+            resultIcon.style.color = '#66fcf1';
+            resultIcon.classList.add('rotate-anim');
+            resultTitle.innerHTML = 'Validando...';
+            resultMessage.innerHTML = 'Espere un momento';
+            resultDetails.style.display = 'none';
+            rescanBtn.style.display = 'none';
+        }
+
+        function showResult(type, title, message, data = null) {
+            resultOverlay.style.display = 'flex';
+            resultIcon.classList.remove('rotate-anim');
+            rescanBtn.style.display = 'block';
+
+            if (type === 'success') {
+                resultOverlay.style.background = 'rgba(27, 94, 32, 0.95)';
+                resultIcon.innerHTML = 'check_circle';
+                resultIcon.style.color = '#ffffff';
+                resultTitle.style.color = '#ffffff';
+                if (data) {
+                    resultDetails.style.display = 'block';
+                    detailEvent.innerHTML = `<i class="material-icons tiny">event</i> ${data.event}`;
+                    detailBuyer.innerHTML = `<i class="material-icons tiny">person</i> Comprador: ${data.buyer}`;
+                }
+            } else {
+                resultOverlay.style.background = 'rgba(183, 28, 28, 0.95)';
+                resultIcon.innerHTML = 'error_outline';
+                resultIcon.style.color = '#ffffff';
+                resultTitle.style.color = '#ffffff';
+                resultDetails.style.display = 'none';
+            }
+
+            resultTitle.innerHTML = title;
+            resultMessage.innerHTML = message;
+            
+            // Vibration for mobile if available
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate(type === 'success' ? 100 : [100, 50, 100]);
+            }
+        }
+
+        function startScanner() {
+            resultOverlay.style.display = 'none';
+            html5QrCode.start({ facingMode: "environment" }, qrConfig, onScanSuccess)
+                .catch((err) => {
+                    console.error("Starting scanner failed", err);
+                    statusMsg.innerHTML = `<p class="red-text">Error: No se pudo acceder a la cámara. Asegúrate de dar permisos.</p>`;
+                });
+        }
+
+        rescanBtn.addEventListener('click', startScanner);
+
+        // Initial start
+        startScanner();
+    });
+</script>
+
+<style>
+    .rotate-anim {
+        animation: rotate 2s linear infinite;
+    }
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    #reader video {
+        object-fit: cover !important;
+    }
+</style>
+{% endblock %}

@@ -1076,3 +1076,201 @@ Method Not Allowed: /tickets/api/validate/
 "GET /tickets/api/validate/ HTTP/1.1" 405 42
 Method Not Allowed: /tickets/api/validate/
 "GET /tickets/api/validate/ HTTP/1.1" 405 42
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket f036c427-4ef0-4c7e-b9a6-6c1893894cbd on blockchain.
+Registered ticket f036c427-4ef0-4c7e-b9a6-6c1893894cbd on blockchain.
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 21362336-1cbf-4e07-961f-7fe8ab494343 on blockchain.
+Registered ticket 21362336-1cbf-4e07-961f-7fe8ab494343 on blockchain.
+Bad Request: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 66465099-aebb-4abf-be31-c04069aaf71b on blockchain.
+Registered ticket 66465099-aebb-4abf-be31-c04069aaf71b on blockchain.
+Forbidden: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 1992340e-f0c1-4036-b1d4-1323e337623c on blockchain.
+Registered ticket 1992340e-f0c1-4036-b1d4-1323e337623c on blockchain.
+Bad Request: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 1904bfbf-01d8-40d3-baa0-29e29d496e61 on blockchain.
+Registered ticket 1904bfbf-01d8-40d3-baa0-29e29d496e61 on blockchain.
+Forbidden: /tickets/api/validate/
+Web3 provider not connected. Using simulated blockchain registration.
+Web3 provider not connected. Using simulated blockchain registration.
+Registered ticket 382cc2d4-94d4-40af-92cd-46cc4a832f59 on blockchain.
+Registered ticket 382cc2d4-94d4-40af-92cd-46cc4a832f59 on blockchain.
+Watching for file changes with StatReloader
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17654
+"GET /admin/ HTTP/1.1" 200 13653
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET / HTTP/1.1" 200 11668
+"GET /media/events/images.jpeg HTTP/1.1" 200 12844
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 200 182625
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 8849
+"GET / HTTP/1.1" 200 11668
+"GET /evento/1/ HTTP/1.1" 200 11689
+"GET /accounts/profile/ HTTP/1.1" 200 10201
+"GET /accounts/profile/ HTTP/1.1" 200 10201
+"GET /tickets/mis-boletos/ HTTP/1.1" 200 8849
+"GET / HTTP/1.1" 200 11668
+"GET /admin/ HTTP/1.1" 200 13653
+"GET /admin/core/sitesettings/ HTTP/1.1" 200 11997
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/core/sitesettings/1/change/ HTTP/1.1" 200 13236
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"POST /admin/core/sitesettings/1/change/ HTTP/1.1" 302 0
+"GET /admin/core/sitesettings/ HTTP/1.1" 200 12222
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14344
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17654
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /media/qrcodes/ticket_79ad2f68-ec3e-4278-a428-531c61f24212.png HTTP/1.1" 304 0
+"GET /tickets/scan/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 9167
+"POST /accounts/login/?next=/tickets/scan/ HTTP/1.1" 302 0
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 10184
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 10184
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 10184
+"GET / HTTP/1.1" 200 11668
+"GET /media/events/images.jpeg HTTP/1.1" 200 12844
+"GET /media/events/pngtree-rock-music-vector-png-image_12148024.png HTTP/1.1" 200 182625
+"GET / HTTP/1.1" 200 11668
+"GET /accounts/profile/ HTTP/1.1" 200 10201
+"GET / HTTP/1.1" 200 11668
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 9179
+"POST /accounts/login/?next=/tickets/scan/ HTTP/1.1" 302 0
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3032
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 9179
+"POST /accounts/login/?next=/tickets/scan/ HTTP/1.1" 302 0
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /tickets/scan/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/tickets/scan/ HTTP/1.1" 200 9179
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3032
+"POST /accounts/login/?next=/tickets/scan/ HTTP/1.1" 302 0
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17654
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14344
+"GET /admin/core/sitesettings/ HTTP/1.1" 200 11997
+"GET /admin/core/sitesettings/1/change/ HTTP/1.1" 200 13244
+"GET /admin/core/sitesettings/ HTTP/1.1" 200 11997
+"GET /admin/ HTTP/1.1" 200 13693
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3032
+"GET /admin HTTP/1.1" 301 0
+"GET /admin/ HTTP/1.1" 200 13693
+"GET /static/admin/css/base.css HTTP/1.1" 200 21310
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2929
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2694
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+"GET /static/admin/js/theme.js HTTP/1.1" 200 1943
+"GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+"GET /static/admin/css/responsive.css HTTP/1.1" 200 18559
+"GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14344
+"GET /static/admin/css/changelists.css HTTP/1.1" 200 6566
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 8943
+"GET /static/admin/js/core.js HTTP/1.1" 200 5682
+"GET /static/admin/js/actions.js HTTP/1.1" 200 7872
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 292458
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 232381
+"GET /static/admin/js/filters.js HTTP/1.1" 200 978
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17654
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+"GET /static/admin/css/forms.css HTTP/1.1" 200 9090
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+"GET /static/admin/css/widgets.css HTTP/1.1" 200 11921
+"GET /media/qrcodes/ticket_79ad2f68-ec3e-4278-a428-531c61f24212.png HTTP/1.1" 200 1044
+"POST /tickets/api/validate/ HTTP/1.1" 200 139
+- Broken pipe from ('192.168.1.85', 34658)
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17662
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17662
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+Bad Request: /tickets/api/validate/
+"POST /tickets/api/validate/ HTTP/1.1" 400 55
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+"GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+"GET /static/admin/js/theme.js HTTP/1.1" 304 0
+"GET /admin/ HTTP/1.1" 200 13693
+"GET /static/admin/css/base.css HTTP/1.1" 304 0
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14344
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/admin/js/filters.js HTTP/1.1" 304 0
+"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+"GET /admin/tickets/ticket/add/ HTTP/1.1" 200 16972
+"GET /static/admin/css/forms.css HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+"GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+"GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+Registered ticket 7a138c62-5c2c-4383-9e4c-518f8938edb0 on blockchain.
+Registered ticket 7a138c62-5c2c-4383-9e4c-518f8938edb0 on blockchain.
+"POST /admin/tickets/ticket/add/ HTTP/1.1" 302 0
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 15172
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /admin/tickets/ticket/79ad2f68-ec3e-4278-a428-531c61f24212/change/ HTTP/1.1" 200 17662
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14908
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436
+"GET /admin/tickets/ticket/7a138c62-5c2c-4383-9e4c-518f8938edb0/change/ HTTP/1.1" 200 17654
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /media/qrcodes/ticket_7a138c62-5c2c-4383-9e4c-518f8938edb0.png HTTP/1.1" 200 1113
+"POST /tickets/api/validate/ HTTP/1.1" 200 122
+"GET /admin/tickets/ticket/ HTTP/1.1" 200 14908
+"GET /admin/jsi18n/ HTTP/1.1" 200 3343
+"GET /tickets/scan/ HTTP/1.1" 200 17389
+Bad Request: /tickets/api/validate/
+"POST /tickets/api/validate/ HTTP/1.1" 400 55
