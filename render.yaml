@@ -1,3 +1,7 @@
+databases:
+  - name: tiketera-db
+    plan: free
+
 services:
   - type: web
     name: tiketera
@@ -17,8 +21,3 @@ services:
           property: connectionString
       - key: ALLOWED_HOSTS
         value: "localhost, 127.0.0.1, tiketera-xxxx.onrender.com"  # Render will let you change this dynamically
-
-  - type: pserv
-    name: tiketera-db
-    env: postgres
-    plan: free
