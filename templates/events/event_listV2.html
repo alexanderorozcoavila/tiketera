@@ -1,0 +1,143 @@
+{% extends 'baseV2.html' %}
+{% block content %}
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <h2 class="success-title">¡Compra exitosa!</h2>
+  <p class="success-sub">Tu ticket ha sido confirmado.<br>Revisa tu correo electrónico</p>
+  <button class="btn-close-success" onclick="closeSuccess()">VOLVER AL INICIO</button>
+</div>
+
+<!-- PAGE -->
+<div class="page active">
+
+<header>
+  <a class="logo" href="{% url 'event_list' %}">
+    <div class="logo-icon">🎫</div>
+    TicketeraChile
+  </a>
+
+  <div class="header-right">
+    <a href="{% url 'my_tickets' %}" class="nav-btn">Mis tickets</a>
+    <a href="{% url 'login' %}" class="nav-btn" style="background:rgba(201,168,76,0.15);border-color:var(--gold)">Ingresar</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero-section">
+  <div class="hero-tag">✦ Temporada 2026 ✦</div>
+  <h1 class="hero-title">¡Descubre los<br><em>eventos</em><br>en Chile!</h1>
+
+  <!-- BUSCADOR -->
+  <form method="GET" class="search-wrap">
+    <input type="text" name="q" placeholder="Buscar evento..." value="{{ request.GET.q }}">
+    <button class="search-btn">🔍</button>
+  </form>
+</div>
+
+<!-- FEATURED -->
+{% if events %}
+<div class="section-header">
+  <span class="section-title">Destacado</span>
+  <div class="section-line"></div>
+</div>
+
+<div class="featured-wrap">
+  {% with event=events.0 %}
+  <div class="featured-card"  onclick="window.location.href='{% url 'event_detail' event.id %}'">
+    <div class="featured-bg">
+      {% if event.image %}
+        <img src="{{ event.image.url }}" style="width:100%;height:100%;object-fit:cover;">
+      {% endif %}
+    </div>
+
+    <div class="featured-info">
+      <div class="featured-details">
+        <h3>{{ event.title }}</h3>
+        <p>📍 {{ event.venue.name }} · {{ event.date_time|date:"d M H:i" }}</p>
+      </div>
+      <button class="btn-tickets"  onclick="window.location.href='{% url 'event_detail' event.id %}'">Comprar</button>
+    </div>
+  </div>
+  {% endwith %}
+</div>
+{% endif %}
+
+<!-- CARTELERA -->
+<div class="section-header">
+  <span class="section-title">Cartelera</span>
+  <div class="section-line"></div>
+</div>
+
+<div class="events-scroll">
+  {% for event in events %}
+  <div class="event-card" onclick="window.location.href='{% url 'event_detail' event.id %}'">
+
+    {% if event.image %}
+      <img src="{{ event.image.url }}" class="event-poster">
+    {% else %}
+      <div class="event-poster-placeholder">
+        🎤 {{ event.title }}
+      </div>
+    {% endif %}
+
+    <div class="card-info">
+      <div class="card-artist">{{ event.title }}</div>
+      <div class="card-venue">📍 {{ event.venue.name }}</div>
+      <div class="card-date">
+        📅 {{ event.date_time|date:"d M" }}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p style="padding:20px;">No hay eventos disponibles</p>
+  {% endfor %}
+</div>
+
+<!-- UPCOMING -->
+<div class="section-header" style="margin-top:28px">
+  <span class="section-title">Próximos eventos</span>
+  <div class="section-line"></div>
+</div>
+
+<div class="upcoming-list">
+  {% for event in events %}
+  <div class="upcoming-item"  onclick="window.location.href='{% url 'event_detail' event.id %}'">
+
+    <div class="upcoming-date-box">
+      <div class="upcoming-day">{{ event.date_time|date:"d" }}</div>
+      <div class="upcoming-month">{{ event.date_time|date:"M" }}</div>
+    </div>
+
+    <div class="upcoming-body">
+      <div class="upcoming-artist">{{ event.title }}</div>
+      <div class="upcoming-venue">📍 {{ event.venue.name }}</div>
+      <div class="upcoming-time">
+        ⏰ {{ event.date_time|date:"H:i" }}
+      </div>
+    </div>
+
+    <div class="upcoming-price">
+      ${{ event.tickettype_set.first.price|default:"--" }}
+      <span>desde</span>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+
+</div>
+
+<!-- JS FUNCIONAL -->
+<script>
+function goToEvent(id){
+  window.location.href = "/event/" + id + "/";
+}
+
+function closeSuccess(){
+  document.getElementById("successScreen").classList.remove("show");
+}
+</script>
+
+{% endblock %}

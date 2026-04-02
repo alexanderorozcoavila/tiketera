@@ -9,6 +9,14 @@ class EventListView(ListView):
 
     def get_queryset(self):
         return Event.objects.filter(is_published=True).order_by('date_time')
+# DISEÑO
+class EventListViewV2(ListView):
+    model = Event
+    template_name = 'events/event_listV2.html'
+    context_object_name = 'events'
+
+    def get_queryset(self):
+        return Event.objects.filter(is_published=True).order_by('date_time')
 
 class EventDetailView(DetailView):
     model = Event
