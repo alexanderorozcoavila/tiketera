@@ -1,0 +1,105 @@
+{% extends 'baseV2.html' %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+
+<div class="page active">
+
+<div class="container" style="max-width:1100px; margin:40px auto;">
+
+    <a href="{% url 'event_listV2' %}" class="nav-btn" style="margin-bottom:20px; display:inline-block;">
+    ← Volver a Eventos
+    </a>
+
+    <!-- CARD (SE MANTIENE PORQUE BASEV2 NO TIENE EQUIVALENTE) -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.2); border-radius: 18px; overflow:hidden;">
+
+        {% if event.image %}
+        <div style="height: 420px; overflow: hidden;">
+            <img src="{{ event.image.url }}" alt="{{ event.title }}" 
+                 style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        {% endif %}
+
+        <div style="padding: 40px;">
+
+            <!-- TÍTULO -->
+            <h1 class="hero-title" style="margin-bottom:20px;">
+                {{ event.title }}
+            </h1>
+
+            <!-- GRID INFO -->
+            <div style="display:flex; flex-wrap:wrap; gap:30px;">
+
+                <!-- INFO -->
+                <div style="flex:1; min-width:250px;">
+                    <p>
+                        <b>Fecha:</b> {{ event.date_time|date:'d M Y H:i' }}
+                    </p>
+
+                    <p>
+                        <b>Lugar:</b> {{ event.venue.name }} <br>
+                        <span class="field-hint">
+                            {{ event.venue.address }}
+                        </span>
+                    </p>
+
+                    <p>
+                        <b>Categoría:</b> {{ event.category.name|default:"General" }}
+                    </p>
+                </div>
+
+                <!-- DESCRIPCIÓN -->
+                <div style="flex:1; min-width:250px;">
+                    <h3 class="section-title">Acerca del Evento</h3>
+                    <p class="field-hint">
+                        {{ event.description }}
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- TICKETS -->
+            <h3 class="section-title" style="margin-top:40px;">
+                Boletos Disponibles
+            </h3>
+
+            {% for tt in event.ticket_types.all %}
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:15px; border:1px solid rgba(201,168,76,0.2); border-radius:12px; margin-bottom:10px;">
+
+                    <div>
+                        <div style="font-weight:700;">{{ tt.name }}</div>
+                        <div class="field-hint">
+                            Disponibles: {{ tt.quantity_available }}
+                        </div>
+                    </div>
+
+                    <div class="ticket-price">
+                        ${{ tt.price }}
+                    </div>
+
+                    <div>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'buy_ticket' tt.id %}" class="btn-tickets">
+                                Comprar
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={% url 'event_detailV2' event.id %}" class="nav-btn">
+                                Login
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% empty %}
+                <p class="field-hint">No hay boletos disponibles.</p>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

@@ -4,11 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}TicketeraChile{% endblock %}</title>
     
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    
+    <header>
+    <a class="logo" href="{% url 'event_listV2' %}">
+        <div class="logo-icon">🎫</div>
+        TicketeraChile
+    </a>
+
+    <div class="header-right">
+        <a href="{% url 'my_tickets' %}" class="nav-btn">Mis tickets</a>
+        <a href="{% url 'login' %}" class="nav-btn" style="background:rgba(201,168,76,0.15);border-color:var(--gold)">Ingresar</a>
+    </div>
+    </header>
+
     <style>       
         :root {
         --gold: #c9a84c;

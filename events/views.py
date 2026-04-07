@@ -22,3 +22,8 @@ class EventDetailView(DetailView):
     model = Event
     template_name = 'events/event_detail.html'
     context_object_name = 'event'
+
+class EventDetailView2(DetailView):
+    model = Event
+    template_name = 'events/event_detailV2.html'
+    context_object_name = 'event'

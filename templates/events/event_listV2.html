@@ -12,17 +12,6 @@
 <!-- PAGE -->
 <div class="page active">
 
-<header>
-  <a class="logo" href="{% url 'event_list' %}">
-    <div class="logo-icon">🎫</div>
-    TicketeraChile
-  </a>
-
-  <div class="header-right">
-    <a href="{% url 'my_tickets' %}" class="nav-btn">Mis tickets</a>
-    <a href="{% url 'login' %}" class="nav-btn" style="background:rgba(201,168,76,0.15);border-color:var(--gold)">Ingresar</a>
-  </div>
-</header>
 
 <!-- HERO -->
 <div class="hero-section">
@@ -45,7 +34,7 @@
 
 <div class="featured-wrap">
   {% with event=events.0 %}
-  <div class="featured-card"  onclick="window.location.href='{% url 'event_detail' event.id %}'">
+  <div class="featured-card"  onclick="window.location.href=`{% url 'event_detailV2' event.id %}`">
     <div class="featured-bg">
       {% if event.image %}
         <img src="{{ event.image.url }}" style="width:100%;height:100%;object-fit:cover;">
@@ -57,7 +46,7 @@
         <h3>{{ event.title }}</h3>
         <p>📍 {{ event.venue.name }} · {{ event.date_time|date:"d M H:i" }}</p>
       </div>
-      <button class="btn-tickets"  onclick="window.location.href='{% url 'event_detail' event.id %}'">Comprar</button>
+      <button class="btn-tickets" onclick="window.location.href=`{% url 'event_detailV2' event.id %}`">Comprar</button>
     </div>
   </div>
   {% endwith %}
@@ -72,7 +61,7 @@
 
 <div class="events-scroll">
   {% for event in events %}
-  <div class="event-card" onclick="window.location.href='{% url 'event_detail' event.id %}'">
+  <div class="event-card" onclick="window.location.href=`{% url 'event_detailV2' event.id %}`">
 
     {% if event.image %}
       <img src="{{ event.image.url }}" class="event-poster">
@@ -103,7 +92,7 @@
 
 <div class="upcoming-list">
   {% for event in events %}
-  <div class="upcoming-item"  onclick="window.location.href='{% url 'event_detail' event.id %}'">
+  <div class="upcoming-item" onclick="window.location.href=`{% url 'event_detailV2' event.id %}`">
 
     <div class="upcoming-date-box">
       <div class="upcoming-day">{{ event.date_time|date:"d" }}</div>
