@@ -1,28 +1,71 @@
-{% extends 'base.html' %}
+{% extends 'baseV2.html' %}
+
+{% block title %}Registro | TicketeraChile{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">Registrarse</span>
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="input-field">
+
+<div class="page active">
+
+    <section class="hero-section">
+        <div class="hero-tag">Cuenta</div>
+        <h1 class="hero-title">Crear <em>Cuenta</em></h1>
+        <p class="hero-sub">Únete y comienza a comprar tus tickets</p>
+    </section>
+
+    <div style="max-width: 500px; margin: 40px auto; padding: 0 20px;">
+
+        <div class="upcoming-item" style="flex-direction: column; gap:20px;">
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:15px;">
+                        
+                        <label style="font-size:0.8rem; color:var(--text-muted);">
+                            {{ field.label }}
+                        </label>
+
+                        {% if field.field.widget.input_type == "text" %}
+                            <input type="text" name="{{ field.name }}" value="{{ field.value|default:'' }}" class="field-input">
+
+                        {% elif field.field.widget.input_type == "email" %}
+                            <input type="email" name="{{ field.name }}" value="{{ field.value|default:'' }}" class="field-input">
+
+                        {% elif field.field.widget.input_type == "password" %}
+                            <input type="password" name="{{ field.name }}" class="field-input">
+
+                        {% else %}
                             {{ field }}
-                            {{ field.label_tag }}
-                            {% if field.errors %}
-                                <span class="red-text">{{ field.errors|join:", " }}</span>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                    <br>
-                    <button type="submit" class="btn blue darken-2 waves-effect waves-light w-100">Crear Cuenta
-                        <i class="material-icons right">person_add</i>
-                    </button>
-                </form>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <span style="color:#ff6b6b; font-size:0.75rem;">
+                                {{ field.errors|join:", " }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-main" style="width:100%; margin-top:10px;">
+                    Crear Cuenta
+                </button>
+
+            </form>
+
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; margin-top:10px; text-align:center;">
+
+                <a href="{% url 'login' %}" style="color:var(--gold);">
+                    ¿Ya tienes cuenta? Inicia sesión
+                </a>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

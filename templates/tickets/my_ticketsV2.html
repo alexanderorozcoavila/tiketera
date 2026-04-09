@@ -1,0 +1,90 @@
+{% extends 'baseV2.html' %}
+
+{% block title %}Mis Tickets | TicketeraChile{% endblock %}
+
+{% block content %}
+
+<div class="page active">
+
+    <!-- HERO -->
+    <section class="hero-section">
+        <div class="hero-tag">Zona personal</div>
+        <h1 class="hero-title">Mis <em>Tickets</em></h1>
+        <p class="hero-sub">Todos tus eventos en un solo lugar</p>
+    </section>
+
+    <!-- LISTA -->
+    <div class="upcoming-list">
+
+        {% for ticket in tickets %}
+        <div class="upcoming-item" style="flex-direction: column; align-items: stretch;">
+
+            <!-- INFO PRINCIPAL -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                
+                <div class="upcoming-body">
+                    <div class="upcoming-artist">
+                        {{ ticket.ticket_type.event.title }}
+                    </div>
+
+                    <div class="upcoming-venue">
+                        {{ ticket.ticket_type.name }}
+                    </div>
+
+                    <div class="upcoming-time">
+                        {{ ticket.purchase_date|date:'d M Y H:i' }}
+                    </div>
+                </div>
+
+                <div class="upcoming-price">
+                    Ticket
+                    <span>#{{ ticket.id }}</span>
+                </div>
+
+            </div>
+
+            <!-- QR -->
+            {% if ticket.id %}
+            <div style="margin-top:15px; text-align:center;">
+                <img src="data:image/png;base64,{{ ticket.get_qr_base64 }}" 
+                     alt="QR" 
+                     style="width:140px; border-radius:10px; border:1px solid rgba(201,168,76,0.3);">
+            </div>
+            {% endif %}
+
+            <!-- HASH -->
+            <div style="margin-top:10px; font-size:0.65rem; color:var(--text-muted); text-align:center; word-break:break-all;">
+                TX: {{ ticket.eth_transaction_hash|default:"Pendiente" }}
+            </div>
+
+            <!-- BOTÓN -->
+            <div style="margin-top:15px; text-align:center;">
+                <a href="{% url 'download_ticket' ticket.id %}" target="_blank" class="btn-tickets">
+                    Descargar PDF
+                </a>
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <!-- VACÍO -->
+        <div style="text-align:center; padding:40px 20px;">
+
+            <p class="hero-sub" style="margin-bottom:20px;">
+                Aún no has comprado ningún ticket
+            </p>
+
+            <a href="{% url 'event_listV2' %}" class="btn-main" style="max-width:260px; margin:auto;">
+                Ver Eventos
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

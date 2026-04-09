@@ -1,32 +1,84 @@
-{% extends 'base.html' %}
+{% extends 'baseV2.html' %}
+
+{% block title %}Iniciar Sesión | TicketeraChile{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">Iniciar Sesión</span>
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="input-field">
+
+<div class="page active">
+
+    <!-- HERO -->
+    <section class="hero-section">
+        <div class="hero-tag">Acceso</div>
+        <h1 class="hero-title">Iniciar <em>Sesión</em></h1>
+        <p class="hero-sub">Accede a tus tickets y eventos</p>
+    </section>
+
+    <!-- CONTENEDOR -->
+    <div style="max-width: 500px; margin: 40px auto; padding: 0 20px;">
+
+        <div class="upcoming-item" style="flex-direction: column; gap:20px;">
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:15px;">
+                        
+                        <label style="font-size:0.8rem; color:var(--text-muted);">
+                            {{ field.label }}
+                        </label>
+
+                        {% if field.name == "username" %}
+                            <input type="text"
+                                   name="{{ field.name }}"
+                                   value="{{ field.value|default:'' }}"
+                                   class="field-input"
+                                   placeholder="Usuario"
+                                   autocomplete="username">
+
+                        {% elif field.name == "password" %}
+                            <input type="password"
+                                   name="{{ field.name }}"
+                                   class="field-input"
+                                   placeholder="Contraseña"
+                                   autocomplete="current-password">
+
+                        {% else %}
                             {{ field }}
-                            {{ field.label_tag }}
-                            {% if field.errors %}
-                                <span class="red-text">{{ field.errors|join:", " }}</span>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                    <br>
-                    <button type="submit" class="btn blue darken-2 waves-effect waves-light w-100">Ingresar
-                        <i class="material-icons right">send</i>
-                    </button>
-                </form>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <span style="color:#ff6b6b; font-size:0.75rem;">
+                                {{ field.errors|join:", " }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-main" style="width:100%; margin-top:10px;">
+                    Ingresar
+                </button>
+
+            </form>
+
+            <!-- LINKS -->
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; margin-top:10px; text-align:center;">
+
+                <a href="{% url 'password_reset' %}" style="color:var(--gold);">
+                    ¿Olvidaste tu contraseña?
+                </a>
+
+                <a href="{% url 'register' %}" style="color:var(--gold);">
+                    Crear cuenta
+                </a>
+
             </div>
-            <div class="card-action">
-                <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
-                <a href="{% url 'register' %}" class="right">Crear cuenta</a>
-            </div>
+
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

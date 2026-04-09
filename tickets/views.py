@@ -53,6 +53,18 @@ class MyTicketsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Ticket.objects.filter(buyer=self.request.user).order_by('-purchase_date')
+    
+class MyTicketsViewV2(LoginRequiredMixin, ListView):#variante de la vista
+    model = Ticket
+    template_name = 'tickets/my_ticketsV2.html'
+    context_object_name = 'tickets'
+
+    def get_queryset(self):
+        return Ticket.objects.filter(
+            buyer=self.request.user
+        ).select_related(
+            'ticket_type__event'
+        ).order_by('-purchase_date')
 
 class TicketScannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'tickets/scanner.html'
