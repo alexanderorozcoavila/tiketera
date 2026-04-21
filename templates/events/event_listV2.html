@@ -1,4 +1,5 @@
 {% extends 'baseV2.html' %}
+{% load static %}
 {% block content %}
 
 <!-- PAGE -->
@@ -6,16 +7,32 @@
 
 
 <!-- HERO -->
-<div class="hero-section">
-  <div class="hero-tag">✦ Temporada 2026 ✦</div>
-  <h1 class="hero-title">¡Descubre los<br><em>eventos</em><br>en Chile!</h1>
+<section class="hero-image">
 
-  <!-- BUSCADOR -->
-  <form method="GET" class="search-wrap">
-    <input type="text" name="q" placeholder="Buscar evento..." value="{{ request.GET.q }}">
-    <button class="search-btn">🔍</button>
-  </form>
-</div>
+  <!-- IMAGEN RESPONSIVA -->
+  <picture>
+    <!-- Móvil -->
+    <source media="(max-width: 768px)" srcset="{% static 'ticketera/img/cordilleraVertical.png' %}">
+    
+    <!-- Desktop -->
+    <img src="{% static 'ticketera/img/cordilleraHorizontal.png' %}" alt="Cordillera">
+  </picture>
+
+  <!-- CONTENIDO -->
+  <div class="hero-image-content">
+    <div class="hero-tag">✦ Temporada 2026 ✦</div>
+
+    <h1 class="hero-title">
+      ¡Descubre los<br><em>eventos</em><br>en Chile!
+    </h1>
+
+    <form method="GET" class="search-wrap">
+      <input type="text" name="q" placeholder="Buscar evento..." value="{{ request.GET.q }}">
+      <button class="search-btn">🔍</button>
+    </form>
+  </div>
+
+</section>
 
 <!-- FEATURED -->
 {% if events %}
