@@ -68,29 +68,30 @@
   <div class="section-line"></div>
 </div>
 
-<div class="events-scroll">
-  {% for event in events %}
-  <div class="event-card" onclick="window.location.href=`{% url 'event_detailV2' event.id %}`">
+<div class="carousel">
 
-    {% if event.image %}
-      <img src="{{ event.image.url }}" class="event-poster">
-    {% else %}
-      <div class="event-poster-placeholder">
-        🎤 {{ event.title }}
-      </div>
-    {% endif %}
+  <button class="carousel-btn left" onclick="moveCarousel(-1)">‹</button>
 
-    <div class="card-info">
-      <div class="card-artist">{{ event.title }}</div>
-      <div class="card-venue">📍 {{ event.venue.name }}</div>
-      <div class="card-date">
-        📅 {{ event.date_time|date:"d M" }}
+  <div class="carousel-track" id="carouselTrack">
+    {% for event in events %}
+    <div class="carousel-item"
+         onclick="window.location.href=`{% url 'event_detailV2' event.id %}`">
+
+      {% if event.image %}
+        <img src="{{ event.image.url }}" draggable="false">
+      {% endif %}
+
+      <div class="carousel-info">
+        <h3>{{ event.title }}</h3>
+        <p>{{ event.venue.name }}</p>
       </div>
+
     </div>
+    {% endfor %}
   </div>
-  {% empty %}
-  <p style="padding:20px;">No hay eventos disponibles</p>
-  {% endfor %}
+
+  <button class="carousel-btn right" onclick="moveCarousel(1)">›</button>
+
 </div>
 
 <!-- UPCOMING -->
@@ -127,7 +128,6 @@
 
 </div>
 
-<!-- JS FUNCIONAL -->
 <script>
 function goToEvent(id){
   window.location.href = "/event/" + id + "/";
@@ -136,6 +136,139 @@ function goToEvent(id){
 function closeSuccess(){
   document.getElementById("successScreen").classList.remove("show");
 }
+
+
+
+let currentIndex = 0;
+
+const track = document.getElementById("carouselTrack");
+const items = track.children;
+
+// =====================
+// 🎯 UPDATE (TU SISTEMA)
+// =====================
+function updateCarousel() {
+    const container = track.parentElement;
+    const containerWidth = container.offsetWidth;
+
+    for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove("active", "side");
+
+        if (i === currentIndex) {
+            items[i].classList.add("active");
+        } else if (i === currentIndex - 1 || i === currentIndex + 1) {
+            items[i].classList.add("side");
+        }
+    }
+
+    const itemWidth = items[0].offsetWidth;
+    const gap = 20;
+
+    const offset = currentIndex * (itemWidth + gap);
+    const centerOffset = (containerWidth / 2) - (itemWidth / 2);
+
+    track.style.transform = `translateX(${centerOffset - offset}px)`;
+}
+
+// =====================
+// 🔘 BOTONES
+// =====================
+function moveCarousel(direction) {
+    currentIndex += direction;
+
+    if (currentIndex < 0) currentIndex = items.length - 1;
+    if (currentIndex >= items.length) currentIndex = 0;
+
+    updateCarousel();
+}
+
+// =====================
+// 🖱️ DRAG INTELIGENTE
+// =====================
+let startX = 0;
+let isDragging = false;
+
+track.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    startX = e.clientX;
+});
+
+track.addEventListener("mouseup", (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+
+    const diff = e.clientX - startX;
+
+    if (diff > 50) {
+        moveCarousel(-1); // derecha
+    } else if (diff < -50) {
+        moveCarousel(1); // izquierda
+    }
+});
+
+track.addEventListener("mouseleave", () => {
+    isDragging = false;
+});
+
+// =====================
+// 📱 TOUCH
+// =====================
+track.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+});
+
+track.addEventListener("touchend", (e) => {
+    const diff = e.changedTouches[0].clientX - startX;
+
+    if (diff > 50) {
+        moveCarousel(-1);
+    } else if (diff < -50) {
+        moveCarousel(1);
+    }
+});
+
+// =====================
+// 🌈 GLOW DINÁMICO (igual que tienes)
+// =====================
+function getDominantColor(img) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 30;
+    canvas.height = 30;
+
+    ctx.drawImage(img, 0, 0, 30, 30);
+    const data = ctx.getImageData(0, 0, 30, 30).data;
+
+    let r = 0, g = 0, b = 0, count = 0;
+
+    for (let i = 0; i < data.length; i += 4) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count++;
+    }
+
+    r = Math.round(r / count);
+    g = Math.round(g / count);
+    b = Math.round(b / count);
+
+    return `rgba(${r}, ${g}, ${b}, 0.6)`;
+}
+
+document.querySelectorAll(".carousel-item").forEach(item => {
+    const img = item.querySelector("img");
+    if (!img) return;
+
+    img.onload = () => {
+        const color = getDominantColor(img);
+        item.style.setProperty("--glow-color", color);
+    };
+});
+
+// INIT
+window.onload = updateCarousel;
+window.onresize = updateCarousel;
 </script>
 
 {% endblock %}

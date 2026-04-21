@@ -222,7 +222,7 @@
                 object-position: center bottom;
             }
         }
-        
+
         .hero-tag {
         display: inline-block;
         font-family: 'Cinzel', serif;
@@ -306,6 +306,131 @@
         background: linear-gradient(90deg, rgba(201,168,76,0.4), transparent);
         }
 
+   /* ─── CAROUSEL ─── */
+        .carousel {
+            position: relative;
+            padding: 60px 0; /* más espacio arriba/abajo */
+            overflow: hidden;
+        }
+
+        /* CONTENEDOR */
+        .carousel-track {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.5s ease;
+            will-change: transform;
+        }
+
+        /* TARJETAS */
+        .carousel-item {
+            width: 200px;
+            height: 300px;
+            border-radius: 16px;
+            overflow: visible; /* 🔥 IMPORTANTE (evita cortes del glow) */
+            position: relative;
+            cursor: grab;
+            transition: all 0.5s ease;
+            opacity: 0.5;
+            transform: scale(0.8);
+            z-index: 1;
+
+            --glow-color: rgba(201,168,76,0.6);
+        }
+
+        /* cuando arrastras */
+        .carousel-item:active {
+            cursor: grabbing;
+        }
+
+        /* IMAGEN */
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 35%;
+            border-radius: 16px; /* 🔥 evita cortes visuales */
+        }
+
+        /*  MÓVIL */
+        @media (max-width: 768px) {
+            .carousel-item {
+                width: 160px;
+                height: 240px;
+            }
+
+            .carousel-item img {
+                object-position: center 45%;
+            }
+        }
+
+        /* INFO */
+        .carousel-info {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            font-size: 0.8rem;
+            border-radius: 0 0 16px 16px;
+        }
+
+        /* CENTRO */
+        .carousel-item.active {
+            transform: scale(1.15); /* más protagonismo */
+            opacity: 1;
+            z-index: 3;
+        }
+
+        /* LADOS */
+        .carousel-item.side {
+            transform: scale(0.9);
+            opacity: 0.7;
+            z-index: 2;
+        }
+
+        /* RESTO */
+        .carousel-item:not(.active):not(.side) {
+            opacity: 0.3;
+            transform: scale(0.75);
+        }
+
+        /*  GLOW SUAVE (sin cortes) */
+        .carousel-item.active::before {
+            content: "";
+            position: absolute;
+            inset: -10px; /* 🔥 más aire */
+            border-radius: 20px;
+            background: var(--glow-color);
+            filter: blur(20px);
+            opacity: 0.35;
+            z-index: -1;
+        }
+
+        /* sombra */
+        .carousel-item.active {
+            box-shadow: 0 0 30px 6px var(--glow-color);
+        }
+
+        /* BOTONES */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+            font-size: 28px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .carousel-btn.left { left: 10px; }
+        .carousel-btn.right { right: 10px; }
+        
         /* EVENT CARDS – horizontal scroll */
         .events-scroll {
         display: flex; gap: 16px;
