@@ -2,23 +2,16 @@
 {% load static %}
 {% block content %}
 
-<!-- PAGE -->
-<div class="page active">
-
-
 <!-- HERO -->
 <section class="hero-image">
+  <div id="hero-particle-container"></div>
 
-  <!-- IMAGEN RESPONSIVA -->
   <picture>
-    <!-- Móvil -->
     <source media="(max-width: 768px)" srcset="{% static 'ticketera/img/cordilleraVertical.png' %}">
     
-    <!-- Desktop -->
     <img src="{% static 'ticketera/img/cordilleraHorizontal.png' %}" alt="Cordillera">
   </picture>
 
-  <!-- CONTENIDO -->
   <div class="hero-image-content">
     <div class="hero-tag">✦ Temporada 2026 ✦</div>
 
@@ -26,12 +19,11 @@
       ¡Descubre los<br><em>eventos</em><br>en Chile!
     </h1>
 
-    <form method="GET" class="search-wrap">
-      <input type="text" name="q" placeholder="Buscar evento..." value="{{ request.GET.q }}">
-      <button class="search-btn">🔍</button>
-    </form>
+    <form method="GET" class="search-wrap" autocomplete="off">
+    <input type="text" id="eventSearch" placeholder="Buscar evento..." autocomplete="off">
+    <button class="search-btn">🔍</button>  
+  </form>
   </div>
-
 </section>
 
 <!-- FEATURED -->
@@ -127,147 +119,196 @@
 </div>
 
 </div>
-
 <script>
-function goToEvent(id){
-  window.location.href = "/event/" + id + "/";
-}
-
-function closeSuccess(){
-  document.getElementById("successScreen").classList.remove("show");
-}
-
-
-
+// ==========================================
+// 1. VARIABLES GLOBALES Y ESTADO
+// ==========================================
 let currentIndex = 0;
-
 const track = document.getElementById("carouselTrack");
-const items = track.children;
+const carouselItems = document.querySelectorAll('.carousel-item');
+const upcomingItems = document.querySelectorAll('.upcoming-item');
+const featured = document.querySelector('.featured-wrap');
+const carteleraHeaders = document.querySelectorAll('.section-header');
+const carouselContainer = document.querySelector('.carousel');
 
-// =====================
-// 🎯 UPDATE (TU SISTEMA)
-// =====================
-function updateCarousel() {
-    const container = track.parentElement;
-    const containerWidth = container.offsetWidth;
+// ==========================================
+// 2. INICIALIZACIÓN (DOMContentLoaded)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // A. Inicializar Partículas
+    initParticles();
 
-    for (let i = 0; i < items.length; i++) {
-        items[i].classList.remove("active", "side");
-
-        if (i === currentIndex) {
-            items[i].classList.add("active");
-        } else if (i === currentIndex - 1 || i === currentIndex + 1) {
-            items[i].classList.add("side");
-        }
+    // B. Inicializar Búsqueda Inteligente
+    const searchInput = document.querySelector('.search-wrap input');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
     }
 
-    const itemWidth = items[0].offsetWidth;
-    const gap = 20;
+    // C. Inicializar Glow Dinámico
+    initGlowEffects();
 
+    // D. Inicializar Carrusel
+    updateCarousel();
+});
+
+// ==========================================
+// 3. LÓGICA DE BÚSQUEDA Y FILTRADO
+// ==========================================
+function handleSearch(e) {
+    const query = e.target.value.toLowerCase().trim();
+    
+    // Transición de Secciones (Featured y Headers)
+    if (query.length > 0) {
+        if (featured) { featured.style.opacity = '0'; setTimeout(() => { if(e.target.value.length > 0) featured.style.display = 'none'; }, 400); }
+        if (carouselContainer) { carouselContainer.style.opacity = '0'; setTimeout(() => { if(e.target.value.length > 0) carouselContainer.style.display = 'none'; }, 400); }
+        carteleraHeaders.forEach((h, i) => { if(i < 2) { h.style.opacity = '0'; setTimeout(() => { if(e.target.value.length > 0) h.style.display = 'none'; }, 400); } });
+    } else {
+        if (featured) { featured.style.display = 'block'; setTimeout(() => featured.style.opacity = '1', 10); }
+        if (carouselContainer) { carouselContainer.style.display = 'block'; setTimeout(() => carouselContainer.style.opacity = '1', 10); }
+        carteleraHeaders.forEach(h => { h.style.display = 'flex'; setTimeout(() => h.style.opacity = '1', 10); });
+    }
+
+    // Filtrado de Items del Carrusel (para que updateCarousel funcione)
+    carouselItems.forEach(item => {
+        const isMatch = item.innerText.toLowerCase().includes(query);
+        item.style.display = isMatch ? 'block' : 'none';
+    });
+
+    // Filtrado de Lista "Próximos Eventos" con Animación
+    upcomingItems.forEach(item => {
+        const isMatch = item.innerText.toLowerCase().includes(query);
+        if (isMatch) {
+            item.style.display = 'flex';
+            setTimeout(() => { item.style.opacity = '1'; item.style.transform = 'translateY(0)'; }, 10);
+        } else {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(15px)';
+            setTimeout(() => { if (!item.innerText.toLowerCase().includes(e.target.value.trim())) item.style.display = 'none'; }, 400);
+        }
+    });
+
+    // Reiniciar carrusel al buscar para evitar desfases
+    currentIndex = 0;
+    setTimeout(updateCarousel, 10);
+}
+
+// ==========================================
+// 4. LÓGICA DEL CARRUSEL (REPARADA)
+// ==========================================
+function updateCarousel() {
+    if (!track) return;
+    const containerWidth = track.parentElement.offsetWidth;
+    const allItems = Array.from(track.children);
+    const visibleItems = allItems.filter(item => item.style.display !== 'none');
+
+    if (visibleItems.length === 0) return;
+
+    // Ajustar índice si el filtro reduce los items
+    if (currentIndex >= visibleItems.length) currentIndex = visibleItems.length - 1;
+
+    allItems.forEach(item => item.classList.remove("active", "side"));
+
+    // Aplicar clases solo a los visibles
+    visibleItems.forEach((item, index) => {
+        if (index === currentIndex) item.classList.add("active");
+        else if (index === currentIndex - 1 || index === currentIndex + 1) item.classList.add("side");
+    });
+
+    const itemWidth = allItems[0].offsetWidth || 300;
+    const gap = 20;
     const offset = currentIndex * (itemWidth + gap);
     const centerOffset = (containerWidth / 2) - (itemWidth / 2);
 
     track.style.transform = `translateX(${centerOffset - offset}px)`;
 }
 
-// =====================
-// 🔘 BOTONES
-// =====================
 function moveCarousel(direction) {
+    const visibleItemsCount = Array.from(track.children).filter(item => item.style.display !== 'none').length;
     currentIndex += direction;
 
-    if (currentIndex < 0) currentIndex = items.length - 1;
-    if (currentIndex >= items.length) currentIndex = 0;
+    if (currentIndex < 0) currentIndex = visibleItemsCount - 1;
+    if (currentIndex >= visibleItemsCount) currentIndex = 0;
 
     updateCarousel();
 }
 
 // =====================
-// 🖱️ DRAG INTELIGENTE
+// 5. EVENTOS DE MOUSE Y TOUCH (CARRUSEL)
 // =====================
 let startX = 0;
 let isDragging = false;
 
-track.addEventListener("mousedown", (e) => {
-    isDragging = true;
-    startX = e.clientX;
-});
+if (track) {
+    track.addEventListener("mousedown", (e) => { isDragging = true; startX = e.clientX; });
+    track.addEventListener("mouseup", (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const diff = e.clientX - startX;
+        if (diff > 50) moveCarousel(-1);
+        else if (diff < -50) moveCarousel(1);
+    });
+    track.addEventListener("mouseleave", () => isDragging = false);
+    track.addEventListener("touchstart", (e) => startX = e.touches[0].clientX);
+    track.addEventListener("touchend", (e) => {
+        const diff = e.changedTouches[0].clientX - startX;
+        if (diff > 50) moveCarousel(-1);
+        else if (diff < -50) moveCarousel(1);
+    });
+}
 
-track.addEventListener("mouseup", (e) => {
-    if (!isDragging) return;
-    isDragging = false;
-
-    const diff = e.clientX - startX;
-
-    if (diff > 50) {
-        moveCarousel(-1); // derecha
-    } else if (diff < -50) {
-        moveCarousel(1); // izquierda
+// ==========================================
+// 6. EFECTOS VISUALES (PARTÍCULAS Y GLOW)
+// ==========================================
+function initParticles() {
+    const container = document.getElementById('hero-particle-container');
+    if (!container) return;
+    const totalParticles = 80;
+    for (let i = 0; i < totalParticles; i++) {
+        const p = document.createElement('div');
+        p.className = 'hero-particle';
+        const size = Math.random() * 3 + 1;
+        const duration = Math.random() * 8 + 7;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = '-5%';
+        p.style.animation = `heroSnowfall ${duration}s linear infinite`;
+        p.style.animationDelay = `${Math.random() * 10}s`;
+        container.appendChild(p);
+        p.addEventListener('animationiteration', () => p.style.left = Math.random() * 100 + '%');
     }
-});
+}
 
-track.addEventListener("mouseleave", () => {
-    isDragging = false;
-});
+function initGlowEffects() {
+    document.querySelectorAll(".carousel-item").forEach(item => {
+        const img = item.querySelector("img");
+        if (!img) return;
+        if (img.complete) applyColor(img, item);
+        else img.onload = () => applyColor(img, item);
+    });
+}
 
-// =====================
-// 📱 TOUCH
-// =====================
-track.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-});
+function applyColor(img, item) {
+    const color = getDominantColor(img);
+    item.style.setProperty("--glow-color", color);
+}
 
-track.addEventListener("touchend", (e) => {
-    const diff = e.changedTouches[0].clientX - startX;
-
-    if (diff > 50) {
-        moveCarousel(-1);
-    } else if (diff < -50) {
-        moveCarousel(1);
-    }
-});
-
-// =====================
-// 🌈 GLOW DINÁMICO (igual que tienes)
-// =====================
 function getDominantColor(img) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-
-    canvas.width = 30;
-    canvas.height = 30;
-
+    canvas.width = 30; canvas.height = 30;
     ctx.drawImage(img, 0, 0, 30, 30);
     const data = ctx.getImageData(0, 0, 30, 30).data;
-
     let r = 0, g = 0, b = 0, count = 0;
-
     for (let i = 0; i < data.length; i += 4) {
-        r += data[i];
-        g += data[i + 1];
-        b += data[i + 2];
-        count++;
+        r += data[i]; g += data[i+1]; b += data[i+2]; count++;
     }
-
-    r = Math.round(r / count);
-    g = Math.round(g / count);
-    b = Math.round(b / count);
-
-    return `rgba(${r}, ${g}, ${b}, 0.6)`;
+    return `rgba(${Math.round(r/count)}, ${Math.round(g/count)}, ${Math.round(b/count)}, 0.6)`;
 }
 
-document.querySelectorAll(".carousel-item").forEach(item => {
-    const img = item.querySelector("img");
-    if (!img) return;
-
-    img.onload = () => {
-        const color = getDominantColor(img);
-        item.style.setProperty("--glow-color", color);
-    };
-});
-
-// INIT
-window.onload = updateCarousel;
+// =====================
+// 7. EVENTOS DE VENTANA
+// =====================
 window.onresize = updateCarousel;
 </script>
 
