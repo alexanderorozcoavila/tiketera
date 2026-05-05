@@ -2,15 +2,17 @@
 {% load static %}
 {% block content %}
 <picture class="bg-image">
-  <img src="{% static 'ticketera/img/nocheEstrellada.png' %}" alt="Fondo">
+  <img src="{% static 'ticketera/img/nocheEstrellada.png' %}" alt="Fondo" draggable="false">
 </picture>
 
 <div class="container" style="max-width:950px; margin:60px auto; position: relative; z-index: 10;">
     
     <div style="margin-bottom: 20px; display: flex; align-items: center;">
-        <a href="{% url 'event_listV2' %}" class="nav-btn" 
-           style="background: rgba(10, 10, 15, 0.4); backdrop-filter: blur(5px); border-color: rgba(201,168,76,0.3);">
-            ← Volver a Eventos
+        <a href="{% url 'event_listV2' %}" class="btn-back-glass">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Volver a eventos
         </a>
     </div>
 

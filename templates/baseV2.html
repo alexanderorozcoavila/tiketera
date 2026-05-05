@@ -16,8 +16,8 @@
     </a>
 
     <div class="header-right">
-        <a href="{% url 'my_ticketsV2' %}" class="nav-btn">Mis tickets</a>
-        <a href="{% url 'login' %}" class="nav-btn" style="background:rgba(201,168,76,0.15);border-color:var(--gold)">Ingresar</a>
+        <a href="{% url 'my_ticketsV2' %}" class="btn-rhomboid">Mis tickets</a>
+        <a href="{% url 'login' %}" class="btn-rhomboid btn-rhomboid-right">Ingresar</a>
     </div>
     </header>
 
@@ -96,6 +96,7 @@
         .header-right {
         display: flex; align-items: center; gap: 14px;
         }
+        /* ─── SE CREO NUEVA VARIANTE DE NAV-BTN-ABAJO DE ESTE MISMO
         .nav-btn {
         background: none;
         border: 1px solid rgba(201,168,76,0.3);
@@ -108,7 +109,90 @@
         transition: all 0.3s;
         }
         .nav-btn:hover { background: rgba(201,168,76,0.15); border-color: var(--gold); }
+        ─── */
+        /* ─── NAV BTN Romboide ─── */
+        .btn-rhomboid {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
+            border: none;
+            padding: 12px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            transform: skewX(-20deg);
+            position: relative;
+        }
 
+        .btn-rhomboid span {
+            display: inline-block;
+            transform: skewX(20deg); /* corrige el texto */
+        }
+
+        .btn-rhomboid-left {
+            border-top-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+        }
+
+        .btn-rhomboid-right {
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+            margin-left: -5px; /* une ambos botones sin espacio */
+        }
+
+        .btn-rhomboid:hover {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            transform: skewX(-20deg) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201,168,76,0.4);
+        }
+
+        /*BTN RETROCEDER EVENT*/
+        .btn-back-glass {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 10px 18px;
+            border-radius: 10px;
+
+            background: rgba(15, 15, 15, 0.75);
+            backdrop-filter: blur(6px);
+
+            border: 1px solid rgba(201,168,76,0.35);
+            color: var(--gold);
+
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        /* Flecha */
+        .btn-back-glass svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.25s ease;
+        }
+
+        /* Hover */
+        .btn-back-glass:hover {
+            background: rgba(15, 15, 15, 0.9);
+            border-color: var(--gold);
+            box-shadow: 0 6px 20px rgba(201,168,76,0.25);
+        }
+
+        /* Animación flecha */
+        .btn-back-glass:hover svg {
+            transform: translateX(-5px);
+        }
+        
         /* ─── PAGE 1: EVENTS ─── */
         .hero-section {
         padding: 60px 24px 20px;
@@ -441,6 +525,18 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+
+            filter: 
+                brightness(0.75)   /* apenas oscurece */
+                saturate(0.85);    /* baja un poco el color */
+        }
+
+        .bg-image::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background: rgba(10, 10, 15, 0.25);
         }
 
         /* overlay para que combine con tu diseño */
