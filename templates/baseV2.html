@@ -5,23 +5,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}TicketeraChile{% endblock %}</title>
-    
+    <title>{% block title %}FastiTicket{% endblock %}</title>
+    <link rel="icon" href="{% static 'ticketera/img/logo.ico' %}">
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <header>
     <a class="logo" href="{% url 'event_listV2' %}">
-        <div class="logo-icon">🎫</div>
-        TicketeraChile
+        <img src="{% static 'ticketera/img/logo.png' %}" 
+            alt="FastiTicket Logo" 
+            class="logo-img">
+
+        <div class="logo-texts">
+            <span class="logo-title">FastiTicket</span>
+            <span class="logo-subtitle">
+            ✦ CHILE 
+            <img src="https://flagcdn.com/w20/cl.png" 
+                alt="CL" 
+                class="cl-flag">
+            ✦
+        </span>
+        </div>
     </a>
 
     <div class="header-right">
         <a href="{% url 'my_ticketsV2' %}" class="btn-rhomboid">Mis tickets</a>
         <a href="{% url 'login' %}" class="btn-rhomboid btn-rhomboid-right">Ingresar</a>
     </div>
-    </header>
+</header>
 
-    <style>       
+    <style>
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 82px;
+            height: auto;
+            object-fit: contain;
+
+            filter:
+                drop-shadow(0 0 8px rgba(212,175,55,0.25))
+                drop-shadow(0 0 12px rgba(0,0,0,0.45));
+
+            transition: transform 0.25s ease;
+        }
+
+        .logo:hover .logo-img {
+            transform: scale(1.04);
+        }
+
+        .logo-texts {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .logo-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+
+            color: #d4af37;
+
+            text-shadow:
+                0 0 8px rgba(212,175,55,0.18),
+                0 0 18px rgba(212,175,55,0.08);
+        }
+
+        .logo-subtitle {
+            margin-top: 6px;
+
+            font-family: 'Lato', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+
+            letter-spacing: 4px;
+
+            color: #c59b47;
+
+            opacity: 0.95;
+        }
+
         :root {
         --gold: #c9a84c;
         --gold-light: #e8c97a;
