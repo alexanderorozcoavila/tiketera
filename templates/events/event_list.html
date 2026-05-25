@@ -1,45 +1,204 @@
 {% extends 'base.html' %}
 {% block content %}
-<div id="hero-banner">
-    <div>
-        <h1>Vive La <span>Experiencia</span></h1>
-        <h5>Encuentra los boletos para los eventos más exclusivos.</h5>
-    </div>
-</div>
 
-<div class="container" style="margin-top: -40px; position:relative; z-index: 10;">
-    <h3 class="center-align" style="font-weight: 800; color: #fff; margin-bottom: 40px; text-transform: uppercase;">Próximos Eventos</h3>
-    <div class="row">
-        {% for event in events %}
-        <div class="col s12 m6 l4">
-            <div class="card hoverable">
-                <div class="card-image center-align" style="background-color: #0b0c10; height: 220px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 2px solid #66fcf1;">
-                    {% if event.image %}
-                        <img src="{{ event.image.url }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" class="event-img">
-                    {% else %}
-                        <i class="material-icons grey-text" style="font-size: 70px; opacity:0.3;">event</i>
-                    {% endif %}
-                </div>
-                <div class="card-content">
-                    <span class="card-title truncate">{{ event.title }}</span>
-                    <p style="margin-top:10px; color:#c5c6c7;"><i class="material-icons tiny" style="color:#66fcf1;">date_range</i> {{ event.date_time|date:'d M Y H:i' }}</p>
-                    <p style="color:#c5c6c7;"><i class="material-icons tiny" style="color:#45a247;">place</i> {{ event.venue.name }}</p>
-                </div>
-                <div class="card-action center-align" style="border-top: 1px solid rgba(255,255,255,0.05); padding: 20px;">
-                    <a href="{% url 'event_detail' event.id %}" class="btn" style="width: 100%;">Ver Detalles</a>
-                </div>
+<div class="view-container">
+  <div class="view active" id="view-home">
+    
+    <section class="hero">
+      <div class="hero-tag"><span class="dot"></span> SHOW EN VIVO · BIOBÍO · {% now "Y" %}</div>
+      <div class="hero-title">
+        <div class="row"><span class="w volt">vive</span> <span class="w outline">el</span></div>
+        <div class="row"><span class="w mgm">movimiento.</span></div>
+      </div>
+      <p class="hero-desc">Bandas chilenas, gigantes internacionales y festivales pasando por tu ciudad. Compra rápido, sin vueltas, sin sustos.</p>
+      <div class="hero-cta">
+        <a href="#destacados-seccion" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">VER CONCIERTOS ⚡</a>
+        <a href="#generos-seccion" class="btn-ghost" style="display: inline-block; text-align: center; text-decoration: none;">→ festivales</a>
+      </div>
+    </section>
+
+    <section class="section" id="destacados-seccion">
+      <div class="section-header">
+        <h2 class="section-title"><span class="bolt">⚡</span> Conciertos destacados</h2>
+        <a class="section-link" href="#todos-seccion">VER TODOS →</a>
+      </div>
+      
+      <div class="card-grid" id="featured-grid">
+        {% for event in events|slice:":3" %}
+          <div class="event-card">
+            <div class="event-image" {% if event.image %} style="background-image: url('{{ event.image.url }}'); background-size: cover; background-position: center;" {% endif %}>
+              <div class="event-date">
+                {{ event.date_time|date:"d" }}<small>{{ event.date_time|date:"M"|upper }}</small>
+              </div>
+              <button class="fav-btn" onclick="event.stopPropagation();"></button>
+              <span>{{ event.title|upper }}</span>
             </div>
-        </div>
-        {% empty %}
-        <div class="col s12 center-align" style="margin-top: 50px;">
-            <i class="material-icons grey-text" style="font-size: 80px;">sentiment_dissatisfied</i>
-            <h5 class="grey-text">No hay eventos publicados por ahora.</h5>
-        </div>
-        {% endfor %}
-    </div>
-</div>
 
-<style>
-    .card:hover .event-img { transform: scale(1.1); }
-</style>
-{% endblock %}
+            <div class="event-info" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url" style="cursor:pointer;">
+              <div class="event-band">{{ event.title }}</div>
+              <div class="event-venue">{{ event.venue.name }}</div>
+              <div class="event-city">{% if event.venue.city %}{{ event.venue.city }}{% else %}Biobío{% endif %}, CL</div>
+              
+              <div class="event-action">
+                <div class="event-price">
+                  {% if event.ticket_types.all %}
+                    desde ${{ event.ticket_types.all.0.price }} CLP
+                  {% else %}
+                    Generales
+                  {% endif %}
+                </div>
+                <button class="event-card-btn" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url">
+                  Ver entradas →
+                </button>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div style="grid-column: 1/-1; text-align: center; padding: 3rem; opacity: 0.5; font-family: 'IBM Plex Mono', monospace;">
+            // NO HAY SHOWS DESTACADOS DISPONIBLES
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="section" id="todos-seccion">
+      <div class="section-header">
+        <h2 class="section-title"><span class="bolt">⚡</span> Próximos eventos</h2>
+        <span class="section-link" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--voltaje);">CALENDARIO ACTIVO ⌚</span>
+      </div>
+
+      <div class="card-grid" id="upcoming-list">
+        {% for event in events|slice:"3:" %}
+          <div class="event-card">
+            <div class="event-image" {% if event.image %} style="background-image: url('{{ event.image.url }}'); background-size: cover; background-position: center;" {% endif %}>
+              <div class="event-date">
+                {{ event.date_time|date:"d" }}<small>{{ event.date_time|date:"M"|upper }}</small>
+              </div>
+              <button class="fav-btn" onclick="event.stopPropagation();"></button>
+              <span>{{ event.title|upper }}</span>
+            </div>
+
+            <div class="event-info" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url" style="cursor:pointer;">
+              <div class="event-band">{{ event.title }}</div>
+              <div class="event-venue">{{ event.venue.name }}</div>
+              <div class="event-city">{% if event.venue.city %}{{ event.venue.city }}{% else %}Biobío{% endif %}, CL</div>
+              
+              <div class="event-action">
+                <div class="event-price">
+                  {% if event.ticket_types.all %}
+                    desde ${{ event.ticket_types.all.0.price }} CLP
+                  {% else %}
+                    Generales
+                  {% endif %}
+                </div>
+                <button class="event-card-btn" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url">
+                  Ver entradas →
+                </button>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          {% if events|length <= 3 %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; opacity: 0.4; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;">
+              // CARTELERA COMPLETAMENTE AL DÍA
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="section" id="generos-seccion">
+      <div class="section-header">
+        <h2 class="section-title"><span class="bolt">⚡</span> Explora por género</h2>
+      </div>
+      <div class="genre-grid">
+        <button class="genre-tile"><span class="genre-icon">🤘</span> ROCK</button>
+        <button class="genre-tile"><span class="genre-icon">☠</span> METAL</button>
+        <button class="genre-tile"><span class="genre-icon">Ⓐ</span> PUNK</button>
+        <button class="genre-tile"><span class="genre-icon">♢</span> INDIE</button>
+        <button class="genre-tile"><span class="genre-icon">✕</span> ALTERNATIVO</button>
+        <button class="genre-tile"><span class="genre-icon">★</span> CHILENO</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="benefits-bar">
+        <div class="benefit">
+          <div class="benefit-icon">⚡</div>
+          <div class="benefit-text">
+            <div class="benefit-title">Compra rápida</div>
+            <div class="benefit-desc">En menos de 60 seg.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">▣</div>
+          <div class="benefit-text">
+            <div class="benefit-title">Compra segura</div>
+            <div class="benefit-desc">Webpay Plus + SSL.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">★</div>
+          <div class="benefit-text">
+            <div class="benefit-title">Acceso exclusivo</div>
+            <div class="benefit-desc">Pre-ventas Club Voltaje.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">☎</div>
+          <div class="benefit-text">
+            <div class="benefit-title">Atención 24/7</div>
+            <div class="benefit-desc">WhatsApp + email.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="name">FASTI<span class="b">⚡</span><br>TICKET</div>
+          <div class="tagline">Tu entrada al<br>movimiento.<br><br>Biobío · Chile<br>{% now "Y" %}</div>
+        </div>
+        <div class="footer-col">
+          <h5>Navega</h5>
+          <ul>
+            <li><a href="#">Conciertos</a></li>
+            <li><a href="#">Festivales</a></li>
+            <li><a href="#">Bandas</a></li>
+            <li><a href="#">Noticias</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Ayuda</h5>
+          <ul>
+            <li><a href="#">Preguntas frecuentes</a></li>
+            <li><a href="#">Cómo comprar</a></li>
+            <li><a href="#">Devoluciones</a></li>
+            <li><a href="#">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="#">Términos</a></li>
+            <li><a href="#">Privacidad</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Newsletter</h5>
+          <p style="font-size:0.75rem; opacity:0.7; line-height:1.5;">Bandas favoritas y próximos shows directo a tu correo.</p>
+          <div class="newsletter-input">
+            <input type="email" placeholder="tu@correo.cl" />
+            <button>→</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>// fastiticket · vlt//001 · v1.0</span>
+        <span>© {% now "Y" %} · agencia aurum · biobío · chile</span>
+      </div>
+    </footer>
+
+  </div> </div> {% endblock %}

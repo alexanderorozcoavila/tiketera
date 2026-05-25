@@ -1,28 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">Registrarse</span>
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="input-field">
-                            {{ field }}
-                            {{ field.label_tag }}
-                            {% if field.errors %}
-                                <span class="red-text">{{ field.errors|join:", " }}</span>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                    <br>
-                    <button type="submit" class="btn blue darken-2 waves-effect waves-light w-100">Crear Cuenta
-                        <i class="material-icons right">person_add</i>
-                    </button>
-                </form>
-            </div>
+
+<section class="auth-section">
+    <div class="auth-container">
+        
+        <div class="auth-header">
+            <div class="auth-kicker">// FASTITICKET JOIN</div>
+            <h1>CREAR CUENTA</h1>
+            <p>Forma parte del Club Voltaje, asegura tus entradas sin filas y gestiona tus accesos de forma inmediata.</p>
         </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="auth-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="auth-error">// {{ field.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="auth-submit">
+                CREAR CUENTA ⚡
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p style="opacity: 0.5; margin-right: 0.5rem;">¿Ya tienes cuenta?</p>
+            <a href="{% url 'login' %}">Inicia Sesión aquí</a>
+        </div>
+
     </div>
-</div>
+</section>
+
 {% endblock %}

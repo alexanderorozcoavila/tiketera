@@ -4,194 +4,1839 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TikeTera - Tickets Premium</title>
-    <!-- Materialize CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+        --obsidiana: #0A0A0F;
+        --carbono: #14141C;
+        --grafito: #25252F;
+        --voltaje: #D4FF1A;
+        --magma: #FF3D14;
+        --hueso: #F0EDE3;
+        --plasma: #FF1493;
+        --linea: rgba(240, 237, 227, 0.15);
+        --linea-fuerte: rgba(240, 237, 227, 0.35);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            background-color: #0b0c10;
-            color: #c5c6c7;
-            font-family: 'Inter', sans-serif;
+        background: var(--obsidiana);
+        color: var(--hueso);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 14px;
+        overflow-x: hidden;
+        }
+        /* Grain global sutil */
+        body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+        input, select { font-family: inherit; }
+        a { color: inherit; text-decoration: none; }
+
+        /* MARQUEE TOP */
+        .marquee {
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        font-family: 'Anton', sans-serif;
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        padding: 0.4rem 0;
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 2px solid var(--obsidiana);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        }
+        .marquee-track {
+        display: inline-block;
+        animation: scroll 35s linear infinite;
+        }
+        .marquee span { padding: 0 1rem; }
+        .marquee span::before { content: '⚡'; padding-right: 0.6rem; color: var(--magma); }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* APP LAYOUT */
+        .app {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: calc(100vh - 32px);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+        background: var(--carbono);
+        border-right: 1px solid var(--linea);
+        padding: 1.5rem 1rem;
+        position: sticky;
+        top: 32px;
+        height: calc(100vh - 32px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--grafito); }
+
+        .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--linea);
+        }
+        .logo-mark {
+        font-family: 'Anton', sans-serif;
+        font-size: 2rem;
+        color: var(--voltaje);
+        line-height: 1;
+        letter-spacing: -0.03em;
+        }
+        .logo-mark .bolt {
+        color: var(--magma);
+        display: inline-block;
+        transform: skewX(-15deg);
+        }
+        .logo-sub {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        color: var(--hueso);
+        opacity: 0.6;
+        margin-top: 0.15rem;
+        }
+
+        .nav-main { display: flex; flex-direction: column; gap: 0.15rem; }
+        .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.65rem 0.8rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--hueso);
+        border-left: 2px solid transparent;
+        transition: all 0.15s;
+        text-align: left;
+        width: 100%;
+        }
+        .nav-item:hover { background: var(--grafito); color: var(--voltaje); }
+        .nav-item.active {
+        background: linear-gradient(90deg, rgba(212,255,26,0.12) 0%, transparent 100%);
+        border-left-color: var(--voltaje);
+        color: var(--voltaje);
+        }
+        .nav-item .icon { width: 16px; height: 16px; }
+        .nav-item .badge {
+        margin-left: auto;
+        background: var(--magma);
+        color: var(--hueso);
+        font-size: 0.6rem;
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        }
+
+        .club-card {
+        background: var(--obsidiana);
+        border: 1px solid var(--voltaje);
+        padding: 1rem;
+        text-align: center;
+        }
+        .club-card .lab {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        color: var(--hueso);
+        opacity: 0.6;
+        }
+        .club-card .title {
+        font-family: 'Anton', sans-serif;
+        font-size: 1.4rem;
+        color: var(--voltaje);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin: 0.3rem 0;
+        line-height: 1;
+        }
+        .club-card .skull { font-size: 2rem; margin: 0.4rem 0; }
+        .club-card .desc {
+        font-size: 0.7rem;
+        line-height: 1.4;
+        opacity: 0.75;
+        margin-bottom: 0.7rem;
+        }
+        .club-card button {
+        width: 100%;
+        padding: 0.55rem;
+        background: transparent;
+        border: 1px solid var(--magma);
+        color: var(--magma);
+        font-family: 'Anton', sans-serif;
+        font-size: 0.85rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        transition: all 0.15s;
+        }
+        .club-card button:hover { background: var(--magma); color: var(--hueso); }
+
+        .account {
+        border-top: 1px solid var(--linea);
+        padding-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        }
+        .account-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.5rem 0.5rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border: 1px solid var(--linea);
+        }
+        .account-row .avatar {
+        width: 24px;
+        height: 24px;
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.85rem;
+        }
+
+        .socials { display: flex; gap: 0.4rem; padding-top: 0.5rem; }
+        .socials a {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--linea);
+        transition: all 0.15s;
+        }
+        .socials a:hover { background: var(--voltaje); color: var(--obsidiana); border-color: var(--voltaje); }
+        .socials svg { width: 13px; height: 13px; }
+
+        /* MAIN CONTENT */
+        .content { display: flex; flex-direction: column; }
+
+        /* APP HEADER */
+        .app-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 2rem;
+        background: var(--carbono);
+        border-bottom: 1px solid var(--linea);
+        position: sticky;
+        top: 32px;
+        z-index: 50;
+        }
+        .search-box {
+        flex: 1;
+        position: relative;
+        max-width: 600px;
+        }
+        .search-box input {
+        width: 100%;
+        background: var(--obsidiana);
+        border: 1px solid var(--linea);
+        color: var(--hueso);
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        outline: none;
+        transition: border-color 0.15s;
+        }
+        .search-box input:focus { border-color: var(--voltaje); }
+        .search-box input::placeholder { color: var(--hueso); opacity: 0.4; }
+        .search-box .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--voltaje);
+        font-size: 1rem;
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+        .header-pill {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0.6rem 0.85rem;
+        border: 1px solid var(--voltaje);
+        color: var(--voltaje);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        white-space: nowrap;
+        }
+        .header-pill .bolt { color: var(--magma); }
+        .icon-btn {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--linea);
+        display: grid;
+        place-items: center;
+        transition: all 0.15s;
+        }
+        .icon-btn:hover { border-color: var(--voltaje); }
+        .icon-btn .count {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: var(--magma);
+        color: var(--hueso);
+        font-size: 0.6rem;
+        padding: 0.05rem 0.35rem;
+        border-radius: 999px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: bold;
+        }
+
+        /* VIEW CONTAINER */
+        .view-container { padding: 0; flex: 1; }
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* HERO */
+        .hero {
+        position: relative;
+        min-height: 460px;
+        padding: 3rem 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        border-bottom: 2px solid var(--hueso);
+        }
+        .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse at 80% 50%, rgba(255,61,20,0.18) 0%, transparent 60%),
+            radial-gradient(ellipse at 30% 70%, rgba(212,255,26,0.08) 0%, transparent 60%),
+            repeating-linear-gradient(
+            45deg,
+            transparent 0,
+            transparent 60px,
+            rgba(255,255,255,0.015) 60px,
+            rgba(255,255,255,0.015) 61px
+            );
+        z-index: 0;
+        }
+        .hero::after {
+        content: 'ALTO VOLTAJE ⚡ ALTO VOLTAJE ⚡ ALTO VOLTAJE ⚡';
+        position: absolute;
+        bottom: 1rem;
+        left: 0;
+        right: 0;
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.4em;
+        color: var(--magma);
+        opacity: 0.4;
+        text-align: center;
+        z-index: 1;
+        }
+        .hero > * { position: relative; z-index: 2; }
+        .hero-tag {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--magma);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        }
+        .hero-tag .dot {
+        width: 8px;
+        height: 8px;
+        background: var(--magma);
+        border-radius: 50%;
+        animation: blink 1.2s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0.2; } }
+
+        .hero-title {
+        font-family: 'Anton', sans-serif;
+        text-transform: uppercase;
+        line-height: 0.82;
+        margin: 1.5rem 0;
+        }
+        .hero-title .row { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+        .hero-title .w {
+        font-size: clamp(3rem, 9vw, 8rem);
+        letter-spacing: -0.02em;
+        }
+        .hero-title .volt { color: var(--voltaje); }
+        .hero-title .outline { -webkit-text-stroke: 2px var(--hueso); color: transparent; }
+        .hero-title .mgm { color: var(--magma); font-style: italic; }
+
+        .hero-desc {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 45ch;
+        margin-bottom: 1.5rem;
+        opacity: 0.85;
+        }
+        .hero-cta {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        flex-wrap: wrap;
+        }
+        .btn-primary {
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        padding: 0.9rem 1.4rem;
+        font-family: 'Anton', sans-serif;
+        font-size: 1rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.15s;
+        }
+        .btn-primary:hover { background: var(--magma); color: var(--hueso); transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--voltaje); }
+        .btn-ghost {
+        background: transparent;
+        color: var(--hueso);
+        border: 1px solid var(--hueso);
+        padding: 0.9rem 1.4rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        transition: all 0.15s;
+        }
+        .btn-ghost:hover { background: var(--hueso); color: var(--obsidiana); }
+
+        /* SECTION */
+        .section { padding: 3rem 2rem; border-bottom: 1px solid var(--linea); }
+        .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--linea);
+        }
+        .section-title {
+        font-family: 'Anton', sans-serif;
+        font-size: clamp(1.6rem, 3vw, 2.4rem);
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        }
+        .section-title .bolt { color: var(--magma); }
+        .section-link {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--voltaje);
+        }
+        .section-link:hover { color: var(--magma); }
+
+        /* CARD GRID (Conciertos destacados) */
+        .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+        }
+        .event-card {
+        background: var(--carbono);
+        border: 1px solid var(--linea);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.2s;
+        position: relative;
+        }
+        .event-card:hover { border-color: var(--voltaje); transform: translateY(-4px); }
+
+        .event-image {
+        aspect-ratio: 1;
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        text-transform: uppercase;
+        color: var(--hueso);
+        font-size: 2.2rem;
+        line-height: 0.9;
+        text-align: center;
+        padding: 1rem;
+        letter-spacing: -0.02em;
+        }
+        .event-image.bg-1 { background: linear-gradient(135deg, #5C0010, #1A0005); }
+        .event-image.bg-2 { background: linear-gradient(135deg, #FF1493, #4A0030); color: var(--obsidiana); }
+        .event-image.bg-3 { background: linear-gradient(135deg, #2A1B0F, #0F0D08); color: #C9A961; }
+        .event-image.bg-4 { background: linear-gradient(135deg, #1A1A2E, #000000); color: var(--hueso); -webkit-text-stroke: 1px var(--voltaje); }
+        .event-image.bg-5 { background: linear-gradient(135deg, #002B36, #001214); color: var(--voltaje); }
+        .event-image.bg-6 { background: linear-gradient(135deg, #3D0F00, #1A0500); color: var(--magma); }
+        .event-image.bg-7 { background: linear-gradient(135deg, #1A0033, #000011); color: var(--plasma); }
+        .event-image.bg-8 { background: linear-gradient(135deg, #0F1F0A, #050B03); color: var(--voltaje); }
+        .event-image::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(0,0,0,0.3) 1px, transparent 1.5px);
+        background-size: 6px 6px;
+        opacity: 0.4;
+        }
+        .event-image > span { position: relative; z-index: 1; }
+
+        .event-date {
+        position: absolute;
+        top: 0.6rem;
+        left: 0.6rem;
+        background: var(--obsidiana);
+        color: var(--voltaje);
+        padding: 0.3rem 0.55rem;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.9rem;
+        line-height: 1;
+        text-align: center;
+        border: 1px solid var(--voltaje);
+        z-index: 2;
+        }
+        .event-date small { display: block; font-size: 0.55rem; opacity: 0.85; }
+        .fav-btn {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+        width: 28px;
+        height: 28px;
+        background: rgba(10,10,15,0.85);
+        display: grid;
+        place-items: center;
+        font-size: 0.95rem;
+        color: var(--hueso);
+        z-index: 2;
+        transition: all 0.15s;
+        }
+        .fav-btn:hover, .fav-btn.active { color: var(--magma); }
+        .fav-btn.active::after { content: '♥'; }
+        .fav-btn:not(.active)::after { content: '♡'; }
+
+        .event-info { padding: 0.9rem; flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+        .event-band {
+        font-family: 'Anton', sans-serif;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+        line-height: 1;
+        }
+        .event-venue {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--magma);
+        }
+        .event-city {
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.65;
+        }
+        .event-action {
+        margin-top: 0.5rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid var(--linea);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+        .event-price {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.85rem;
+        color: var(--voltaje);
+        }
+        .event-card-btn {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--voltaje);
+        padding: 0.3rem 0;
+        border-bottom: 1px solid var(--voltaje);
+        }
+        .event-card-btn:hover { color: var(--magma); border-color: var(--magma); }
+
+        /* Lista compacta (Próximos eventos) */
+        .list-events {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--linea);
+        }
+        .list-row {
+        display: grid;
+        grid-template-columns: 60px 120px 1fr auto auto;
+        gap: 1rem;
+        align-items: center;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--linea);
+        transition: background 0.15s;
+        }
+        .list-row:last-child { border-bottom: none; }
+        .list-row:hover { background: var(--carbono); }
+        .list-row .l-date {
+        font-family: 'Anton', sans-serif;
+        text-align: center;
+        line-height: 0.95;
+        color: var(--voltaje);
+        }
+        .list-row .l-date .d { font-size: 1.5rem; }
+        .list-row .l-date .m { font-size: 0.65rem; letter-spacing: 0.1em; }
+        .list-row .l-band {
+        background: var(--obsidiana);
+        border: 1px solid var(--magma);
+        padding: 0.4rem 0.6rem;
+        text-align: center;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--magma);
+        line-height: 1;
+        }
+        .list-row .l-info { display: flex; flex-direction: column; gap: 0.2rem; }
+        .list-row .l-info .band {
+        font-family: 'Anton', sans-serif;
+        font-size: 1rem;
+        text-transform: uppercase;
+        }
+        .list-row .l-info .venue {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--magma);
+        }
+        .list-row .l-info .city { font-size: 0.7rem; opacity: 0.6; }
+        .list-row .l-btn {
+        padding: 0.5rem 0.9rem;
+        border: 1px solid var(--voltaje);
+        color: var(--voltaje);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        transition: all 0.15s;
+        }
+        .list-row .l-btn:hover { background: var(--voltaje); color: var(--obsidiana); }
+        .list-row .l-fav { font-size: 1.1rem; opacity: 0.5; }
+        .list-row .l-fav.active { color: var(--magma); opacity: 1; }
+
+        /* GÉNEROS */
+        .genre-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+        }
+        .genre-tile {
+        aspect-ratio: 1;
+        background: var(--carbono);
+        border: 1px solid var(--linea);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+        }
+        .genre-tile::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(212,255,26,0.05) 1px, transparent 1.5px);
+        background-size: 8px 8px;
+        }
+        .genre-tile:hover { border-color: var(--voltaje); transform: scale(1.02); }
+        .genre-tile .genre-icon { font-size: 1.8rem; color: var(--voltaje); }
+        .genre-tile:hover .genre-icon { color: var(--magma); }
+        .genre-tile.active { background: var(--voltaje); color: var(--obsidiana); }
+        .genre-tile.active .genre-icon { color: var(--obsidiana); }
+
+        /* BENEFICIOS */
+        .benefits-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0; 
+        border: 1px solid var(--linea);
+        }
+        .benefit {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem 1.2rem;
+        border-right: 1px solid var(--linea);
+        }
+        .benefit:last-child { border-right: none; }
+        .benefit-icon {
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--voltaje);
+        color: var(--voltaje);
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        }
+        .benefit-text { display: flex; flex-direction: column; gap: 0.15rem; }
+        .benefit-title {
+        font-family: 'Anton', sans-serif;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: var(--magma);
+        }
+        .benefit-desc { font-size: 0.7rem; line-height: 1.4; opacity: 0.7; }
+
+        /* FILTROS (vista conciertos) */
+        .filter-bar {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        padding: 1.5rem 2rem 0;
+        align-items: center;
+        }
+        .filter-label {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        color: var(--magma);
+        margin-right: 0.5rem;
+        }
+        .filter-pill {
+        padding: 0.4rem 0.8rem;
+        border: 1px solid var(--linea);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        transition: all 0.15s;
+        }
+        .filter-pill:hover { border-color: var(--voltaje); color: var(--voltaje); }
+        .filter-pill.active { background: var(--voltaje); color: var(--obsidiana); border-color: var(--voltaje); }
+
+        /* DETALLE EVENTO */
+        .event-detail {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 2rem;
+        padding: 2rem;
+        align-items: start;
+        }
+        .event-detail-img {
+        aspect-ratio: 3/4;
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        text-transform: uppercase;
+        font-size: 4.5rem;
+        line-height: 0.85;
+        text-align: center;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        }
+        .event-detail-img::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(0,0,0,0.4) 1px, transparent 1.5px);
+        background-size: 6px 6px;
+        opacity: 0.4;
+        }
+        .event-detail-img > * { position: relative; z-index: 1; }
+
+        .detail-info { display: flex; flex-direction: column; gap: 1.2rem; }
+        .detail-back {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--voltaje);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        align-self: flex-start;
+        }
+        .detail-band {
+        font-family: 'Anton', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        text-transform: uppercase;
+        line-height: 0.9;
+        color: var(--hueso);
+        }
+        .detail-band em { color: var(--magma); font-style: italic; }
+        .detail-meta {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--linea);
+        background: var(--carbono);
+        }
+        .meta-cell { display: flex; flex-direction: column; gap: 0.2rem; }
+        .meta-label {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        color: var(--magma);
+        text-transform: uppercase;
+        }
+        .meta-val {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        color: var(--hueso);
+        text-transform: uppercase;
+        }
+
+        .tickets-section {
+        border: 1px solid var(--linea);
+        padding: 1.2rem;
+        background: var(--carbono);
+        }
+        .tickets-section .title {
+        font-family: 'Anton', sans-serif;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.9rem;
+        color: var(--voltaje);
+        }
+        .ticket-tier {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--linea);
+        align-items: center;
+        }
+        .ticket-tier:last-child { border-bottom: none; }
+        .ticket-tier .t-name {
+        font-family: 'Anton', sans-serif;
+        font-size: 1rem;
+        text-transform: uppercase;
+        }
+        .ticket-tier .t-desc { font-size: 0.7rem; opacity: 0.65; }
+        .ticket-tier .t-price {
+        font-family: 'Major Mono Display', monospace;
+        color: var(--voltaje);
+        font-size: 1rem;
+        }
+        .qty-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--linea);
+        }
+        .qty-control button {
+        width: 28px;
+        height: 28px;
+        background: var(--obsidiana);
+        color: var(--voltaje);
+        font-family: 'Anton', sans-serif;
+        font-size: 1rem;
+        }
+        .qty-control button:hover { background: var(--voltaje); color: var(--obsidiana); }
+        .qty-control .qty {
+        width: 32px;
+        text-align: center;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.9rem;
+        }
+
+        .purchase-summary {
+        background: var(--obsidiana);
+        border: 2px solid var(--voltaje);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+        .purchase-summary .total-label {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        color: var(--magma);
+        }
+        .purchase-summary .total-amount {
+        font-family: 'Anton', sans-serif;
+        font-size: 1.5rem;
+        color: var(--voltaje);
+        }
+
+        /* PURCHASE FLOW */
+        .purchase-flow { padding: 2rem; }
+        .purchase-title {
+        font-family: 'Anton', sans-serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        text-transform: uppercase;
+        text-align: center;
+        letter-spacing: -0.01em;
+        margin-bottom: 1.5rem;
+        }
+        .purchase-title em { color: var(--magma); font-style: italic; }
+        .steps {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        }
+        .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        }
+        .step-num {
+        width: 36px;
+        height: 36px;
+        border: 2px solid var(--linea-fuerte);
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        font-size: 1rem;
+        color: var(--hueso);
+        opacity: 0.5;
+        }
+        .step-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0.5;
+        }
+        .step.active .step-num { border-color: var(--voltaje); color: var(--voltaje); opacity: 1; background: var(--obsidiana); }
+        .step.active .step-label { color: var(--voltaje); opacity: 1; }
+        .step.done .step-num { background: var(--voltaje); color: var(--obsidiana); border-color: var(--voltaje); opacity: 1; }
+        .step.done .step-label { opacity: 1; }
+        .step-line {
+        width: 50px;
+        height: 1px;
+        background: var(--linea-fuerte);
+        }
+        .step-line.done { background: var(--voltaje); }
+
+        .purchase-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        }
+        .purchase-panel {
+        background: var(--carbono);
+        border: 1px solid var(--linea);
+        padding: 1.5rem;
+        }
+        .panel-title {
+        font-family: 'Anton', sans-serif;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        color: var(--voltaje);
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid var(--linea);
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-label {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        color: var(--magma);
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+        display: block;
+        }
+        .form-input {
+        width: 100%;
+        background: var(--obsidiana);
+        border: 1px solid var(--linea);
+        color: var(--hueso);
+        padding: 0.8rem 1rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.15s;
+        }
+        .form-input:focus { border-color: var(--voltaje); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+        .pay-option {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--linea);
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        }
+        .pay-option:hover { border-color: var(--voltaje); }
+        .pay-option.selected { border-color: var(--voltaje); background: rgba(212,255,26,0.05); }
+        .pay-radio {
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--linea-fuerte);
+        border-radius: 50%;
+        position: relative;
+        flex-shrink: 0;
+        }
+        .pay-option.selected .pay-radio { border-color: var(--voltaje); }
+        .pay-option.selected .pay-radio::after {
+        content: '';
+        position: absolute;
+        inset: 3px;
+        background: var(--voltaje);
+        border-radius: 50%;
+        }
+        .pay-logo {
+        font-family: 'Anton', sans-serif;
+        font-size: 0.8rem;
+        color: var(--magma);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.5rem;
+        border: 1px solid var(--magma);
+        min-width: 75px;
+        text-align: center;
+        }
+        .pay-name { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; letter-spacing: 0.05em; }
+        .pay-desc { font-size: 0.7rem; opacity: 0.6; margin-left: auto; }
+
+        .summary-card { background: var(--carbono); border: 1px solid var(--linea); padding: 1.5rem; position: sticky; top: 110px; }
+        .summary-event { display: flex; gap: 0.8rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--linea); }
+        .summary-thumb {
+        width: 70px;
+        height: 70px;
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 0.9;
+        padding: 0.3rem;
+        flex-shrink: 0;
+        }
+        .summary-event-info .band {
+        font-family: 'Anton', sans-serif;
+        font-size: 1rem;
+        text-transform: uppercase;
+        }
+        .summary-event-info .meta { font-size: 0.7rem; opacity: 0.7; line-height: 1.5; letter-spacing: 0.05em; }
+
+        .summary-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.8rem;
+        }
+        .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-top: 1px solid var(--linea-fuerte);
+        margin-top: 0.5rem;
+        }
+        .summary-total .label { font-family: 'Anton', sans-serif; font-size: 1rem; text-transform: uppercase; }
+        .summary-total .amount { font-family: 'Anton', sans-serif; font-size: 1.5rem; color: var(--voltaje); }
+
+        .btn-pay {
+        width: 100%;
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        padding: 1rem;
+        font-family: 'Anton', sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-top: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.15s;
+        }
+        .btn-pay:hover { background: var(--magma); color: var(--hueso); }
+        .btn-back {
+        width: 100%;
+        background: transparent;
+        border: 1px solid var(--linea);
+        color: var(--hueso);
+        padding: 0.7rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-top: 0.5rem;
+        transition: all 0.15s;
+        }
+        .btn-back:hover { border-color: var(--magma); color: var(--magma); }
+
+        /* TICKET FINAL */
+        .ticket-confirm { padding: 2rem; max-width: 700px; margin: 0 auto; }
+        .success-banner {
+        text-align: center;
+        margin-bottom: 2rem;
+        }
+        .success-banner .check {
+        font-family: 'Anton', sans-serif;
+        font-size: 3.5rem;
+        color: var(--voltaje);
+        line-height: 1;
+        }
+        .success-banner .title {
+        font-family: 'Anton', sans-serif;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        color: var(--magma);
+        font-style: italic;
+        margin-top: 0.5rem;
+        }
+        .success-banner .desc { margin-top: 0.5rem; opacity: 0.75; font-size: 0.85rem; }
+
+        .ticket {
+        background: var(--carbono);
+        border: 2px solid var(--voltaje);
+        position: relative;
+        overflow: hidden;
+        }
+        .ticket::before, .ticket::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: var(--obsidiana);
+        border: 1px solid var(--voltaje);
+        border-radius: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+        }
+        .ticket::before { top: 250px; }
+        .ticket::after { bottom: 60px; }
+        .ticket-top {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        position: relative;
+        }
+        .ticket-top-img {
+        width: 110px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        font-size: 1.3rem;
+        text-align: center;
+        line-height: 0.9;
+        padding: 0.4rem;
+        }
+        .ticket-top-info { flex: 1; }
+        .ticket-top-band {
+        font-family: 'Anton', sans-serif;
+        font-size: 2rem;
+        text-transform: uppercase;
+        color: var(--hueso);
+        line-height: 0.9;
+        }
+        .ticket-top-venue {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--magma);
+        margin-top: 0.3rem;
+        }
+        .ticket-top-city { font-size: 0.75rem; opacity: 0.7; margin-top: 0.2rem; }
+
+        .ticket-divider {
+        border-top: 2px dashed var(--linea-fuerte);
+        margin: 0 1.5rem;
+        }
+        .ticket-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+        }
+        .ticket-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+        .ticket-meta .l { font-family: 'Major Mono Display', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--magma); }
+        .ticket-meta .v { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; }
+
+        .ticket-bottom { padding: 1.2rem 1.5rem 1.5rem; }
+        .ticket-bottom .id {
+        display: flex;
+        justify-content: space-between;
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        margin-bottom: 0.7rem;
+        color: var(--magma);
+        }
+        .barcode {
+        width: 100%;
+        height: 60px;
+        background: linear-gradient(90deg,
+            var(--hueso) 0 2px, transparent 2px 4px,
+            var(--hueso) 4px 5px, transparent 5px 8px,
+            var(--hueso) 8px 11px, transparent 11px 13px,
+            var(--hueso) 13px 14px, transparent 14px 18px,
+            var(--hueso) 18px 20px, transparent 20px 21px,
+            var(--hueso) 21px 25px, transparent 25px 27px,
+            var(--hueso) 27px 28px, transparent 28px 31px,
+            var(--hueso) 31px 34px, transparent 34px 36px,
+            var(--hueso) 36px 37px, transparent 37px 40px);
+        background-size: 40px 100%;
+        background-color: var(--obsidiana);
+        border: 1px solid var(--linea);
+        }
+        .barcode-number {
+        text-align: center;
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 0.5em;
+        margin-top: 0.7rem;
+        color: var(--voltaje);
+        }
+
+        .ticket-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+        margin-top: 1.5rem;
+        }
+        .ticket-actions button {
+        padding: 0.85rem;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.95rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transition: all 0.15s;
+        }
+        .ticket-actions .wallet { background: var(--voltaje); color: var(--obsidiana); }
+        .ticket-actions .wallet:hover { background: var(--magma); color: var(--hueso); }
+        .ticket-actions .share { background: transparent; border: 1px solid var(--magma); color: var(--magma); }
+        .ticket-actions .share:hover { background: var(--magma); color: var(--hueso); }
+
+        /* MIS TICKETS / FAVORITOS */
+        .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--linea-fuerte);
+        padding: 0 2rem;
+        margin-top: 0;
+        }
+        .tab {
+        padding: 1rem 1.5rem 0.9rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--hueso);
+        opacity: 0.55;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        }
+        .tab.active { color: var(--voltaje); opacity: 1; border-bottom-color: var(--voltaje); }
+
+        .saved-empty {
+        padding: 4rem 2rem;
+        text-align: center;
+        border: 1px dashed var(--linea-fuerte);
+        margin: 2rem;
+        }
+        .saved-empty .title {
+        font-family: 'Anton', sans-serif;
+        font-size: 2rem;
+        text-transform: uppercase;
+        color: var(--magma);
+        }
+        .saved-empty .desc { margin-top: 0.5rem; opacity: 0.7; font-size: 0.85rem; }
+
+        .saved-list { padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 0.8rem; }
+        .saved-card {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--linea);
+        align-items: center;
+        background: var(--carbono);
+        }
+        .saved-card .s-img {
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.7rem;
+        text-align: center;
+        line-height: 0.9;
+        padding: 0.3rem;
+        }
+        .saved-card .s-info { display: flex; flex-direction: column; gap: 0.25rem; }
+        .saved-card .s-band {
+        font-family: 'Anton', sans-serif;
+        font-size: 1.15rem;
+        text-transform: uppercase;
+        }
+        .saved-card .s-meta {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--magma);
+        }
+        .saved-card .s-date {
+        display: flex;
+        gap: 0.6rem;
+        font-size: 0.7rem;
+        opacity: 0.7;
+        margin-top: 0.2rem;
+        }
+        .saved-card .s-actions { display: flex; flex-direction: column; gap: 0.4rem; }
+
+        /* FOOTER */
+        .app-footer {
+        background: var(--carbono);
+        border-top: 2px solid var(--voltaje);
+        padding: 2.5rem 2rem 1.5rem;
+        margin-top: 2rem;
+        }
+        .footer-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 1.5fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        }
+        .footer-brand .name {
+        font-family: 'Anton', sans-serif;
+        font-size: 2.2rem;
+        color: var(--voltaje);
+        line-height: 0.9;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        }
+        .footer-brand .name .b { color: var(--magma); transform: skewX(-15deg); display: inline-block; }
+        .footer-brand .tagline {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        opacity: 0.75;
+        line-height: 1.5;
+        }
+        .footer-col h5 {
+        font-family: 'Anton', sans-serif;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--magma);
+        margin-bottom: 0.7rem;
+        }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+        .footer-col li a { font-size: 0.78rem; letter-spacing: 0.05em; opacity: 0.8; }
+        .footer-col li a:hover { color: var(--voltaje); }
+        .newsletter-input {
+        display: flex;
+        margin-top: 0.5rem;
+        border: 1px solid var(--linea);
+        }
+        .newsletter-input input {
+        flex: 1;
+        background: var(--obsidiana);
+        border: none;
+        color: var(--hueso);
+        padding: 0.55rem 0.75rem;
+        font-size: 0.75rem;
+        outline: none;
+        }
+        .newsletter-input button {
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        padding: 0 0.85rem;
+        font-family: 'Anton', sans-serif;
+        font-size: 0.95rem;
+        }
+        .newsletter-input button:hover { background: var(--magma); color: var(--hueso); }
+
+        .footer-bottom {
+        border-top: 1px solid var(--linea);
+        padding-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        opacity: 0.6;
+        flex-wrap: wrap;
+        gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+        .event-detail { grid-template-columns: 1fr; }
+        .purchase-grid { grid-template-columns: 1fr; }
+        .summary-card { position: static; }
+        .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+        .app { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .footer-grid { grid-template-columns: 1fr; }
+        .list-row { grid-template-columns: 50px 1fr; gap: 0.6rem; }
+        .list-row .l-band, .list-row .l-btn, .list-row .l-fav { display: none; }
+        }
+
+        /* Toast / notificación */
+        .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        padding: 0.9rem 1.2rem;
+        font-family: 'Anton', sans-serif;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        z-index: 200;
+        display: none;
+        animation: toastIn 0.25s;
+        box-shadow: 4px 4px 0 var(--magma);
+        }
+        .toast.show { display: block; }
+        @keyframes toastIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+      /* Estilos embebidos específicos para controlar el menú desplegable contextual de la cuenta */
+      .account-wrapper { position: relative; width: 100%; }
+      .account-menu-dropdown {
+        display: none;
+        position: absolute;
+        bottom: 110%;
+        left: 0;
+        width: 100%;
+        background: var(--carbono);
+        border: 1px solid var(--voltaje);
+        padding: 0.5rem 0;
+        z-index: 200;
+        box-shadow: 0 -10px 25px rgba(0,0,0,0.5);
+      }
+      .account-wrapper:hover .account-menu-dropdown { display: block; }
+      .dropdown-link {
+        display: block;
+        width: 100%;
+        padding: 0.6rem 1rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--hueso);
+        text-align: left;
+        border: none;
+        background: none;
+        transition: all 0.15s;
+      }
+      .dropdown-link:hover { background: var(--grafito); color: var(--voltaje); }
+      .logout-btn-action { color: var(--magma) !important; font-weight: bold; }
+      .logout-btn-action:hover { background: rgba(255, 61, 20, 0.1); }
+      .btn-auth-sidebar {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 0.65rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: bold;
+        transition: all 0.15s;
+      }
+      .btn-auth-login { background: var(--voltaje); color: var(--obsidiana); border: 1px solid var(--voltaje); margin-bottom: 0.4rem; }
+      .btn-auth-login:hover { background: transparent; color: var(--voltaje); }
+      .btn-auth-reg { background: transparent; color: var(--hueso); border: 1px solid var(--linea); }
+      .btn-auth-reg:hover { border-color: var(--voltaje); color: var(--voltaje); }
+      
+        .auth-section {
             display: flex;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        main { flex: 1 0 auto; }
-        
-        nav {
-            background: rgba(11, 12, 16, 0.85) !important;
-            backdrop-filter: blur(15px);
-            box-shadow: none;
-            border-bottom: 1px solid rgba(102,252,241,0.15);
-        }
-        .brand-logo { color: #66fcf1 !important; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;}
-        .brand-logo span { color: #fff; font-weight: 300;}
-        
-        .card {
-            background: #1f2833;
-            border-radius: 15px;
-            border: 1px solid rgba(102, 252, 241, 0.1);
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(102, 252, 241, 0.15);
-            border-color: rgba(102, 252, 241, 0.4);
-        }
-        .card .card-content { color: #e2e2e2; }
-        .card .card-title { font-weight: 800; color: #66fcf1; letter-spacing: 0.5px;}
-        
-        .btn, .btn-large, .btn-small {
-            background: linear-gradient(45deg, #1f2833, #45a247);
-            border-radius: 30px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(69, 162, 71, 0.3);
-            border: 1px solid rgba(102, 252, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-        .btn:hover, .btn-large:hover, .btn-small:hover {
-            background: linear-gradient(45deg, #45a247, #1f2833);
-            box-shadow: 0 0 20px rgba(102, 252, 241, 0.6);
-            transform: scale(1.02);
-            color: #fff;
-        }
-        .btn.grey { background: #4a4e69 !important; box-shadow: none; border: none;}
-        .btn.red { background: linear-gradient(45deg, #e53935, #b71c1c) !important; }
-        
-        /* Form Inputs Customization */
-        input[type=text], input[type=password], input[type=email], input[type=number], textarea.materialize-textarea {
-            color: #fff !important;
-            border-bottom: 1px solid #45a247 !important;
-        }
-        input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
-            border-bottom: 1px solid #66fcf1 !important;
-            box-shadow: 0 1px 0 0 #66fcf1 !important;
-        }
-        [type="radio"]:checked+span:after, [type="radio"].with-gap:checked+span:after {
-            background-color: #66fcf1;
-            border: 2px solid #66fcf1;
-        }
-        
-        /* Collections / Lists */
-        .collection { border: 1px solid rgba(102,252,241,0.2); border-radius: 10px; overflow: hidden;}
-        .collection .collection-item { background-color: #1a222a; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c5c6c7; }
-        
-        /* Hero Banner */
-        #hero-banner {
-            background: linear-gradient(135deg, rgba(11,12,16,0.9) 0%, rgba(31,40,51,0.7) 100%), url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=2070') center/cover;
-            min-height: 45vh;
-            display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            width: 100%;
+            padding: 1rem;
+        }
+        .auth-container {
+            background: var(--carbono);
+            border: 1px solid var(--linea);
+            width: 100%;
+            max-width: 450px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        .auth-header {
+            margin-bottom: 2rem;
             text-align: center;
-            color: #fff;
-            position: relative;
-            border-bottom: 1px solid rgba(102,252,241,0.2);
         }
-        #hero-banner::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
-            background: linear-gradient(to bottom, transparent, #0b0c10);
+        .auth-kicker {
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            color: var(--voltaje);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
         }
-        #hero-banner h1 { font-weight: 800; color: #fff; text-shadow: 0 0 30px rgba(102,252,241,0.8); font-size: 4rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;}
-        #hero-banner h1 span { color: #66fcf1; }
-        #hero-banner h5 { color: #c5c6c7; font-weight: 300; letter-spacing: 1px; }
-        
-        /* Footer */
-        .page-footer { background-color: #0b0c10 !important; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;}
+        .auth-header h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        .auth-header p {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            line-height: 1.4;
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .auth-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .auth-field label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--hueso);
+            opacity: 0.8;
+        }
+        /* Forzar estilos limpios sobre los inputs que autogenera Django */
+        .auth-field input {
+            width: 100%;
+            background: var(--obsidiana);
+            border: 1px solid var(--linea);
+            color: var(--hueso);
+            padding: 0.75rem 1rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .auth-field input:focus {
+            border-color: var(--voltaje);
+        }
+        .auth-error {
+            color: var(--magma);
+            font-size: 0.75rem;
+            margin-top: 0.2rem;
+        }
+        .auth-submit {
+            background: var(--voltaje);
+            color: var(--obsidiana);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 0.15em;
+            padding: 0.8rem;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            width: 100%;
+            transition: all 0.15s;
+            text-align: center;
+            border: 1px solid var(--voltaje);
+            cursor: pointer;
+        }
+        .auth-submit:hover {
+            background: transparent;
+            color: var(--voltaje);
+        }
+        .auth-footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--linea);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+        .auth-footer a {
+            color: var(--hueso);
+            opacity: 0.6;
+            transition: opacity 0.15s;
+        }
+        .auth-footer a:hover {
+            opacity: 1;
+            color: var(--voltaje);
+        }
+            .auth-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        width: 100%;
+        padding: 1rem;
+    }
+    .auth-container {
+        background: var(--carbono);
+        border: 1px solid var(--linea);
+        width: 100%;
+        max-width: 500px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    }
+    .auth-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .auth-kicker {
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        color: var(--voltaje);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+    .auth-header h1 {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    .auth-header p {
+        font-size: 0.8rem;
+        opacity: 0.6;
+        line-height: 1.4;
+    }
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+    .auth-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .auth-field label {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--hueso);
+        opacity: 0.8;
+    }
+    /* Estilos inyectados sobre los campos dinámicos que genera el formulario de Django */
+    .auth-field input {
+        width: 100%;
+        background: var(--obsidiana);
+        border: 1px solid var(--linea);
+        color: var(--hueso);
+        padding: 0.75rem 1rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .auth-field input:focus {
+        border-color: var(--voltaje);
+    }
+    /* Control de texto de ayuda secundario que suele generar Django (ej: requisitos de contraseña) */
+    .auth-field .helptext {
+        font-size: 0.7rem;
+        opacity: 0.4;
+        line-height: 1.3;
+        margin-top: 0.2rem;
+    }
+    .auth-error {
+        color: var(--magma);
+        font-size: 0.75rem;
+        margin-top: 0.2rem;
+    }
+    .auth-submit {
+        background: var(--voltaje);
+        color: var(--obsidiana);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.85rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+        padding: 0.8rem;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        width: 100%;
+        transition: all 0.15s;
+        text-align: center;
+        border: 1px solid var(--voltaje);
+        cursor: pointer;
+    }
+    .auth-submit:hover {
+        background: transparent;
+        color: var(--voltaje);
+    }
+    .auth-footer {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--linea);
+        display: flex;
+        justify-content: center;
+        font-size: 0.75rem;
+    }
+    .auth-footer a {
+        color: var(--hueso);
+        opacity: 0.6;
+        transition: opacity 0.15s;
+    }
+    .auth-footer a:hover {
+        opacity: 1;
+        color: var(--voltaje);
+    }
     </style>
-</head>
+    </head>
 <body>
-    <header>
-        <nav>
-            <div class="nav-wrapper container">
-                <a href="/" class="brand-logo">Tike<span>Tera</span></a>
-                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-                <ul id="nav-mobile" class="right hide-on-med-and-down">
-                    <li><a href="/">Descubrir</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'my_tickets' %}" style="color: #66fcf1; font-weight:bold;">Mis Boletos</a></li>
-                        <li><a href="{% url 'profile' %}"><i class="material-icons left">account_circle</i>Mi Perfil</a></li>
-                        <li>
-                            <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-flat white-text" style="text-transform:none; margin-top:15px; font-weight:bold; padding:0 15px;"><i class="material-icons right">exit_to_app</i>Salir</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Ingresar</a></li>
-                        <li><a href="{% url 'register' %}" class="btn" style="height:36px; line-height:36px; margin-top:14px;">Registrarse</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </nav>
-        <ul class="sidenav" id="mobile-demo" style="background-color: #1f2833;">
-            <li><a href="/" class="white-text">Descubrir</a></li>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'my_tickets' %}" class="white-text">Mis Boletos</a></li>
-                <li><a href="{% url 'profile' %}" class="white-text">Mi Perfil</a></li>
-                <li>
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-flat white-text" style="width:100%; text-align:left;">Salir</button>
-                    </form>
-                </li>
-            {% else %}
-                <li><a href="{% url 'login' %}" class="white-text">Ingresar</a></li>
-                <li><a href="{% url 'register' %}" class="white-text">Registrarse</a></li>
-            {% endif %}
-        </ul>
+<div class="marquee">
+  <div class="marquee-track">
+    <span>FASTITICKET ⚡ TU ENTRADA AL MOVIMIENTO</span>
+    <span>PRE-VENTA · LOS BUNKERS · 22 JUN</span>
+    <span>NUEVO EN CARTELERA · FESTIVAL ROCKÓDROMO</span>
+    <span>CLUB VOLTAJE · 15% DTO TODO EL AÑO</span>
+    <span>FASTITICKET ⚡ TU ENTRADA AL MOVIMIENTO</span>
+    <span>PRE-VENTA · LOS BUNKERS · 22 JUN</span>
+    <span>NUEVO EN CARTELERA · FESTIVAL ROCKÓDROMO</span>
+    <span>CLUB VOLTAJE · 15% DTO TODO EL AÑO</span>
+  </div>
+</div>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div>
+        <div class="logo-mark">FASTI<span class="bolt">⚡</span></div>
+        <div class="logo-sub">— TICKET —</div>
+      </div>
+    </div>
+
+    <nav class="nav-main">
+      <button class="nav-item active" data-view="home"><span class="icon">⌂</span> INICIO</button>
+      <button class="nav-item" data-view="conciertos"><span class="icon">♫</span> CONCIERTOS</button>
+      <button class="nav-item" data-view="conciertos"><span class="icon">✦</span> FESTIVALES</button>
+      <button class="nav-item" data-view="conciertos"><span class="icon">♣</span> BANDAS</button>
+      <button class="nav-item" data-view="favoritos"><span class="icon">♡</span> FAVORITOS</button>
+      <button class="nav-item" data-view="mistickets"><span class="icon">▣</span> MIS TICKETS</button>
+      <button class="nav-item" data-view="conciertos"><span class="icon">⌚</span> CALENDARIO</button>
+      <button class="nav-item" data-view="home"><span class="icon">⚐</span> NOTICIAS</button>
+      <button class="nav-item" data-view="home"><span class="icon">☠</span> CLUB VOLTAJE</button>
+      <button class="nav-item" data-view="home"><span class="icon">?</span> AYUDA</button>
+    </nav>
+
+    <div class="club-card">
+      <div class="lab">// únete al</div>
+      <div class="title">Club Voltaje</div>
+      <div class="skull">☠</div>
+      <div class="desc">Pre-ventas exclusivas, dtos. y acceso anticipado a todos los shows.</div>
+      <button>regístrate</button>
+    </div>
+
+    <div class="account">
+      {% if user.is_authenticated %}
+        <div class="account-wrapper">
+          <div class="account-menu-dropdown">
+            <a href="{% url 'profile' %}" class="dropdown-link">✦ Mi Perfil</a>
+            <a href="{% url 'my_tickets' %}" class="dropdown-link">▣ Mis Tickets</a>
+            <form action="{% url 'logout' %}" method="post" style="margin: 0; padding: 0;">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-link logout-btn-action">⚡ Cerrar Sesión</button>
+            </form>
+          </div>
+          <div class="account-row" style="cursor: pointer; background: rgba(240, 237, 227, 0.03); border: 1px solid var(--linea); padding: 0.5rem 0.8rem;">
+            <div class="avatar">{{ user.username|slice:":1"|upper }}</div>
+            <span>{{ user.username|upper }} ▴</span>
+          </div>
+        </div>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn-auth-sidebar btn-auth-login">INGRESAR ⚡</a>
+        <a href="{% url 'register' %}" class="btn-auth-sidebar btn-auth-reg">REGISTRARSE</a>
+      {% endif %}
+
+      <div class="socials">
+        <a href="https://www.instagram.com/aurum.agencia_" target="_blank" title="Instagram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58 0 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s0 3.58-.07 4.85c-.15 3.23-1.67 4.77-4.92 4.92-1.27.06-1.65.07-4.85.07s-3.58 0-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.65-.07-4.85s0-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zm0-2.16C8.74 0 8.33 0 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s0 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98 1.28.07 1.69.07 4.95.07s3.67 0 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.07-1.28.07-1.69.07-4.95s0-3.67-.07-4.95C23.74 2.7 21.31.27 16.95.07 15.67 0 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg></a>
+        <a href="#" title="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.77a8.16 8.16 0 0 0 4.77 1.52V6.84a4.85 4.85 0 0 1-1.84-.15z"/></svg></a>
+        <a href="#" title="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="#" title="Spotify"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/></svg></a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <header class="app-header">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="busca bandas, conciertos, festivales..." />
+      </div>
+      <div class="header-actions">
+        <div class="header-pill"><span class="bolt">⚡</span> CLUB VOLTAJE</div>
+        <button class="icon-btn">♪</button>
+        <button class="icon-btn" onclick="navigate('mistickets')">▣</button>
+      </div>
     </header>
 
-    <main>
-        {% if messages %}
-            <div class="container" style="margin-top: 20px;">
-            {% for message in messages %}
-                <div class="card-panel {% if message.tags == 'error' %}red{% elif message.tags == 'warning' %}orange{% else %}green{% endif %} lighten-2 white-text" style="border-radius: 8px; padding: 15px;">
-                    {{ message }}
-                </div>
-            {% endfor %}
-            </div>
-        {% endif %}
+    {% if messages %}
+      <div style="padding: 1.5rem 2rem 0 2rem;">
+        {% for message in messages %}
+          <div>
+            // {{ message|upper }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
-        {% block content %}{% endblock %}
-    </main>
+    <div>
+      {% block content %}
+        {% endblock %}
+    </div>
 
-    <footer class="page-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col l6 s12">
-                    <h5 class="white-text" style="font-weight: 800;">Tike<span style="color:#66fcf1">Tera</span></h5>
-                    <p class="grey-text text-lighten-1">La experiencia definitiva en gestión de eventos y boletos impulsada por Web3 y transacciones seguras.</p>
-                </div>
-                <div class="col l4 offset-l2 s12">
-                    <h5 class="white-text">Enlaces</h5>
-                    <ul>
-                        <li><a class="grey-text text-lighten-3" href="#!">Términos y Condiciones</a></li>
-                        <li><a class="grey-text text-lighten-3" href="#!">Privacidad</a></li>
-                        <li><a class="grey-text text-lighten-3" href="#!">Soporte Ticketera</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright" style="background-color: #050608 !important;">
-            <div class="container center-align grey-text text-darken-1">
-                © {% now "Y" %} TikeTera - Todos los derechos reservados
-            </div>
-        </div>
-    </footer>
+  </main>
 
-    <!-- Materialize JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var elems = document.querySelectorAll('.sidenav');
-            M.Sidenav.init(elems);
-        });
-    </script>
+</div>
 </body>
 </html>
