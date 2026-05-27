@@ -6,7 +6,9 @@
     <title>TikeTera - Tickets Premium</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bowlby+One+SC&family=Major+Mono+Display&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
         --obsidiana: #0A0A0F;
@@ -1976,11 +1978,15 @@
 
     <nav class="nav-main">
       <a href="/" class="nav-item active" data-view="home"><span class="icon">⌂</span> INICIO</a>
-      <a href="#destacados-seccion" class="nav-item" data-view="conciertos"><span class="icon">♫</span> CONCIERTOS</a>
+      <a href="/#destacados-seccion" class="nav-item" data-view="conciertos"><span class="icon">♫</span> CONCIERTOS</a>
       <a href="#generos-seccion" class="nav-item" data-view="conciertos"><span class="icon">✦</span> FESTIVALES</a>
       <button class="nav-item" data-view="conciertos"><span class="icon">♣</span> BANDAS</button>
-      <button class="nav-item" data-view="favoritos"><span class="icon">♡</span> FAVORITOS</button>
-      <a href="{% url 'my_tickets' %}" class="nav-item" data-view="mistickets"><span class="icon">▣</span> MIS TICKETS</a>
+      <a href="{% url 'my_favorite' %}" class="nav-item {% if request.path == '/mis-favoritos/' %}active{% endif %}" data-view="favoritos"> <span class="icon">♡</span> FAVORITOS</a>
+      <a href="{% url 'my_tickets' %}" class="nav-item" data-view="mistickets">
+        <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
+                <path fill-rule="evenodd" d="M13 2H1v2h12V2zM0 4a1 1 0 0 0 1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v2zm2 1h10v9H2V5zm2 3h6V7H4v1z" fill="white"/>
+        </svg>
+         MIS TICKETS</a>
       <button class="nav-item" data-view="conciertos"><span class="icon">⌚</span> CALENDARIO</button>
       <button class="nav-item" data-view="home"><span class="icon">⚐</span> NOTICIAS</button>
       <button class="nav-item" data-view="home"><span class="icon">☠</span> CLUB VOLTAJE</button>
@@ -2034,7 +2040,11 @@
       <div class="header-actions">
         <div class="header-pill"><span class="bolt">⚡</span> CLUB VOLTAJE</div>
         <button class="icon-btn">♪</button>
-        <button class="icon-btn" onclick="navigate('mistickets')">▣</button>
+        <a class="icon-btn" href="{% url 'my_tickets' %}">
+            <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
+                <path fill-rule="evenodd" d="M13 2H1v2h12V2zM0 4a1 1 0 0 0 1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v2zm2 1h10v9H2V5zm2 3h6V7H4v1z" fill="white"/>
+            </svg>
+        </a>
       </div>
     </header>
 
@@ -2048,49 +2058,99 @@
       </div>
     {% endif %}
 
-    <div>
+   <div>
       {% block content %}
-        {% endblock %}
+      {% endblock %}
     </div>
 
-  </main>
+    <footer class="app-footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="name">FASTI<span class="b">⚡</span><br>TICKET</div>
+          <div class="tagline">Tu entrada al<br>movimiento.<br><br>Biobío · Chile<br>{% now "Y" %}</div>
+        </div>
+        <div class="footer-col">
+          <h5>Navega</h5>
+          <ul>
+            <li><a href="#">Conciertos</a></li>
+            <li><a href="#">Festivales</a></li>
+            <li><a href="#">Bandas</a></li>
+            <li><a href="#">Noticias</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Ayuda</h5>
+          <ul>
+            <li><a href="#">Preguntas frecuentes</a></li>
+            <li><a href="#">Cómo comprar</a></li>
+            <li><a href="#">Devoluciones</a></li>
+            <li><a href="#">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="#">Términos</a></li>
+            <li><a href="#">Privacidad</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Newsletter</h5>
+          <p style="font-size:0.75rem; opacity:0.7; line-height:1.5;">Bandas favoritas y próximos shows directo a tu correo.</p>
+          <div class="newsletter-input">
+            <input type="email" placeholder="tu@correo.cl" />
+            <button>→</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>// fastiticket · vlt//001 · v1.0</span>
+        <span>© {% now "Y" %} · Agencia aurum · biobío · chile</span>
+      </div>
+    </footer>
 
-</div>
-</body>
+  </main> </div> </body>
 <script>
-  function navigate(view) {
+  function setActive(view) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('[data-view="' + view + '"]').forEach(n => n.classList.add('active'));
+  }
 
+  function navigate(view) {
     const targetView = document.getElementById('view-' + view);
 
-    // solo si existe una vista SPA
     if (targetView) {
-
-      document.querySelectorAll('.view').forEach(v => {
-        v.classList.remove('active');
-      });
-
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       targetView.classList.add('active');
     }
 
-    // actualizar sidebar SIEMPRE
-    document.querySelectorAll('.nav-item').forEach(n => {
-      n.classList.remove('active');
-    });
-
-    document.querySelectorAll('[data-view="' + view + '"]').forEach(n => {
-      n.classList.add('active');
-    });
-
+    setActive(view);
   }
 
   document.querySelectorAll('.nav-item[data-view]').forEach(item => {
-
     item.addEventListener('click', () => {
-
       navigate(item.dataset.view);
-
     });
+  });
 
+  window.addEventListener('DOMContentLoaded', () => {
+    const path = window.location.pathname;
+    const hash = window.location.hash;
+
+    if (path === '/my_tickets/' || path === '/my_tickets') {
+      setActive('mistickets');
+      return;
+    }
+
+    if (path === '/' || path === '') {
+      setActive('home');
+      return;
+    }
+
+    if (hash === '#noticias-seccion' || hash === '#club-voltaje-seccion' || hash === '#ayuda-seccion') {
+      setActive('home');
+    }
   });
 </script>
 </html>

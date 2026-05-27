@@ -7,9 +7,9 @@
     <section class="hero">
       <div class="hero-tag"><span class="dot"></span> SHOW EN VIVO · BIOBÍO · {% now "Y" %}</div>
       <div class="hero-title">
-        <div class="row"><span class="w volt">vive</span> <span class="w outline">el</span></div>
-        <div class="row"><span class="w mgm">movimiento.</span></div>
-      </div>
+            <div class="row"><span class="w volt">vive</span> <span class="w outline">el</span></div>
+            <div class="row"><span class="w mgm">movimiento.</span></div>
+          </div>
       <p class="hero-desc">Bandas chilenas, gigantes internacionales y festivales pasando por tu ciudad. Compra rápido, sin vueltas, sin sustos.</p>
       <div class="hero-cta">
         <a href="#destacados-seccion" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">VER CONCIERTOS ⚡</a>
@@ -30,7 +30,11 @@
               <div class="event-date">
                 {{ event.date_time|date:"d" }}<small>{{ event.date_time|date:"M"|upper }}</small>
               </div>
-              <button class="fav-btn" onclick="event.stopPropagation();"></button>
+              <button
+                  class="fav-btn"
+                  data-event-id="{{ event.id }}"
+                  onclick="toggleFavorite(event, this)">
+              </button>
               <span>{{ event.title|upper }}</span>
             </div>
 
@@ -61,51 +65,50 @@
       </div>
     </section>
 
-    <section class="section" id="todos-seccion">
-      <div class="section-header">
-        <h2 class="section-title"><span class="bolt">⚡</span> Próximos eventos</h2>
-        <span class="section-link" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--voltaje);">CALENDARIO ACTIVO ⌚</span>
+    <section class="section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <span class="bolt">⚡</span> Próximos eventos
+    </h2>
+    <a class="section-link" href="#todos-seccion">
+      VER CALENDARIO ⌚
+    </a>
+  </div>
+  <div class="list-events" id="upcoming-list">
+    {% for event in upcoming_events %}
+    <div class="list-row">
+      <div class="l-date">
+        <div class="d"> {{ event.date_time|date:"d" }} </div>
+        <div class="m"> {{ event.date_time|date:"M"|upper }} </div>
       </div>
-
-      <div class="card-grid" id="upcoming-list">
-        {% for event in events|slice:"3:" %}
-          <div class="event-card">
-            <div class="event-image" {% if event.image %} style="background-image: url('{{ event.image.url }}'); background-size: cover; background-position: center;" {% endif %}>
-              <div class="event-date">
-                {{ event.date_time|date:"d" }}<small>{{ event.date_time|date:"M"|upper }}</small>
-              </div>
-              <button class="fav-btn" onclick="event.stopPropagation();"></button>
-              <span>{{ event.title|upper }}</span>
-            </div>
-
-            <div class="event-info" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url" style="cursor:pointer;">
-              <div class="event-band">{{ event.title }}</div>
-              <div class="event-venue">{{ event.venue.name }}</div>
-              <div class="event-city">{% if event.venue.city %}{{ event.venue.city }}{% else %}Biobío{% endif %}, CL</div>
-              
-              <div class="event-action">
-                <div class="event-price">
-                  {% if event.ticket_types.all %}
-                    desde ${{ event.ticket_types.all.0.price }} CLP
-                  {% else %}
-                    Generales
-                  {% endif %}
-                </div>
-                <button class="event-card-btn" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url">
-                  Ver entradas →
-                </button>
-              </div>
-            </div>
-          </div>
-        {% empty %}
-          {% if events|length <= 3 %}
-            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; opacity: 0.4; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;">
-              // CARTELERA COMPLETAMENTE AL DÍA
-            </div>
-          {% endif %}
-        {% endfor %}
+      <div class="l-band"> {{ event.title }} </div>
+      <div class="l-info">
+        <div class="band">
+          {{ event.title }}
+        </div>
+        <div class="venue">
+          {{ event.venue.name }}
+          ·
+          {% if event.venue.city %}
+            {{ event.venue.city }}
+          {% else %}
+            Biobío
+          {% endif %}, CL
+        </div>
       </div>
-    </section>
+      <button class="l-btn" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url">
+        Ver entradas
+      </button>
+      <button class="l-fav" data-event-id="{{ event.id }}" onclick="toggleFavorite(event, this)"> ♡ </button>
+    </div>
+    {% empty %}
+    <div style="padding: 2rem; opacity: 0.5; text-align: center; font-family: 'IBM Plex Mono', monospace;">
+      // NO HAY PRÓXIMOS EVENTOS
+    </div>
+    {% endfor %}
+
+  </div>
+</section>
 
     <section class="section" id="generos-seccion">
       <div class="section-header">
@@ -154,51 +157,98 @@
       </div>
     </section>
 
-    <footer class="app-footer">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="name">FASTI<span class="b">⚡</span><br>TICKET</div>
-          <div class="tagline">Tu entrada al<br>movimiento.<br><br>Biobío · Chile<br>{% now "Y" %}</div>
-        </div>
-        <div class="footer-col">
-          <h5>Navega</h5>
-          <ul>
-            <li><a href="#">Conciertos</a></li>
-            <li><a href="#">Festivales</a></li>
-            <li><a href="#">Bandas</a></li>
-            <li><a href="#">Noticias</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h5>Ayuda</h5>
-          <ul>
-            <li><a href="#">Preguntas frecuentes</a></li>
-            <li><a href="#">Cómo comprar</a></li>
-            <li><a href="#">Devoluciones</a></li>
-            <li><a href="#">Contacto</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h5>Legal</h5>
-          <ul>
-            <li><a href="#">Términos</a></li>
-            <li><a href="#">Privacidad</a></li>
-            <li><a href="#">Cookies</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h5>Newsletter</h5>
-          <p style="font-size:0.75rem; opacity:0.7; line-height:1.5;">Bandas favoritas y próximos shows directo a tu correo.</p>
-          <div class="newsletter-input">
-            <input type="email" placeholder="tu@correo.cl" />
-            <button>→</button>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>// fastiticket · vlt//001 · v1.0</span>
-        <span>© {% now "Y" %} · Agencia aurum · biobío · chile</span>
-      </div>
-    </footer>
+    <div class="toast" id="toast"></div>
+  <script>
+    const toggleFavoriteUrl = "{% url 'toggle_favorite' %}";
 
-  </div> </div> {% endblock %}
+    function getCookie(name) {
+        let cookieValue = null;
+
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(
+                        cookie.substring(name.length + 1)
+                    );
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toast.hideTimeout);
+
+        toast.hideTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
+    }
+
+    function toggleFavorite(event, button) {
+        event.stopPropagation();
+        const eventId = button.dataset.eventId;
+
+        fetch(toggleFavoriteUrl, {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+
+            body: new URLSearchParams({
+                event_id: eventId
+            })
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+            if (data.status === 'added') {
+                button.classList.add('active');
+                showToast('⚡ ★ Guardado en favoritos');
+            }
+
+            else if (data.status === 'removed') {
+                button.classList.remove('active');
+                showToast('⚡ Quitado de favoritos');
+                // eliminar tarjeta si estamos en favoritos
+                const card = button.closest('.saved-card');
+
+                if (card) {
+                    card.style.transition = '0.2s';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.remove();
+
+                        const list = document.querySelector('.saved-list');
+
+                        if (list && !list.querySelector('.saved-card')) {
+                            list.innerHTML = `
+                                <div style="padding:2rem; opacity:0.7;">
+                                    No tienes eventos favoritos aún.
+                                </div>
+                            `;
+                        }
+                    }, 200);
+                }
+            }
+        })
+
+        .catch(error => {
+            console.error('Favorite error:', error);
+            showToast('⚠ Error al actualizar favoritos');
+        });
+    }
+</script>
+  {% endblock %}
