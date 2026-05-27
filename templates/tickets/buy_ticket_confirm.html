@@ -1,40 +1,170 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">Confirmar Compra</span>
-                <p>Estás a punto de comprar un boleto para <b>{{ ticket_type.event.title }}</b>.</p>
-                <ul>
-                    <li><b>Tipo de Boleto:</b> {{ ticket_type.name }}</li>
-                    <li><b>Precio:</b> ${{ ticket_type.price }}</li>
-                </ul>
-                <br>
-                <form method="post">
-                    {% csrf_token %}
-                    <p style="margin-bottom: 20px;"><b>Selecciona método de pago:</b></p>
-                    <p>
-                        <label>
-                            <input name="payment_method" type="radio" value="webpay" checked />
-                            <span>Webpay Plus (Tarjetas)</span>
-                        </label>
-                    </p>
-                    <p>
-                        <label>
-                            <input name="payment_method" type="radio" value="crypto" />
-                            <span>Criptomonedas (Web3)</span>
-                        </label>
-                    </p>
-                    <br>
-                    <button type="submit" class="btn green waves-effect waves-light w-100">
-                        Confirmar y Pagar
-                        <i class="material-icons right">payment</i>
-                    </button>
-                    <a href="{% url 'event_detail' ticket_type.event.id %}" class="btn grey right">Cancelar</a>
-                </form>
-            </div>
+<div class="view active" id="view-compra">
+    <div class="purchase-flow">
+        <h1 class="purchase-title">Compra tu <em>entrada</em></h1>
+        
+        <div class="steps" id="steps-bar">
+            <div class="step active" id="step-header-1"><div class="step-num">1</div><div class="step-label">Información</div></div>
+            <div class="step-line" id="step-line-1"></div>
+            <div class="step" id="step-header-2"><div class="step-num">2</div><div class="step-label">Pago</div></div>
+            <div class="step-line" id="step-line-2"></div>
+            <div class="step" id="step-header-3"><div class="step-num">3</div><div class="step-label">Confirmación</div></div>
+        </div>
+
+        <div id="purchase-content">
+            <form method="post" action="" class="purchase-grid" id="purchase-form" onsubmit="return validarPaso2()">
+                {% csrf_token %}
+                
+                <div class="purchase-panel step-content" id="panel-paso-1">
+                    <div class="panel-title">Información del comprador</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="f-name">// nombre completo *</label>
+                        <input type="text" name="name" class="form-input" id="f-name" placeholder="Como aparece en tu cédula" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="f-rut">// rut *</label>
+                            <input type="text" name="rut" class="form-input" id="f-rut" placeholder="12.345.678-9" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="f-phone">// teléfono *</label>
+                            <input type="text" name="phone" class="form-input" id="f-phone" placeholder="+56 9 1234 5678" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="f-email">// correo electrónico *</label>
+                        <input type="email" name="email" class="form-input" id="f-email" placeholder="tu@correo.cl" required>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button type="button" class="btn-pay" onclick="irAlPaso2()">Continuar al pago ⚡</button>
+                        <a href="{% url 'event_detail' ticket_type.event.id %}" class="btn-back" style="display: inline-block; text-decoration: none; text-align: center; margin-top: 10px;">← volver</a>
+                    </div>
+                </div>
+
+                <div class="purchase-panel step-content" id="panel-paso-2" style="display: none;">
+                    <div class="panel-title">Método de pago</div>
+                    
+                    <div class="pay-option selected" id="opt-webpay" onclick="seleccionarMetodo('webpay')">
+                        <div class="pay-radio"></div>
+                        <div class="pay-logo">WEBPAY</div>
+                        <div class="pay-name">Webpay Plus</div>
+                        <div class="pay-desc">Tarjetas Visa, Master, Redcompra</div>
+                    </div>
+
+                    <div class="pay-option" id="opt-mp" onclick="seleccionarMetodo('mp')">
+                        <div class="pay-radio"></div>
+                        <div class="pay-logo">MERCADO</div>
+                        <div class="pay-name">Mercado Pago</div>
+                        <div class="pay-desc">Saldo + tarjetas</div>
+                    </div>
+
+                    <div class="pay-option" id="opt-khipu" onclick="seleccionarMetodo('khipu')">
+                        <div class="pay-radio"></div>
+                        <div class="pay-logo">KHIPU</div>
+                        <div class="pay-name">Transferencia Khipu</div>
+                        <div class="pay-desc">BancoEstado, Santander, BCI, +</div>
+                    </div>
+
+                    <div class="pay-option" id="opt-oneclick" onclick="seleccionarMetodo('oneclick')">
+                        <div class="pay-radio"></div>
+                        <div class="pay-logo">1·CLICK</div>
+                        <div class="pay-name">One Click Pay</div>
+                        <div class="pay-desc">Pago con un toque (suscritos)</div>
+                    </div>
+
+                    <input type="hidden" name="payment_method" id="id_payment_method" value="webpay">
+
+                    <div style="margin-top: 30px;">
+                        <button type="submit" class="btn-pay">Pagar ${{ ticket_type.price }} ⚡</button>
+                        <button type="button" class="btn-back" onclick="irAlPaso1()">← volver</button>
+                    </div>
+                </div>
+              
+                <div class="summary-card">
+                    <div class="summary-event">
+                        <div class="summary-thumb event-image bg-1">
+                            <span>{{ ticket_type.event.title|slice:":12"|upper }}</span>
+                        </div>
+                        <div class="summary-event-info">
+                            <div class="band">{{ ticket_type.event.title }}</div>
+                            <div class="meta">
+                                {{ ticket_type.event.date|date:"d M Y" }} · {{ ticket_type.event.date|time:"H:i" }} hrs<br>
+                                {{ ticket_type.event.venue|default:"Movistar Arena" }}<br>
+                                {{ ticket_type.event.city|default:"Santiago, CL" }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-line">
+                        <span>1× {{ ticket_type.name|upper }}</span>
+                        <span>${{ ticket_type.price }} CLP</span>
+                    </div>
+                    
+                    <div class="summary-line">
+                        <span>Cargo por servicio</span>
+                        <span>$0 CLP</span>
+                    </div>
+                    
+                    <div class="summary-total">
+                        <span class="label">Total</span>
+                        <span class="amount">${{ ticket_type.price }} CLP</span>
+                    </div>
+                </div>
+            
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    function irAlPaso2() {
+        const name = document.getElementById('f-name');
+        const rut = document.getElementById('f-rut');
+        const phone = document.getElementById('f-phone');
+        const email = document.getElementById('f-email');
+
+        if (!name.checkValidity() || !rut.checkValidity() || !phone.checkValidity() || !email.checkValidity()) {
+            document.getElementById('purchase-form').reportValidity();
+            return;
+        }
+
+        document.getElementById('panel-paso-1').style.display = 'none';
+        document.getElementById('panel-paso-2').style.display = 'block';
+
+        document.getElementById('step-header-1').classList.remove('active');
+        document.getElementById('step-header-1').classList.add('done');
+        document.getElementById('step-line-1').classList.add('done');
+        document.getElementById('step-header-2').classList.add('active');
+    }
+
+    function irAlPaso1() {
+        document.getElementById('panel-paso-2').style.display = 'none';
+        document.getElementById('panel-paso-1').style.display = 'block';
+
+        document.getElementById('step-header-2').classList.remove('active');
+        document.getElementById('step-header-1').classList.remove('done');
+        document.getElementById('step-line-1').classList.remove('done');
+        document.getElementById('step-header-1').classList.add('active');
+    }
+
+    function seleccionarMetodo(metodoId) {
+        document.querySelectorAll('.pay-option').forEach(opt => opt.classList.remove('selected'));
+        document.getElementById(`opt-${metodoId}`).classList.add('selected');
+        document.getElementById('id_payment_method').value = metodoId;
+    }
+
+    function validarPaso2() {
+        const metodo = document.getElementById('id_payment_method').value;
+        if (!metodo) {
+            alert('Por favor, selecciona un método de pago.');
+            return false;
+        }
+        return true;
+    }
+</script>
 {% endblock %}

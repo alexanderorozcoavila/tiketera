@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TikeTera - Tickets Premium</title>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -43,6 +43,42 @@
         input, select { font-family: inherit; }
         a { color: inherit; text-decoration: none; }
 
+        /*PDF*/
+        /* Estilos aplicados solo durante la generación del PDF */
+        .ticket.pdf-mode {
+            /* Centrado horizontal y vertical estricto */
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            
+            /* Forzar márgenes internos para que el diseño no toque los bordes del PDF */
+            padding: 40px !important; 
+            
+            /* Asegurar que el ticket ocupe el 100% del contenedor */
+            width: 800px !important;
+            height: 500px !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            
+            /* Evitar que elementos como el QR se muevan */
+            position: relative !important;
+        }
+
+        /* Ajuste específico para el contenedor de los códigos (QR + Barra) */
+        .ticket.pdf-mode .codes-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin-top: auto !important; /* Empuja los códigos al fondo del ticket */
+        }
+
+        /* Asegurar que la transacción no quede pegada al borde */
+        .ticket.pdf-mode .blockchain-tx {
+            margin-top: 10px !important;
+            text-align: center !important;
+            width: 100% !important;
+        }
         /* MARQUEE TOP */
         .marquee {
         background: var(--voltaje);
@@ -1153,8 +1189,8 @@
         left: 50%;
         transform: translateX(-50%);
         }
-        .ticket::before { top: 250px; }
-        .ticket::after { bottom: 60px; }
+        .ticket::before { top: 145px; }
+        .ticket::after { bottom: 210px; }
         .ticket-top {
         padding: 1.5rem;
         display: flex;
@@ -1204,41 +1240,102 @@
         .ticket-meta { display: flex; flex-direction: column; gap: 0.2rem; }
         .ticket-meta .l { font-family: 'Major Mono Display', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--magma); }
         .ticket-meta .v { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; }
+        .ticket-bottom { 
+            padding: 1.2rem 1.5rem 1.5rem; 
+            box-sizing: border-box;
+            width: 100%;
+        }
 
-        .ticket-bottom { padding: 1.2rem 1.5rem 1.5rem; }
         .ticket-bottom .id {
-        display: flex;
-        justify-content: space-between;
-        font-family: 'Major Mono Display', monospace;
-        font-size: 0.7rem;
-        letter-spacing: 0.15em;
-        margin-bottom: 0.7rem;
-        color: var(--magma);
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Major Mono Display', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.2rem;
+            color: var(--magma);
+            width: 100%;
         }
+
+        /* Fila contenedora principal (Lado a Lado) */
+        .codes-row {
+            display: flex;
+            align-items: center; 
+            justify-content: space-between;
+            gap: 1.2rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Columna izquierda que agrupa barras + texto */
+        .barcode-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Tu código de barras con gradiente CSS nativo */
         .barcode {
-        width: 100%;
-        height: 60px;
-        background: linear-gradient(90deg,
-            var(--hueso) 0 2px, transparent 2px 4px,
-            var(--hueso) 4px 5px, transparent 5px 8px,
-            var(--hueso) 8px 11px, transparent 11px 13px,
-            var(--hueso) 13px 14px, transparent 14px 18px,
-            var(--hueso) 18px 20px, transparent 20px 21px,
-            var(--hueso) 21px 25px, transparent 25px 27px,
-            var(--hueso) 27px 28px, transparent 28px 31px,
-            var(--hueso) 31px 34px, transparent 34px 36px,
-            var(--hueso) 36px 37px, transparent 37px 40px);
-        background-size: 40px 100%;
-        background-color: var(--obsidiana);
-        border: 1px solid var(--linea);
+            width: 100%;
+            height: 65px;
+            background: linear-gradient(90deg,
+                var(--hueso) 0 2px, transparent 2px 4px,
+                var(--hueso) 4px 5px, transparent 5px 8px,
+                var(--hueso) 8px 11px, transparent 11px 13px,
+                var(--hueso) 13px 14px, transparent 14px 18px,
+                var(--hueso) 18px 20px, transparent 20px 21px,
+                var(--hueso) 21px 25px, transparent 25px 27px,
+                var(--hueso) 27px 28px, transparent 28px 31px,
+                var(--hueso) 31px 34px, transparent 34px 36px,
+                var(--hueso) 36px 37px, transparent 37px 40px);
+            background-size: 40px 100%;
+            background-color: var(--obsidiana);
+            border: 1px solid var(--linea);
         }
+
+        /* CORRECCIÓN: El número ahora se superpone al círculo usando fondo y z-index */
         .barcode-number {
-        text-align: center;
-        font-family: 'Major Mono Display', monospace;
-        font-size: 0.85rem;
-        letter-spacing: 0.5em;
-        margin-top: 0.7rem;
-        color: var(--voltaje);
+            text-align: center;
+            font-family: 'Major Mono Display', monospace;
+            font-size: 0.65rem; 
+            letter-spacing: 0.2em;
+            margin-top: 0.6rem;
+            color: var(--voltaje);
+            word-break: break-all;
+            width: 100%;
+            
+            /* Propiedades de capas para ocultar el círculo por detrás */
+            position: relative;
+            z-index: 5;
+            background-color: var(--obsidiana); /* Cubre el círculo con el fondo oscuro del ticket */
+            padding: 2px 0; /* Pequeño margen interno para limpiar los bordes del círculo */
+        }
+
+        /* Caja del QR a la derecha */
+        .qr-container {
+            background: #ffffff;
+            padding: 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .qr-container img {
+            display: block;
+            width: 100px; 
+            height: 100px;
+        }
+
+        /* Hash Blockchain en el fondo */
+        .blockchain-tx {
+            font-size: 0.65rem;
+            opacity: 0.5;
+            word-break: break-all;
+            text-align: center;
+            font-family: monospace;
+            margin-top: 1.2rem;
+            width: 100%;
+            color: var(--hueso);
         }
 
         .ticket-actions {
@@ -1335,7 +1432,128 @@
         margin-top: 0.2rem;
         }
         .saved-card .s-actions { display: flex; flex-direction: column; gap: 0.4rem; }
+        /* Capa de fondo oscuro (Overlay) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
 
+/* Estado Activo del Modal */
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Contenedor Interno del Modal */
+.modal-wrapper {
+    position: relative;
+    width: 92%;
+    max-width: 460px; /* Evita que el modal se ensanche de más */
+    margin: auto;
+    background: var(--obsidiana, #0d0d0d);
+    border: 1px solid var(--linea, #333);
+    border-radius: 6px;
+    box-shadow: 0px 0px 25px rgba(0, 255, 204, 0.15);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-wrapper {
+    transform: scale(1);
+}
+
+/* Botón de cierre en esquina superior derecha */
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--hueso, #fff);
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.6;
+    z-index: 1010;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.modal-close-btn:hover {
+    opacity: 1;
+    color: var(--magma, #ff3366);
+}
+
+/* Ajustes estructurales de la imagen dentro del Modal */
+.ticket-top-img-container {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+#modal-event-img {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Contenedor interno con scroll controlado para pantallas pequeñas */
+#ticketModal .ticket-confirm {
+    max-height: 82vh !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.2rem;
+}
+
+/* ========================================================
+   REGLAS ESPECÍFICAS PARA ELIMINAR LOS ERRORES VISUALES
+   ======================================================== */
+
+/* 1. Ocultar los círculos flotantes descolocados en el popup */
+#ticketModal .ticket::before,
+#ticketModal .ticket::after {
+    display: none !important;
+}
+
+/* 2. Fulminar el dato duplicado de texto bajo el código de barras */
+#ticketModal .barcode-number {
+    display: none !important;
+}
+
+/* 3. Forzar el reajuste del grid en el modal para evitar colisiones */
+#ticketModal .ticket-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.8rem 0.4rem !important;
+}
+
+/* 4. Maquetación limpia para los botones inferiores del modal */
+#ticketModal .ticket-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.2rem;
+    width: 100%;
+}
+
+#ticketModal .ticket-actions a,
+#ticketModal .ticket-actions button {
+    flex: 1;
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.8rem !important;
+}
         /* FOOTER */
         .app-footer {
         background: var(--carbono);
@@ -1749,20 +1967,20 @@
 <div class="app">
 
   <aside class="sidebar">
-    <div class="logo">
+    <a href="/" class="logo">
       <div>
         <div class="logo-mark">FASTI<span class="bolt">⚡</span></div>
         <div class="logo-sub">— TICKET —</div>
       </div>
-    </div>
+    </a>
 
     <nav class="nav-main">
-      <button class="nav-item active" data-view="home"><span class="icon">⌂</span> INICIO</button>
-      <button class="nav-item" data-view="conciertos"><span class="icon">♫</span> CONCIERTOS</button>
-      <button class="nav-item" data-view="conciertos"><span class="icon">✦</span> FESTIVALES</button>
+      <a href="/" class="nav-item active" data-view="home"><span class="icon">⌂</span> INICIO</a>
+      <a href="#destacados-seccion" class="nav-item" data-view="conciertos"><span class="icon">♫</span> CONCIERTOS</a>
+      <a href="#generos-seccion" class="nav-item" data-view="conciertos"><span class="icon">✦</span> FESTIVALES</a>
       <button class="nav-item" data-view="conciertos"><span class="icon">♣</span> BANDAS</button>
       <button class="nav-item" data-view="favoritos"><span class="icon">♡</span> FAVORITOS</button>
-      <button class="nav-item" data-view="mistickets"><span class="icon">▣</span> MIS TICKETS</button>
+      <a href="{% url 'my_tickets' %}" class="nav-item" data-view="mistickets"><span class="icon">▣</span> MIS TICKETS</a>
       <button class="nav-item" data-view="conciertos"><span class="icon">⌚</span> CALENDARIO</button>
       <button class="nav-item" data-view="home"><span class="icon">⚐</span> NOTICIAS</button>
       <button class="nav-item" data-view="home"><span class="icon">☠</span> CLUB VOLTAJE</button>
@@ -1839,4 +2057,40 @@
 
 </div>
 </body>
+<script>
+  function navigate(view) {
+
+    const targetView = document.getElementById('view-' + view);
+
+    // solo si existe una vista SPA
+    if (targetView) {
+
+      document.querySelectorAll('.view').forEach(v => {
+        v.classList.remove('active');
+      });
+
+      targetView.classList.add('active');
+    }
+
+    // actualizar sidebar SIEMPRE
+    document.querySelectorAll('.nav-item').forEach(n => {
+      n.classList.remove('active');
+    });
+
+    document.querySelectorAll('[data-view="' + view + '"]').forEach(n => {
+      n.classList.add('active');
+    });
+
+  }
+
+  document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+
+    item.addEventListener('click', () => {
+
+      navigate(item.dataset.view);
+
+    });
+
+  });
+</script>
 </html>
