@@ -12,15 +12,15 @@
           </div>
       <p class="hero-desc">Bandas chilenas, gigantes internacionales y festivales pasando por tu ciudad. Compra rápido, sin vueltas, sin sustos.</p>
       <div class="hero-cta">
-        <a href="#destacados-seccion" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">VER CONCIERTOS ⚡</a>
-        <a href="#generos-seccion" class="btn-ghost" style="display: inline-block; text-align: center; text-decoration: none;">→ festivales</a>
+        <a href="{% url 'all_filter_event' %}"class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">VER CONCIERTOS ⚡</a>
+        <a href="{% url 'all_filter_event' %}"  class="btn-ghost" style="display: inline-block; text-align: center; text-decoration: none;">→ festivales</a>
       </div>
     </section>
 
     <section class="section" id="destacados-seccion">
       <div class="section-header">
         <h2 class="section-title"><span class="bolt">⚡</span> Conciertos destacados</h2>
-        <a class="section-link" href="#todos-seccion">VER TODOS →</a>
+        <a href="{% url 'all_filter_event' %}" class="section-link" href="#todos-seccion">VER TODOS →</a>
       </div>
       
       <div class="card-grid" id="featured-grid">
@@ -70,9 +70,9 @@
     <h2 class="section-title">
       <span class="bolt">⚡</span> Próximos eventos
     </h2>
-    <a class="section-link" href="#todos-seccion">
+    <!-- <a class="section-link" href="#todos-seccion">
       VER CALENDARIO ⌚
-    </a>
+    </a> -->
   </div>
   <div class="list-events" id="upcoming-list">
     {% for event in upcoming_events %}
@@ -111,19 +111,38 @@
 </section>
 
     <section class="section" id="generos-seccion">
-      <div class="section-header">
-        <h2 class="section-title"><span class="bolt">⚡</span> Explora por género</h2>
-      </div>
-      <div class="genre-grid">
-        <button class="genre-tile"><span class="genre-icon">🤘</span> ROCK</button>
-        <button class="genre-tile"><span class="genre-icon">☠</span> METAL</button>
-        <button class="genre-tile"><span class="genre-icon">Ⓐ</span> PUNK</button>
-        <button class="genre-tile"><span class="genre-icon">♢</span> INDIE</button>
-        <button class="genre-tile"><span class="genre-icon">✕</span> ALTERNATIVO</button>
-        <button class="genre-tile"><span class="genre-icon">★</span> CHILENO</button>
-      </div>
-    </section>
+  <div class="section-header">
+    <h2 class="section-title"><span class="bolt">⚡</span> Explora por género</h2>
+  </div>
 
+  <div class="genre-grid">
+
+    <a href="{% url 'all_filter_event' %}?category=rock" class="genre-tile">
+      <span class="genre-icon">🤘</span> ROCK
+    </a>
+
+    <a href="{% url 'all_filter_event' %}?category=metal" class="genre-tile">
+      <span class="genre-icon">☠</span> METAL
+    </a>
+
+    <a href="{% url 'all_filter_event' %}?category=punk" class="genre-tile">
+      <span class="genre-icon">Ⓐ</span> PUNK
+    </a>
+
+    <a href="{% url 'all_filter_event' %}?category=indie" class="genre-tile">
+      <span class="genre-icon">♢</span> INDIE
+    </a>
+
+    <a href="{% url 'all_filter_event' %}?category=alternativo" class="genre-tile">
+      <span class="genre-icon">✕</span> ALTERNATIVO
+    </a>
+
+    <a href="{% url 'all_filter_event' %}?category=chileno" class="genre-tile">
+      <span class="genre-icon">★</span> CHILENO
+    </a>
+
+  </div>
+</section>
     <section class="section">
       <div class="benefits-bar">
         <div class="benefit">

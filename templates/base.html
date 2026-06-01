@@ -2112,6 +2112,30 @@
 
   </main> </div> </body>
 <script>
+  let searchTimeout;
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+
+      clearTimeout(searchTimeout);
+
+      searchTimeout = setTimeout(() => {
+
+          const texto = e.target.value.trim();
+
+          const params = new URLSearchParams(window.location.search);
+
+          if (texto) {
+              params.set('search', texto);
+          } else {
+              params.delete('search');
+          }
+
+          window.location.href = '/eventos/?' + params.toString();
+
+      }, 400);
+
+  });
+
   function setActive(view) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.querySelectorAll('[data-view="' + view + '"]').forEach(n => n.classList.add('active'));

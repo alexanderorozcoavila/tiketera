@@ -24,8 +24,32 @@ class EventListView(ListView):
 
         return context
 
-
 class EventDetailView(DetailView):
     model = Event
     template_name = 'events/event_detail.html'
     context_object_name = 'event'
+    
+class AllFilterEventView(ListView):
+    model = Event
+    template_name = 'events/all_filter_event.html'
+    context_object_name = 'events'
+
+    def get_queryset(self):
+        queryset = Event.objects.filter(
+            is_published=True
+        ).order_by('date_time')
+
+        category = self.request.GET.get('category')
+        search = self.request.GET.get('search')
+
+        if category:
+            queryset = queryset.filter(
+                category__name__iexact=category
+            )
+
+        if search:
+            queryset = queryset.filter(
+                title__icontains=search
+            )
+
+        return queryset
