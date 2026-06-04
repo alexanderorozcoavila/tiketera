@@ -1,27 +1,151 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="card center-align">
-            <div class="card-content">
-                <i class="material-icons green-text" style="font-size: 80px;">check_circle</i>
-                <span class="card-title">¡Compra Exitosa!</span>
-                <p>Tu boleto para <b>{{ ticket.ticket_type.event.title }}</b> ha sido generado.</p>
-                <div style="margin-top: 20px;">
-                    {% if ticket.id %}
-                        <img src="data:image/png;base64,{{ ticket.get_qr_base64 }}" alt="Código QR del Boleto" style="width: 250px; border: 1px solid #eee;">
+<div class="view active" id="view-ticket">
+    <div class="ticket-confirm" id="ticket-content">
+        
+        <div class="success-banner">
+            <div class="check">⚡</div>
+            <div class="title">¡Compra exitosa!</div>
+            <div class="desc">Tu ticket ha sido generado correctamente.</div>
+        </div>
+        
+        <div class="ticket">
+            <div class="ticket-top">
+                <div class="ticket-top-img event-image bg-2" {% if ticket.ticket_type.event.image %} style="background-image: url('{{ ticket.ticket_type.event.image.url }}'); background-size: cover; background-position: center;" {% endif %}>
+                    {% if not ticket.ticket_type.event.image %}
+                        <span>{{ ticket.ticket_type.event.title|slice:":12"|upper }}</span>
                     {% endif %}
                 </div>
-                <p style="margin-top: 15px; font-family: monospace;">UUID: {{ ticket.id }}</p>
-                <p>
-                    <b>Blockchain Tx:</b> {{ ticket.eth_transaction_hash|default:"Pendiente" }}
-                </p>
+                <div class="ticket-top-info">
+                    <div class="ticket-top-band">{{ ticket.ticket_type.event.title }}</div>
+                    <div class="ticket-top-venue">{{ ticket.ticket_type.event.venue|default:"Gimnasio Municipal" }}</div>
+                    <div class="ticket-top-city">{{ ticket.ticket_type.event.city|default:"Concepción, CL" }}</div>
+                </div>
             </div>
-            <div class="card-action">
-                <a href="{% url 'download_ticket' ticket.id %}" target="_blank" class="btn green darken-2" style="margin-right: 10px;"><i class="material-icons left">picture_as_pdf</i>Descargar Boleto PDF</a>
-                <a href="/" class="btn blue darken-2">Volver a Eventos</a>
+            
+            <div class="ticket-divider"></div>
+            
+            <div class="ticket-meta-grid">
+                <div class="ticket-meta"><span class="l">// fecha</span><span class="v">{{ ticket.ticket_type.event.date_time|date:'d M Y'|upper }}</span></div>
+                <div class="ticket-meta"><span class="l">// hora</span><span class="v">{{ ticket.ticket_type.event.date_time|date:'H:i' }} hrs</span></div>
+                
+                <div class="ticket-meta"><span class="l">// acceso</span><span class="v">puerta 2 · norte</span></div>
+                <div class="ticket-meta"><span class="l">// sección</span><span class="v">{{ ticket.ticket_type.name|upper }}</span></div>
+                <!-- <div class="ticket-meta"><span class="l">// fila</span><span class="v">ON</span></div>
+                <div class="ticket-meta"><span class="l">// asiento</span><span class="v">65</span></div> -->
+            </div>
+            
+            <div class="ticket-divider"></div>
+            <div class="ticket-bottom">
+                <div class="id">
+                    <span>id orden · {{ ticket.id|slice:":8"|upper }}</span>
+                    <span>1× {{ ticket.ticket_type.name|upper }}</span>
+                </div>
+                
+                <div class="codes-row">
+                    <div class="barcode-wrapper">
+                        <div class="barcode"></div>
+                        <div class="barcode-number">
+                            {{ ticket.id|cut:"-"|upper }}
+                        </div>
+                    </div>
+                    
+                    {% if ticket.id %}
+                    <div class="qr-container">
+                        <img src="data:image/png;base64,{{ ticket.get_qr_base64 }}" alt="Código QR">
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="blockchain-tx">
+                    TX: {{ ticket.eth_transaction_hash|default:"PROCESADO EN NODO LOCAL" }}
+                </div>
             </div>
         </div>
+        
+        <div class="ticket-actions">
+            <a href="#" onclick="event.preventDefault(); generarPDF();" class="wallet" 
+            style="text-decoration: none; text-align: center; display: block; line-height: normal; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5m-5-7v12"/>
+                    </svg>Descargar Boleto PDF
+            </a>
+            <button class="share" onclick="copiarLinkTicket()">↗ Compartir</button>
+        </div>
+        
+        <div style="margin-top:2rem; text-align:center;">
+            <a href="{% url 'my_tickets' %}" class="btn-ghost" style="text-decoration: none; display: inline-block;">Ver todos mis tickets →</a>
+        </div>
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
     </div>
 </div>
+
+<script>
+  async function generarPDF() {
+    const element = document.querySelector('.ticket');
+    const bandName = "{{ ticket.ticket_type.event.title|slugify }}";
+    const orderId = "{{ ticket.id|slice:':8'|upper }}";
+
+    // Creamos un wrapper temporal estrictamente fuera de la vista
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '-9999px'; // Totalmente fuera de pantalla
+    document.body.appendChild(wrapper);
+
+    const clone = element.cloneNode(true);
+    clone.style.margin = '0';
+    wrapper.appendChild(clone);
+
+    const opt = {
+        margin: 0,
+        filename: `Ticket_${bandName}_${orderId}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true,
+            logging: false,
+            width: 800,
+            height: 500,
+            // AQUÍ MUEVES EL CONTENIDO DENTRO DEL PDF:
+            x: 360, 
+            y: 280 
+        },
+        jsPDF: { 
+            unit: 'px', 
+            format: [800, 500], 
+            orientation: 'l' 
+        }
+    };
+
+    try {
+        await new Promise(r => setTimeout(r, 300));
+        await html2pdf().set(opt).from(clone).save();
+    } finally {
+        document.body.removeChild(wrapper);
+        if (typeof showToast === "function") showToast('Generando PDF...');
+    }
+}
+    // TOAST
+    function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '⚡ ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    function copiarLinkTicket() {
+        navigator.clipboard.writeText(window.location.href)
+            .then(() => {
+                if (typeof showToast === "function") {
+                    showToast('¡link copiado! ⚡');
+                } else {
+                    console.log('¡link copiado! ⚡');
+                }
+            })
+            .catch(err => {
+                console.error('Error al copiar el enlace: ', err);
+            });
+    }
+</script>
 {% endblock %}

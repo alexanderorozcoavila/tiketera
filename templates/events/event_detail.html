@@ -1,53 +1,152 @@
 {% extends 'base.html' %}
-{% block content %}
-<div class="container" style="margin-top: 40px; margin-bottom: 60px;">
-    <div class="row">
-        <div class="col s12">
-            <a href="/" class="btn-flat" style="color:#66fcf1; margin-bottom:15px;"><i class="material-icons left">arrow_back</i> Volver a Eventos</a>
-            <div class="card hoverable">
-                {% if event.image %}
-                <div class="card-image" style="height: 450px; overflow: hidden; border-bottom: 3px solid #66fcf1;">
-                    <img src="{{ event.image.url }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                {% endif %}
-                <div class="card-content" style="padding: 40px;">
-                    <span class="card-title" style="font-size: 3rem; margin-bottom:20px;">{{ event.title }}</span>
-                    <div class="row">
-                        <div class="col s12 m6">
-                            <p style="font-size: 1.1rem; margin-bottom:10px;"><i class="material-icons left" style="color:#66fcf1;">date_range</i> <b>Fecha:</b> {{ event.date_time|date:'d M Y H:i' }}</p>
-                            <p style="font-size: 1.1rem; margin-bottom:10px;"><i class="material-icons left" style="color:#45a247;">place</i> <b>Lugar:</b> {{ event.venue.name }} <br><span style="margin-left:40px; color:#aaa; font-size:0.9rem;">{{ event.venue.address }}</span></p>
-                            <p style="font-size: 1.1rem; margin-bottom:10px;"><i class="material-icons left" style="color:#fbc02d;">label</i> <b>Categoría:</b> {{ event.category.name|default:"General" }}</p>
-                        </div>
-                        <div class="col s12 m6" style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 30px;">
-                            <h5 style="color:#fff; font-weight:700;">Acerca del Evento</h5>
-                            <p style="line-height: 1.6; color:#c5c6c7;">{{ event.description }}</p>
-                        </div>
-                    </div>
-                    
-                    <h5 style="color:#fff; font-weight:700; border-top: 1px solid rgba(255,255,255,0.1); padding-top:30px; margin-top:30px;">Boletos Disponibles</h5>
-                    <ul class="collection">
-                        {% for tt in event.ticket_types.all %}
-                            <li class="collection-item avatar">
-                                <i class="material-icons circle" style="background-color: #45a247;">local_play</i>
-                                <span class="title" style="font-size: 1.2rem; color:#66fcf1; font-weight:700;">{{ tt.name }}</span>
-                                <p style="margin-top:5px; color:#fff;">Precio: <b style="font-size:1.1rem;">${{ tt.price }}</b> <br> <span style="color:#aaa;">Disponibles: {{ tt.quantity_available }}</span></p>
-                                
-                                {% if user.is_authenticated %}
-                                    <a href="{% url 'buy_ticket' tt.id %}" class="secondary-content btn waves-effect waves-light" style="margin-top: 10px;"><i class="material-icons right">shopping_cart</i>Comprar</a>
-                                {% else %}
-                                    <a href="{% url 'login' %}?next={% url 'event_detail' event.id %}" class="secondary-content btn grey" style="margin-top: 10px;">Inicia Sesión</a>
-                                {% endif %}
-                            </li>
-                        {% empty %}
-                            <li class="collection-item center-align" style="padding:30px;">
-                                <i class="material-icons grey-text" style="font-size:40px;">block</i><br>
-                                <span class="grey-text">No hay boletos configurados para este evento en este momento.</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
+{% block content %}  
+<div class="view active" id="view-detalle">
+  <div class="event-detail" id="detail-content">
+    <div>
+      <div class="event-image event-detail-img bg-1" {% if event.image %} style="background-image: url('{{ event.image.url }}');" {% endif %}>
+        <span>{{ event.title|upper }}</span>
+      </div>
     </div>
+    <div class="detail-info">
+      <a href="/" class="detail-back" onclick="navigate('conciertos')">← volver a conciertos</a>
+      <h1 class="detail-band">{{ event.title }}<em>.</em></h1>
+      
+      <div class="detail-meta">
+        <div class="meta-cell">
+          <div class="meta-label">// fecha</div>
+          <div class="meta-val">{{ event.date_time|date:'d M Y'|upper }}</div>
+        </div>
+        <div class="meta-cell">
+          <div class="meta-label">// hora</div>
+          <div class="meta-val">{{ event.date_time|date:'H:i' }} hrs</div>
+        </div>
+        <div class="meta-cell">
+          <div class="meta-label">// recinto</div>
+          <div class="meta-val">{{ event.venue.name }}</div>
+        </div>
+        <div class="meta-cell">
+          <div class="meta-label">// ciudad</div>
+          <div class="meta-val">{{ event.venue.address }}</div>
+        </div>
+      </div>
+
+      <div class="tickets-section">
+        <div class="title">Selecciona tus entradas</div>
+        
+        {% for tt in event.ticket_types.all %}
+          <div class="ticket-tier">
+            <div>
+              <div class="t-name">{{ tt.name|upper }}</div>
+              <div class="t-desc">{{ tt.description|default:"Disponibles: "|add:tt.quantity_available }}</div>
+            </div>
+            <div class="t-price" data-price="{{ tt.price }}">${{ tt.price }} CLP</div>
+            <div class="qty-control">
+              <button onclick="changeQty('{{ tt.id }}', -1)">−</button>
+              <span class="qty" id="qty-{{ tt.id }}" data-tier-id="{{ tt.id }}">0</span>
+              <button onclick="changeQty('{{ tt.id }}', 1, '{{ tt.quantity_available }}')">+</button>
+            </div>
+          </div>
+        {% empty %}
+          <div class="ticket-tier">
+            <div class="t-name">No hay boletos configurados para este evento.</div>
+          </div>
+        {% endfor %}
+        
+        <div class="purchase-summary">
+          <div>
+            <div class="total-label">// total</div>
+            <div class="total-amount" id="total-amount">$0 CLP</div>
+          </div>
+          
+          {% if user.is_authenticated %}
+            <button id="btn-submit-purchase" class="btn-primary" onclick="startPurchase()" disabled style="opacity:0.4;cursor:not-allowed;">Continuar ⚡</button>
+          {% else %}
+            <button class="btn-primary"
+                onclick="window.location.href=`{% url 'login' %}?next={% url 'event_detail' event.id %}`">
+                    Inicia Sesión ⚡
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  // Objeto para guardar las cantidades seleccionadas { ticket_id: cantidad }
+  const cart = {};
+
+  function changeQty(tierId, change, maxAvailable) {
+    if (!cart[tierId]) cart[tierId] = 0;
+    
+    let newQty = cart[tierId] + change;
+    
+    // Validar límites
+    if (newQty < 0) newQty = 0;
+    if (maxAvailable !== undefined && newQty > maxAvailable) {
+        newQty = maxAvailable;
+    }
+    
+    cart[tierId] = newQty;
+    
+    // Actualizar el DOM del contador específico
+    const qtySpan = document.getElementById(`qty-${tierId}`);
+    if (qtySpan) qtySpan.innerText = newQty;
+    
+    updateSummary();
+  }
+
+  function updateSummary() {
+    let total = 0;
+    let hasItems = false;
+    
+    document.querySelectorAll('.ticket-tier').forEach(tier => {
+      const qtySpan = tier.querySelector('.qty');
+      const priceDiv = tier.querySelector('.t-price');
+      
+      if (qtySpan && priceDiv) {
+        const tierId = qtySpan.getAttribute('data-tier-id');
+        const price = parseFloat(priceDiv.getAttribute('data-price')) || 0;
+        const qty = cart[tierId] || 0;
+        
+        total += qty * price;
+        if (qty > 0) hasItems = true;
+      }
+    });
+    
+    // Actualizar texto del total
+    document.getElementById('total-amount').innerText = `$${total.toLocaleString('es-CL')} CLP`;
+    
+    // Manejar estado del botón de compra
+    const buyBtn = document.getElementById('btn-submit-purchase');
+    if (buyBtn) {
+      if (hasItems) {
+        buyBtn.removeAttribute('disabled');
+        buyBtn.style.opacity = '1';
+        buyBtn.style.cursor = 'pointer';
+      } else {
+        buyBtn.setAttribute('disabled', '');
+        buyBtn.style.opacity = '0.4';
+        buyBtn.style.cursor = 'not-allowed';
+      }
+    }
+  }
+
+  function startPurchase() {
+    // Buscamos cuál ticket tiene cantidad mayor a 0
+    const selectedTickets = Object.entries(cart).filter(([_, qty]) => qty > 0);
+    
+    if (selectedTickets.length > 0) {
+        const [ticketId, qty] = selectedTickets[0];
+        
+        let baseUrl = "{% url 'buy_ticket' 0 %}"; 
+        // Reemplazamos el '0' ficticio por el ID real seleccionado en el DOM
+        let finalUrl = baseUrl.replace('0', ticketId);
+        
+        // Redireccionamos pasando la cantidad elegida por parámetro GET (?qty=X)
+        window.location.href = `${finalUrl}?qty=${qty}`;
+    }
+  }
+</script>
 {% endblock %}
+

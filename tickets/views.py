@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, TemplateView
 from django.contrib import messages
 from .models import TicketType, Ticket
+from django.http import JsonResponse
+from events.models import Event, Favorite
 from core.models import SiteSettings
 from core.models import SiteSettings
 
@@ -46,6 +48,57 @@ def ticket_success(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id, buyer=request.user)
     return render(request, 'tickets/purchase_success.html', {'ticket': ticket})
 
+#FAVORITOS FUNC
+@login_required
+def my_favorite(request):
+
+    favorites = Favorite.objects.filter(
+        user=request.user
+    ).select_related(
+        'event',
+        'event__venue'
+    )
+
+    return render(request, 'tickets/my_favorite.html', {
+        'favorites': favorites
+    })
+
+@login_required
+def toggle_favorite(request):
+
+    if request.method == 'POST':
+
+        event_id = request.POST.get('event_id')
+
+        event = get_object_or_404(Event, id=event_id)
+
+        favorite = Favorite.objects.filter(
+            user=request.user,
+            event=event
+        ).first()
+
+        if favorite:
+
+            favorite.delete()
+
+            return JsonResponse({
+                'status': 'removed'
+            })
+
+        else:
+
+            Favorite.objects.create(
+                user=request.user,
+                event=event
+            )
+
+            return JsonResponse({
+                'status': 'added'
+            })
+
+    return JsonResponse({
+        'error': 'Invalid request'
+    }, status=400)
 class MyTicketsView(LoginRequiredMixin, ListView):
     model = Ticket
     template_name = 'tickets/my_tickets.html'
