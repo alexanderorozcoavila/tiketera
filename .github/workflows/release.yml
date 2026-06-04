@@ -1,0 +1,32 @@
+name: Gestión Automática de Versiones y Pre-versiones
+
+on:
+  push:
+    branches:
+      - main
+      - release # Escucha a ambas ramas para actuar según corresponda
+
+jobs:
+  release:
+    name: Procesar Versión
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Ejecutar Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
