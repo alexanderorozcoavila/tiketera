@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block content %}  
+<div class="view active" id="view-conciertos">
+        <div class="filter-bar">
+            <span class="filter-label">// filtrar:</span>
+            <a href="?category=rock" class="filter-pill">
+                Rock
+            </a>
+            <a href="?category=metal" class="filter-pill">
+                Metal
+            </a>
+            <a href="?category=punk" class="filter-pill">
+                Punk
+            </a>
+            <a href="?category=indie" class="filter-pill">
+                Indie
+            </a>
+            <a href="?category=alt" class="filter-pill">
+                Alternativo
+            </a>
+            <a href="?category=chileno" class="filter-pill">
+                Chileno
+            </a>
+            <a href="{% url 'all_filter_event' %}" class="filter-pill">
+                Todo
+            </a>
+        </div>
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title"><span class="bolt">⚡</span> <span id="results-title">Todos los conciertos</span></h2>
+            <span class="section-link" id="results-count">
+                {{ events|length }} evento{{ events|length|pluralize:"s" }}
+            </span>
+          </div>
+          <div class="card-grid" id="all-grid">
+
+{% for event in events %}
+<div class="event-card">
+
+  <div class="event-image"
+       {% if event.image %}
+       style="background-image:url('{{ event.image.url }}'); background-size:cover; background-position:center;"
+       {% endif %}>
+
+    <div class="event-date">
+      {{ event.date_time|date:"d" }}
+      <small>{{ event.date_time|date:"M"|upper }}</small>
+    </div>
+
+    <button
+      class="fav-btn"
+      data-event-id="{{ event.id }}"
+      onclick="toggleFavorite(event, this)">
+    </button>
+
+    <span>{{ event.title|upper }}</span>
+
+  </div>
+
+  <div
+    class="event-info"
+    data-url="{% url 'event_detail' event.id %}"
+    onclick="window.location.href=this.dataset.url"
+    style="cursor:pointer;">
+
+    <div class="event-band">
+      {{ event.title }}
+    </div>
+
+    <div class="event-venue">
+      {{ event.venue.name }}
+    </div>
+
+    <div class="event-city">
+      {% if event.venue.city %}
+        {{ event.venue.city }}
+      {% else %}
+        Biobío
+      {% endif %}, CL
+    </div>
+
+    <div class="event-action">
+
+      <div class="event-price">
+        {% if event.ticket_types.all %}
+          desde ${{ event.ticket_types.all.0.price }} CLP
+        {% else %}
+          Generales
+        {% endif %}
+      </div>
+
+      <button
+        class="event-card-btn"
+        data-url="{% url 'event_detail' event.id %}"
+        onclick="event.stopPropagation(); window.location.href=this.dataset.url">
+
+        Ver entradas →
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% empty %}
+<div style="grid-column:1/-1; text-align:center; padding:3rem; opacity:.5;">
+  No hay eventos disponibles.
+</div>
+{% endfor %}
+
+</div>
+{% endblock %}

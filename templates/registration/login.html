@@ -1,32 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">Iniciar Sesión</span>
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="input-field">
-                            {{ field }}
-                            {{ field.label_tag }}
-                            {% if field.errors %}
-                                <span class="red-text">{{ field.errors|join:", " }}</span>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                    <br>
-                    <button type="submit" class="btn blue darken-2 waves-effect waves-light w-100">Ingresar
-                        <i class="material-icons right">send</i>
-                    </button>
-                </form>
-            </div>
-            <div class="card-action">
-                <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
-                <a href="{% url 'register' %}" class="right">Crear cuenta</a>
-            </div>
+
+
+<section class="auth-section">
+    <div class="auth-container">
+        
+        <div class="auth-header">
+            <div class="auth-kicker">// FASTITICKET ACCESS</div>
+            <h1>INICIAR SESIÓN</h1>
+            <p>Ingresa tus credenciales para acceder a tus tickets y beneficios del Club Voltaje.</p>
         </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="auth-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="auth-error">// {{ field.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="auth-submit">
+                INGRESAR ⚡
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
+            <a href="{% url 'register' %}">Crear cuenta</a>
+        </div>
+
     </div>
-</div>
+</section>
+
 {% endblock %}

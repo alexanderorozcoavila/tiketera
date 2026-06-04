@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="view active" id="view-favoritos">
+
+    <div style="padding: 1.5rem 2rem 0;">
+        <h1 class="purchase-title"
+            style="text-align:left; margin-bottom:0.3rem;">
+            Favoritos
+        </h1>
+
+        <p style="opacity:0.7; font-size:0.85rem;">
+            Eventos guardados para no perderte ninguno.
+        </p>
+    </div>
+
+    <div id="favoritos-content">
+        <div class="saved-list">
+            {% for favorite in favorites %}
+            <div class="saved-card">
+                <div class="s-img event-image bg-1"
+                    {% if favorite.event.image %}
+                        style="background-image:url('{{ favorite.event.image.url }}');"
+                    {% endif %}>
+                    <span>
+                        {{ favorite.event.title|upper }}
+                    </span>
+                </div>
+
+                <div class="s-info">
+                    <div class="s-band">
+                        {{ favorite.event.title }}
+                    </div>
+
+                    <div class="s-meta">
+                        {{ favorite.event.venue.name }} · Santiago, CL
+                    </div>
+
+                    <div class="s-date">
+                        <span>
+                            ⌚ {{ favorite.event.date_time|date:"d M Y" }}
+                        </span>
+
+                        <span>
+                            · {{ favorite.event.date_time|time:"H:i" }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="s-actions">
+                    <a href="{% url 'event_detail' favorite.event.id %}"
+                       class="btn-primary"
+                       style="font-size:0.78rem; padding:0.5rem 0.9rem;">
+                        Ver entradas
+                    </a>
+
+                    <button
+                        class="btn-back"
+                        style="margin:0; font-size:0.65rem;"
+                        data-event-id="{{ favorite.event.id }}"
+                        onclick="removeFavorite(event, this)">
+
+                        Quitar ♥
+
+                    </button>
+                </div>
+            </div>
+
+            {% empty %}
+            <div class="saved-empty">
+                <div class="title">Sin favoritos aún</div>
+                <div class="desc">Marca shows con ♡ y aparecerán acá.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+<div class="toast" id="toast"></div>
+
+<script>
+
+const toggleFavoriteUrl = "{% url 'toggle_favorite' %}";
+
+function getCookie(name) {
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toast.hideTimeout);
+
+    toast.hideTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+function removeFavorite(event, button) {
+    event.stopPropagation();
+    const eventId = button.dataset.eventId;
+
+    fetch(toggleFavoriteUrl, {
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: new URLSearchParams({
+            event_id: eventId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'removed') {
+            showToast('⚡ Quitado de favoritos');
+            const card = button.closest('.saved-card');
+
+            if (card) {
+                card.style.transition = '0.25s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+
+                setTimeout(() => {
+                    card.remove();
+                    const list = document.querySelector('.saved-list');
+
+                    if (list && !list.querySelector('.saved-card')) {
+                        list.innerHTML = `
+                            <div class="saved-empty">
+                                <div class="title">
+                                    Sin favoritos aún
+                                </div>
+
+                                <div class="desc">
+                                    Marca shows con ♡ y aparecerán acá.
+                                </div>
+                            </div>
+                        `;
+                    }
+                }, 250);
+            }
+        }
+    })
+
+    .catch(error => {
+        console.error('Favorite error:', error);
+        showToast('⚠ Error al quitar favorito');
+    });
+}
+</script>
+{% endblock %}
