@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - release # Escucha a ambas ramas para actuar según corresponda
+      - release
 
 jobs:
   release:
@@ -29,4 +29,5 @@ jobs:
       - name: Ejecutar Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        # Añadimos -p para precargar tanto la herramienta base como el plugin faltante
+        run: npx -p semantic-release -p @semantic-release/changelog semantic-release
