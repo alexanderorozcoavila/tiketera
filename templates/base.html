@@ -1956,13 +1956,21 @@
 <div class="marquee">
   <div class="marquee-track">
     <span>FASTITICKET ⚡ TU ENTRADA AL MOVIMIENTO</span>
-    <span>PRE-VENTA · LOS BUNKERS · 22 JUN</span>
-    <span>NUEVO EN CARTELERA · FESTIVAL ROCKÓDROMO</span>
-    <span>CLUB VOLTAJE · 15% DTO TODO EL AÑO</span>
+    {% for event in events %}
+      <span>
+        {{ event.title|upper }} ·
+        {{ event.date_time|date:"d M"|upper }} ·
+        {{ event.venue.name|upper }}
+      </span>
+    {% endfor %}
     <span>FASTITICKET ⚡ TU ENTRADA AL MOVIMIENTO</span>
-    <span>PRE-VENTA · LOS BUNKERS · 22 JUN</span>
-    <span>NUEVO EN CARTELERA · FESTIVAL ROCKÓDROMO</span>
-    <span>CLUB VOLTAJE · 15% DTO TODO EL AÑO</span>
+    {% for event in events %}
+      <span>
+        {{ event.title|upper }} ·
+        {{ event.date_time|date:"d M"|upper }} ·
+        {{ event.venue.name|upper }}
+      </span>
+    {% endfor %}
   </div>
 </div>
 

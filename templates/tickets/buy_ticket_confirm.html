@@ -87,8 +87,13 @@
               
                 <div class="summary-card">
                     <div class="summary-event">
-                        <div class="summary-thumb event-image bg-1">
-                            <span>{{ ticket_type.event.title|slice:":12"|upper }}</span>
+                        <div
+                            class="summary-thumb event-image bg-1"
+                            {% if ticket_type.event.image %}
+                            style="background-image:url('{{ ticket_type.event.image.url }}'); background-size:cover; background-position:center;"
+                            {% endif %}
+                        >
+                            <!-- <span>{{ ticket_type.event.title|slice:":12"|upper }}</span> -->
                         </div>
                         <div class="summary-event-info">
                             <div class="band">{{ ticket_type.event.title }}</div>
