@@ -8,7 +8,7 @@
     
     <div class="tabs">
         <button class="tab active" data-tab="comprados">Comprados</button>
-        <button class="tab" data-tab="proximos">Próximos shows</button>
+        <!-- <button class="tab" data-tab="proximos">Próximos shows</button> CREAR SHOWS HORARIOS -->
     </div>
     
     <div id="mistickets-content">
@@ -36,20 +36,26 @@
                 </div>
                 
                 <div class="s-actions">
-                    <button class="btn-primary" style="font-size:0.78rem; padding:0.5rem 0.9rem;" 
+                    <button class="btn-primary"
+                            style="font-size:0.78rem; padding:0.5rem 0.9rem;"
                             data-id="{{ ticket.id }}"
                             data-title="{{ ticket.ticket_type.event.title }}"
-                            data-venue="{{ ticket.ticket_type.event.venue|default:'Gimnasio Municipal' }}"
-                            data-city="{{ ticket.ticket_type.event.city|default:'Concepción, CL' }}"
+                            data-venue="{{ ticket.ticket_type.event.venue }}"
                             data-date="{{ ticket.ticket_type.event.date_time|date:'d M Y'|upper }}"
                             data-time="{{ ticket.ticket_type.event.date_time|date:'H:i' }} hrs"
                             data-type="{{ ticket.ticket_type.name|upper }}"
                             data-qr="{{ ticket.get_qr_base64 }}"
-                            data-tx="{{ ticket.eth_transaction_hash|default:'PROCESADO EN NODO LOCAL' }}"
                             data-pdf="{% url 'download_ticket' ticket.id %}"
                             onclick="openTicketModal(this)">
                         Ver ticket
                     </button>
+
+                    <a href=""
+                    class="btn-primary"
+                    style="font-size:0.78rem; padding:0.5rem 0.9rem;">
+                        Reembolso
+                    </a>
+
                 </div>
             </div>
             {% empty %}
@@ -77,51 +83,71 @@
             </style>
             
             <div class="ticket">
+
                 <div class="ticket-top">
+
                     <div class="ticket-top-img-container">
                         <div id="modal-event-img" class="ticket-top-img event-image bg-2">
                             <span id="modal-event-fallback"></span>
                         </div>
                     </div>
+
                     <div class="ticket-top-info">
                         <div class="ticket-top-band" id="modal-band">--</div>
                         <div class="ticket-top-venue" id="modal-venue">--</div>
-                        <div class="ticket-top-city" id="modal-city">--</div>
                     </div>
+
                 </div>
-                
+
                 <div class="ticket-divider"></div>
-                
+
                 <div class="ticket-meta-grid">
-                    <div class="ticket-meta"><span class="l">// fecha</span><span class="v" id="modal-date">--</span></div>
-                    <div class="ticket-meta"><span class="l">// hora</span><span class="v" id="modal-time">--</span></div>
-                    <div class="ticket-meta"><span class="l">// acceso</span><span class="v">puerta 2 · norte</span></div>
-                    <div class="ticket-meta"><span class="l">// sección</span><span class="v" id="modal-type">--</span></div>
-                    <div class="ticket-meta"><span class="l">// fila</span><span class="v">ON</span></div>
-                    <div class="ticket-meta"><span class="l">// asiento</span><span class="v">65</span></div>
+
+                    <div class="ticket-meta">
+                        <span class="l">// fecha</span>
+                        <span class="v" id="modal-date">--</span>
+                    </div>
+
+                    <div class="ticket-meta">
+                        <span class="l">// hora</span>
+                        <span class="v" id="modal-time">--</span>
+                    </div>
+
+                    <div class="ticket-meta">
+                        <span class="l">// entrada</span>
+                        <span class="v" id="modal-type">--</span>
+                    </div>
+
+                    <div class="ticket-meta">
+                        <span class="l">// orden</span>
+                        <span class="v" id="modal-order-short">--</span>
+                    </div>
+
                 </div>
-                
+
                 <div class="ticket-divider"></div>
-                
+
                 <div class="ticket-bottom">
+
                     <div class="id">
                         <span id="modal-order-id">id orden · --</span>
                         <span id="modal-badge-type">1× --</span>
                     </div>
-                    
+
                     <div class="codes-row">
+
                         <div class="barcode-wrapper">
                             <div class="barcode"></div>
-                            <div class="barcode-number" id="modal-barcode-num" style="display: none !important;">--</div>
                         </div>
-                        
+
                         <div class="qr-container">
                             <img id="modal-qr" src="" alt="Código QR">
                         </div>
+
                     </div>
-                    
-                    <div class="blockchain-tx" id="modal-tx">TX: --</div>
+
                 </div>
+
             </div>
             
             <div class="ticket-actions">
@@ -201,38 +227,55 @@ function generarPDF() {
     });
 
     function openTicketModal(button) {
-        const data = button.dataset;
-        currentTicketId = data.id;
-        
-        document.getElementById('modal-band').textContent = data.title;
-        document.getElementById('modal-venue').textContent = data.venue;
-        document.getElementById('modal-city').textContent = data.city;
-        document.getElementById('modal-date').textContent = data.date;
-        document.getElementById('modal-time').textContent = data.time;
-        document.getElementById('modal-type').textContent = data.type;
-        
-        document.getElementById('modal-order-id').textContent = `id orden · ${data.id.substring(0, 8).toUpperCase()}`;
-        document.getElementById('modal-badge-type').textContent = `1× ${data.type}`;
-        document.getElementById('modal-barcode-num').textContent = data.id.replace(/-/g, '').toUpperCase();
-        document.getElementById('modal-tx').textContent = `TX: ${data.tx}`;
-        
-        document.getElementById('modal-pdf-link').href = data.pdf;
-        document.getElementById('modal-qr').src = `data:image/png;base64,${data.qr}`;
-        
-        const eventImgDiv = document.getElementById('modal-event-img');
-        const fallbackSpan = document.getElementById('modal-event-fallback');
-        
-        const originalImg = button.closest('.saved-card').querySelector('.s-img').style.backgroundImage;
-        if (originalImg) {
-            eventImgDiv.style.backgroundImage = originalImg;
-            fallbackSpan.textContent = "";
-        } else {
-            eventImgDiv.style.backgroundImage = "none";
-            fallbackSpan.textContent = data.title.substring(0, 12).toUpperCase();
-        }
-        
-        document.getElementById('ticketModal').classList.add('active');
+
+    const data = button.dataset;
+    currentTicketId = data.id;
+
+    document.getElementById('modal-band').textContent = data.title;
+    document.getElementById('modal-venue').textContent = data.venue;
+    document.getElementById('modal-date').textContent = data.date;
+    document.getElementById('modal-time').textContent = data.time;
+    document.getElementById('modal-type').textContent = data.type;
+
+    document.getElementById('modal-order-short').textContent =
+        data.id.substring(0, 8).toUpperCase();
+
+    document.getElementById('modal-order-id').textContent =
+        `id orden · ${data.id.substring(0, 8).toUpperCase()}`;
+
+    document.getElementById('modal-badge-type').textContent =
+        `1× ${data.type}`;
+
+    document.getElementById('modal-qr').src =
+        `data:image/png;base64,${data.qr}`;
+
+    document.getElementById('modal-pdf-link').href =
+        data.pdf;
+
+    const eventImgDiv = document.getElementById('modal-event-img');
+    const fallbackSpan = document.getElementById('modal-event-fallback');
+
+    const originalImg =
+        button.closest('.saved-card')
+              .querySelector('.s-img')
+              .style.backgroundImage;
+
+    if (originalImg && originalImg !== 'none') {
+
+        eventImgDiv.style.backgroundImage = originalImg;
+        fallbackSpan.textContent = '';
+
+    } else {
+
+        eventImgDiv.style.backgroundImage = 'none';
+        fallbackSpan.textContent =
+            data.title.substring(0, 12).toUpperCase();
+
     }
+
+    document.getElementById('ticketModal')
+            .classList.add('active');
+}
 
     function closeTicketModal(event) {
         if (event.target.id === 'ticketModal') {
