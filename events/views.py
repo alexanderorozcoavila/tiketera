@@ -44,6 +44,7 @@ class AllFilterEventView(ListView):
 
         category = self.request.GET.get('category')
         search = self.request.GET.get('search')
+        region = self.request.GET.get('region')  # 👈 NUEVO
 
         if category:
             queryset = queryset.filter(
@@ -55,7 +56,13 @@ class AllFilterEventView(ListView):
                 title__icontains=search
             )
 
+        if region:
+            queryset = queryset.filter(
+                venue__name__iexact=region
+            )
+            
         return queryset
+    
     
     
 # ==========================

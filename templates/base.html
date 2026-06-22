@@ -354,7 +354,7 @@
         .view-container { padding: 0; flex: 1; }
         .view { display: none; }
         .view.active { display: block; }
-
+        
         /* HERO */
         .hero {
         position: relative;
@@ -1949,6 +1949,71 @@
     .auth-footer a:hover {
         opacity: 1;
         color: var(--voltaje);
+    }
+    .dropdown-region {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+
+    min-width: 220px;
+    max-height: 260px;
+    overflow-y: auto;
+
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.15);
+    z-index: 1000;
+}
+
+/* 👇 clave: hover + focus */
+.dropdown-region:hover .dropdown-menu,
+.dropdown-region:focus-within .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: .7rem 1rem;
+    color: inherit;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: .1em;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(255,255,255,.08);
+}
+
+.custom-form-container p {
+        margin-bottom: 1rem;
+    }
+    .custom-form-container label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    .custom-form-container input, 
+    .custom-form-container select, 
+    .custom-form-container textarea {
+        width: 100%;
+        padding: 0.9rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        color: white;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .custom-form-container input:focus {
+        border-color: rgba(255, 255, 255, 0.2);
     }
     </style>
     </head>
