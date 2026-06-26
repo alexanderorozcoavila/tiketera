@@ -19,7 +19,7 @@
             <div class="saved-card">
                 <div class="s-img event-image bg-1"
                     {% if favorite.event.image %}
-                        style="background-image:url('{{ favorite.event.image.url }}');"
+                        style="background-image: url('{{ favorite.event.image.url }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"
                     {% endif %}>
                     <span>
                         {{ favorite.event.title|upper }}

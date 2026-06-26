@@ -5,7 +5,7 @@ from .models import Event
 #FORMULARIO DE AYUDA
 from django.core.mail import EmailMessage
 from django.contrib import messages
-
+from django.shortcuts import redirect
 class EventListView(ListView):
     model = Event
     template_name = 'events/event_list.html'
@@ -72,11 +72,8 @@ class AllFilterEventView(ListView):
 def help_view(request):
     return render(request, 'events/help.html')
 
-
 def enviar_consulta(request):
-
     if request.method == "POST":
-
         nombre = request.POST.get('nombre')
         correo = request.POST.get('correo')
         telefono = request.POST.get('telefono')
@@ -96,23 +93,16 @@ Mensaje:
         email = EmailMessage(
             subject=f"[FASTITICKET] Consulta de {nombre}",
             body=cuerpo,
-            to=['correoEmpresa@gmail.com']  # cambia por coreo de empresa
+            from_email='serviciostecnologicoscupo@gmail.com',
+            to=['serviciostecnologicoscupo@gmail.com'],
+            reply_to=[correo]
         )
-
-        email.reply_to = [correo]
 
         try:
             email.send()
-
-            messages.success(
-                request,
-                'Consulta enviada correctamente ⚡'
-            )
-
-        except Exception:
-            messages.error(
-                request,
-                'No fue posible enviar la consulta.'
-            )
+            messages.success(request, 'Consulta enviada correctamente ⚡')
+        except Exception as e:
+            print(f"Error al enviar email: {e}")
+            messages.error(request, 'No fue posible enviar la consulta.')
 
     return redirect('help')
