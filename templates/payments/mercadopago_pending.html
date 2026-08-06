@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="view active" id="view-mp-pending">
+    <div style="display:flex; align-items:center; justify-content:center; min-height:60vh; padding:40px 20px;">
+        <div style="text-align:center; max-width:480px; width:100%;">
+
+            <div style="width:80px; height:80px; border-radius:50%;
+                        background:linear-gradient(135deg,#f39c12,#e67e22);
+                        display:flex; align-items:center; justify-content:center;
+                        margin:0 auto 24px; font-size:36px;">
+                ⏳
+            </div>
+
+            <h2 style="font-size:1.7rem; font-weight:700; margin-bottom:12px;">Pago en revisión</h2>
+            <p style="opacity:.7; line-height:1.6; margin-bottom:8px;">
+                Tu pago está siendo procesado por Mercado Pago y se encuentra
+                <strong>pendiente de acreditación</strong>.
+            </p>
+            <p style="opacity:.7; line-height:1.6; margin-bottom:32px;">
+                Recibirás una confirmación por correo electrónico una vez que se acredite.
+                Este proceso puede demorar hasta <strong>72 horas hábiles</strong>.
+            </p>
+
+            <div style="background:rgba(243,156,18,.1); border:1px solid rgba(243,156,18,.3);
+                        border-radius:12px; padding:16px; margin-bottom:32px; text-align:left;">
+                <p style="margin:0; font-size:.9rem; opacity:.8;">
+                    💡 <strong>¿Qué hacer ahora?</strong><br>
+                    No realices otro pago. Tu solicitud está registrada y será procesada
+                    automáticamente por Mercado Pago.
+                </p>
+            </div>
+
+            <a href="{% url 'my_tickets' %}"
+               style="display:inline-block; text-decoration:none; padding:12px 28px;
+                      background:linear-gradient(135deg,#f39c12,#e67e22); border-radius:10px;
+                      font-weight:700; color:#fff;">
+                Ver mis boletos
+            </a>
+            &nbsp;
+            <a href="/" style="display:inline-block; text-decoration:none; padding:12px 28px;
+               border:1px solid rgba(255,255,255,.2); border-radius:10px;
+               font-weight:600; color:inherit; margin-top:10px;">
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -37,9 +37,12 @@ def buy_ticket(request, ticket_type_id):
             return redirect('webpay_init', ticket_type_id=ticket_type.id)
         elif payment_method == 'crypto':
             return redirect('crypto_init', ticket_type_id=ticket_type.id)
+        elif payment_method == 'mp':
+            return redirect('mercadopago_init', ticket_type_id=ticket_type.id)
         else:
             messages.error(request, "Por favor seleccione un método de pago.")
             return redirect('buy_ticket', ticket_type_id=ticket_type.id)
+
 
     return render(request, 'tickets/buy_ticket_confirm.html', {'ticket_type': ticket_type})
 
@@ -106,6 +109,16 @@ class MyTicketsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Ticket.objects.filter(buyer=self.request.user).order_by('-purchase_date')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        # Verificar si hay un pago de MP pendiente de confirmar
+        from payments.models import PendingMPPayment
+        ctx['pending_mp_payment'] = PendingMPPayment.objects.filter(
+            user=self.request.user, processed=False
+        ).order_by('-created_at').first()
+        return ctx
+
 
 class TicketScannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'tickets/scanner.html'
