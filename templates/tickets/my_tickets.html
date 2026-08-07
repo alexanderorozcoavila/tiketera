@@ -82,7 +82,8 @@
                 <div class="s-info">
                     <div class="s-band">{{ ticket.ticket_type.event.title }}</div>
                     <div class="s-meta">
-                        {{ ticket.ticket_type.event.venue|default:"Gimnasio Municipal" }} · {{ ticket.ticket_type.event.city|default:"Concepción, CL" }}
+                        {{ ticket.ticket_type.event.venue}} · {{ ticket.ticket_type.event.city}}
+                        <!-- {{ ticket.ticket_type.event.venue|default:"Gimnasio Municipal" }} · {{ ticket.ticket_type.event.city|default:"Concepción, CL" }} -->
                     </div>
                     <div class="s-date">
                         <span>⌚ {{ ticket.ticket_type.event.date_time|date:'d M Y · H:i' }}</span>
