@@ -70,7 +70,7 @@
     </div>
     
     <div id="mistickets-content">
-        <div class="saved-list">
+        <div class="saved-list" id="saved-list">
             {% for ticket in tickets %}
             <div class="saved-card" data-ticket-card-id="{{ ticket.id }}">
                 <div class="s-img event-image bg-2" {% if ticket.ticket_type.event.image %} style="background-image: url('{{ ticket.ticket_type.event.image.url }}'); background-size: cover; background-position: center;" {% endif %}>
@@ -224,6 +224,62 @@
 
 <div class="toast" id="toast" style="position: fixed; bottom: 5%; left: 50%; transform: translateX(-50%); z-index: 2500; margin: 0; max-width: 90%; text-align: center;"></div>
 
+<style>
+    /* ===== Tarjetas agrupadas (varias entradas del mismo show/tipo) ===== */
+    .group-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .group-toggle .chevron {
+        display: inline-block;
+        transition: transform 0.2s ease;
+        font-size: 0.9em;
+    }
+    .group-toggle.open .chevron {
+        transform: rotate(180deg);
+    }
+    .group-tickets-list {
+        display: none;
+        grid-column: 1 / -1;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed rgba(255,255,255,0.15);
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .group-tickets-list.open {
+        display: flex;
+    }
+    .ticket-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background: rgba(255,255,255,0.04);
+        border-radius: 8px;
+        font-size: 0.8rem;
+    }
+    .ticket-row-label {
+        opacity: 0.75;
+        font-family: monospace;
+    }
+    .ticket-row-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .btn-sm {
+        font-size: 0.72rem !important;
+        padding: 0.4rem 0.7rem !important;
+    }
+    .saved-card.group-card {
+        flex-wrap: wrap;
+    }
+</style>
+
 <script>
 function generarPDF() {
     const element = document.querySelector('.ticket');
@@ -263,26 +319,179 @@ function generarPDF() {
 }
     let currentTicketId = '';
 
-    // FILTRO ANTI-DUPLICADOS
-    document.addEventListener("DOMContentLoaded", function () {
-        const seenShowKeys = new Set();
-        const cards = document.querySelectorAll('.saved-card');
+    /* =========================================================
+       AGRUPACIÓN DE TICKETS
+       Antes había un "filtro anti-duplicados" que directamente
+       eliminaba del DOM los tickets repetidos (mismo show + mismo
+       tipo de entrada) — por eso una compra de 2 entradas solo
+       mostraba 1. Ahora se agrupan de verdad: se arma una sola
+       tarjeta con contador y una lista desplegable con cada
+       entrada individual (cada una con su propio "Ver ticket" y PDF).
+       ========================================================= */
+    document.addEventListener("DOMContentLoaded", agruparTickets);
+
+    function agruparTickets() {
+        const container = document.getElementById('saved-list');
+        if (!container) return;
+
+        const cards = Array.from(container.querySelectorAll('.saved-card'));
+        if (cards.length === 0) return;
+
+        const grupos = new Map();
 
         cards.forEach(card => {
-            const bandEl = card.querySelector('.s-band');
-            const dateEl = card.querySelector('.s-date span:first-child');
-            
-            if (bandEl && dateEl) {
-                const showKey = `${bandEl.textContent.trim()}-${dateEl.textContent.trim()}`.toUpperCase();
-                
-                if (seenShowKeys.has(showKey)) {
-                    card.remove();
-                } else {
-                    seenShowKeys.add(showKey);
-                }
+            const btn = card.querySelector('.s-actions button.btn-primary[data-id]');
+            if (!btn) return;
+            const d = btn.dataset;
+
+            // clave = mismo show (banda + fecha + hora) + mismo tipo de entrada
+            const key = `${d.title}||${d.date}||${d.time}||${d.type}`.toUpperCase();
+
+            if (!grupos.has(key)) {
+                grupos.set(key, {
+                    title: d.title,
+                    venue: d.venue,
+                    date: d.date,
+                    time: d.time,
+                    type: d.type,
+                    imgStyleAttr: card.querySelector('.s-img').getAttribute('style'),
+                    tickets: []
+                });
             }
+
+            grupos.get(key).tickets.push({
+                id: d.id,
+                title: d.title,
+                venue: d.venue,
+                date: d.date,
+                time: d.time,
+                type: d.type,
+                qr: d.qr,
+                pdf: d.pdf
+            });
         });
-    });
+
+        container.innerHTML = '';
+        grupos.forEach(grupo => container.appendChild(crearTarjetaGrupo(grupo)));
+    }
+
+    function crearTarjetaGrupo(grupo) {
+        const qty = grupo.tickets.length;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'saved-card' + (qty > 1 ? ' group-card' : '');
+
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 's-img event-image bg-2';
+        if (grupo.imgStyleAttr) {
+            imgDiv.setAttribute('style', grupo.imgStyleAttr);
+        } else {
+            const span = document.createElement('span');
+            span.textContent = (grupo.title || '').substring(0, 12).toUpperCase();
+            imgDiv.appendChild(span);
+        }
+
+        const info = document.createElement('div');
+        info.className = 's-info';
+        info.innerHTML = `
+            <div class="s-band">${grupo.title}</div>
+            <div class="s-meta">${grupo.venue || ''}</div>
+            <div class="s-date">
+                <span>⌚ ${grupo.date} · ${grupo.time}</span>
+                <span style="color:var(--voltaje);">· ${qty}× ${grupo.type}</span>
+            </div>
+        `;
+
+        const actions = document.createElement('div');
+        actions.className = 's-actions';
+
+        wrapper.appendChild(imgDiv);
+        wrapper.appendChild(info);
+        wrapper.appendChild(actions);
+
+        if (qty === 1) {
+            // Una sola entrada: se ve exactamente como antes, sin flecha.
+            const t = grupo.tickets[0];
+            actions.appendChild(crearBotonVer(t));
+            actions.appendChild(crearLinkReembolso());
+            return wrapper;
+        }
+
+        // Varias entradas: tarjeta con contador + flecha desplegable
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'btn-primary group-toggle';
+        toggleBtn.style.cssText = 'font-size:0.78rem; padding:0.5rem 0.9rem;';
+        toggleBtn.innerHTML = `Ver ${qty} entradas <span class="chevron">▾</span>`;
+        actions.appendChild(toggleBtn);
+
+        const list = document.createElement('div');
+        list.className = 'group-tickets-list';
+
+        grupo.tickets.forEach((t, idx) => {
+            const row = document.createElement('div');
+            row.className = 'ticket-row';
+
+            const label = document.createElement('span');
+            label.className = 'ticket-row-label';
+            label.textContent = `entrada ${idx + 1} · orden ${t.id.substring(0, 8).toUpperCase()}`;
+
+            const rowActions = document.createElement('div');
+            rowActions.className = 'ticket-row-actions';
+
+            const verBtn = crearBotonVer(t);
+            verBtn.classList.add('btn-sm');
+
+            const pdfLink = document.createElement('a');
+            pdfLink.href = t.pdf;
+            pdfLink.className = 'btn-ghost btn-sm';
+            pdfLink.textContent = 'PDF';
+
+            const refundLink = crearLinkReembolso();
+            refundLink.classList.add('btn-sm');
+
+            rowActions.appendChild(verBtn);
+            rowActions.appendChild(pdfLink);
+            rowActions.appendChild(refundLink);
+
+            row.appendChild(label);
+            row.appendChild(rowActions);
+            list.appendChild(row);
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            const abierto = list.classList.toggle('open');
+            toggleBtn.classList.toggle('open', abierto);
+        });
+
+        wrapper.appendChild(list);
+        return wrapper;
+    }
+
+    function crearBotonVer(t) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.style.cssText = 'font-size:0.78rem; padding:0.5rem 0.9rem;';
+        btn.dataset.id = t.id;
+        btn.dataset.title = t.title;
+        btn.dataset.venue = t.venue;
+        btn.dataset.date = t.date;
+        btn.dataset.time = t.time;
+        btn.dataset.type = t.type;
+        btn.dataset.qr = t.qr;
+        btn.dataset.pdf = t.pdf;
+        btn.textContent = 'Ver ticket';
+        btn.addEventListener('click', () => openTicketModal(btn));
+        return btn;
+    }
+
+    function crearLinkReembolso() {
+        const a = document.createElement('a');
+        a.href = '';
+        a.className = 'btn-primary';
+        a.style.cssText = 'font-size:0.78rem; padding:0.5rem 0.9rem;';
+        a.textContent = 'Reembolso';
+        return a;
+    }
 
     function openTicketModal(button) {
 

@@ -15,29 +15,40 @@
         <div id="purchase-content">
             <form method="post" action="{% url 'process_payment' %}" class="purchase-grid" id="purchase-form" onsubmit="return validarPaso2()">
                 {% csrf_token %}
+
+                <!-- Honeypot: campo invisible para humanos, los bots suelen autocompletarlo -->
+                <div style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">
+                    <label for="f-website">No completar este campo</label>
+                    <input type="text" name="website" id="f-website" tabindex="-1" autocomplete="off">
+                </div>
+                <input type="hidden" name="form_loaded_at" id="f-loaded-at">
                 
                 <div class="purchase-panel step-content" id="panel-paso-1">
                     <div class="panel-title">Información del comprador</div>
                     
                     <div class="form-group">
                         <label class="form-label" for="f-name">// nombre completo *</label>
-                        <input type="text" name="name" class="form-input" id="f-name" placeholder="Como aparece en tu cédula" required>
+                        <input type="text" name="name" class="form-input" id="f-name" placeholder="Como aparece en tu cédula" maxlength="80" required>
+                        <div class="field-error" id="err-name"></div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="f-rut">// rut *</label>
-                            <input type="text" name="rut" class="form-input" id="f-rut" placeholder="12.345.678-9" required>
+                            <input type="text" name="rut" class="form-input" id="f-rut" placeholder="12.345.678-9" inputmode="numeric" autocomplete="off" maxlength="12" required>
+                            <div class="field-error" id="err-rut"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="f-phone">// teléfono *</label>
-                            <input type="text" name="phone" class="form-input" id="f-phone" placeholder="+56 9 1234 5678" required>
+                            <input type="text" name="phone" class="form-input" id="f-phone" placeholder="+56 9 1234 5678" inputmode="tel" autocomplete="off" maxlength="20" required>
+                            <div class="field-error" id="err-phone"></div>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label" for="f-email">// correo electrónico *</label>
-                        <input type="email" name="email" class="form-input" id="f-email" placeholder="tu@correo.cl" required>
+                        <input type="email" name="email" class="form-input" id="f-email" placeholder="tu@correo.cl" maxlength="120" required>
+                        <div class="field-error" id="err-email"></div>
                     </div>
 
                     <div style="margin-top: 20px;">
@@ -128,15 +139,216 @@
     </div>
 </div>
 
-<script>
-    function irAlPaso2() {
-        const name = document.getElementById('f-name');
-        const rut = document.getElementById('f-rut');
-        const phone = document.getElementById('f-phone');
-        const email = document.getElementById('f-email');
+<style>
+    .form-input.field-invalid {
+        border-color: #ff4d4f !important;
+        box-shadow: 0 0 0 1px #ff4d4f;
+    }
+    .form-input.field-valid {
+        border-color: #2ecc71 !important;
+    }
+    .field-error {
+        display: none;
+        color: #ff4d4f;
+        font-size: 12px;
+        margin-top: 4px;
+        min-height: 14px;
+    }
+    .field-error.show {
+        display: block;
+    }
+</style>
 
-        if (!name.checkValidity() || !rut.checkValidity() || !phone.checkValidity() || !email.checkValidity()) {
-            document.getElementById('purchase-form').reportValidity();
+<script>
+    
+    /* =========================================================
+       RUT chileno: formateo automático + validación (Módulo 11)
+       ========================================================= */
+    function limpiarRut(valor) {
+        return valor.replace(/[^0-9kK]/g, '').toUpperCase();
+    }
+
+    function formatearRut(input) {
+        let limpio = limpiarRut(input.value);
+        // el RUT tiene máx. 8 dígitos de cuerpo + 1 dígito verificador
+        if (limpio.length > 9) {
+            limpio = limpio.slice(0, 9);
+        }
+        if (limpio.length <= 1) {
+            input.value = limpio;
+            return;
+        }
+        const cuerpo = limpio.slice(0, -1);
+        const dv = limpio.slice(-1);
+        let cuerpoFormateado = '';
+        for (let i = 0; i < cuerpo.length; i++) {
+            const posDesdeElFinal = cuerpo.length - i;
+            cuerpoFormateado += cuerpo[i];
+            if (posDesdeElFinal > 1 && posDesdeElFinal % 3 === 1) {
+                cuerpoFormateado += '.';
+            }
+        }
+        input.value = cuerpoFormateado + '-' + dv;
+    }
+
+    function calcularDvEsperado(cuerpo) {
+        let suma = 0;
+        let multiplo = 2;
+        for (let i = cuerpo.length - 1; i >= 0; i--) {
+            suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+            multiplo = multiplo < 7 ? multiplo + 1 : 2;
+        }
+        const resto = 11 - (suma % 11);
+        if (resto === 11) return '0';
+        if (resto === 10) return 'K';
+        return String(resto);
+    }
+
+    function validarRut(valorFormateado) {
+        const limpio = limpiarRut(valorFormateado);
+        // cuerpo entre 7 y 8 dígitos, según los rangos vigentes de RUT/RUN en Chile
+        if (!/^[0-9]{7,8}[0-9K]$/.test(limpio)) return false;
+        const cuerpo = limpio.slice(0, -1);
+        const dv = limpio.slice(-1);
+        return calcularDvEsperado(cuerpo) === dv;
+    }
+
+    /* =========================================================
+       Teléfono: formatea como chileno (+56 9 XXXX XXXX) si detecta
+       el código 56; si el usuario ingresa otro código de país,
+       lo deja como número internacional (+<código> resto de dígitos)
+       ========================================================= */
+    function formatearTelefono(input) {
+        let digitos = input.value.replace(/\D/g, '');
+        digitos = digitos.slice(0, 15); // E.164 permite máx. 15 dígitos
+
+        if (digitos.length === 0) {
+            input.value = '';
+            return;
+        }
+
+        if (digitos.startsWith('56')) {
+            // Formato chileno
+            let nums = digitos.slice(2);
+            if (nums.startsWith('0')) nums = nums.slice(1);
+            nums = nums.slice(0, 9);
+            let salida = '+56';
+            if (nums.length > 0) salida += ' ' + nums.slice(0, 1);
+            if (nums.length > 1) salida += ' ' + nums.slice(1, 5);
+            if (nums.length > 5) salida += ' ' + nums.slice(5, 9);
+            input.value = salida;
+            return;
+        }
+
+        // Número internacional: se deja como +<código país><resto>,
+        // agrupado en bloques de 3-4 para que sea legible
+        let salida = '+' + digitos;
+        input.value = salida;
+    }
+
+    function validarTelefono(valorFormateado) {
+        const digitos = valorFormateado.replace(/\D/g, '');
+        if (digitos.startsWith('56')) {
+            const nums = digitos.slice(2);
+            // celular chileno: 9 dígitos y comienza con 9
+            return /^9[0-9]{8}$/.test(nums);
+        }
+        // número internacional genérico (formato E.164): entre 8 y 15
+        // dígitos en total, sin empezar en 0
+        return /^[1-9][0-9]{7,14}$/.test(digitos);
+    }
+
+    /* =========================================================
+       Correo electrónico
+       ========================================================= */
+    function validarEmail(valor) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor.trim());
+    }
+
+    /* =========================================================
+       Feedback visual por campo
+       ========================================================= */
+    function marcarCampo(input, errorDivId, esValido, mensajeError) {
+        const errorDiv = document.getElementById(errorDivId);
+        input.classList.remove('field-invalid', 'field-valid');
+        if (input.value.trim() === '') {
+            errorDiv.classList.remove('show');
+            errorDiv.textContent = '';
+            return;
+        }
+        if (esValido) {
+            input.classList.add('field-valid');
+            errorDiv.classList.remove('show');
+            errorDiv.textContent = '';
+        } else {
+            input.classList.add('field-invalid');
+            errorDiv.textContent = mensajeError;
+            errorDiv.classList.add('show');
+        }
+    }
+
+    /* =========================================================
+       Anti-bot: honeypot + tiempo mínimo de llenado
+       (esto es una primera barrera del lado del cliente; los bots
+       serios la saltan, así que replica esta misma lógica en el
+       backend antes de crear la orden de compra)
+       ========================================================= */
+    document.getElementById('f-loaded-at').value = Date.now();
+
+    function esProbablementeBot() {
+        const honeypot = document.getElementById('f-website').value;
+        if (honeypot !== '') return true;
+
+        const cargadoEn = parseInt(document.getElementById('f-loaded-at').value, 10);
+        const transcurrido = Date.now() - cargadoEn;
+        // un humano difícilmente llena nombre + rut + teléfono + correo
+        // y elige método de pago en menos de 2.5 segundos
+        if (transcurrido < 2500) return true;
+
+        return false;
+    }
+
+    const inputRut = document.getElementById('f-rut');
+    const inputPhone = document.getElementById('f-phone');
+    const inputEmail = document.getElementById('f-email');
+    const inputName = document.getElementById('f-name');
+
+    inputRut.addEventListener('input', () => {
+        formatearRut(inputRut);
+        marcarCampo(inputRut, 'err-rut', validarRut(inputRut.value), 'RUT inválido, revisa el dígito verificador');
+    });
+
+    inputPhone.addEventListener('focus', () => {
+        if (inputPhone.value.trim() === '') inputPhone.value = '+56 9 ';
+    });
+    inputPhone.addEventListener('input', () => {
+        formatearTelefono(inputPhone);
+        marcarCampo(inputPhone, 'err-phone', validarTelefono(inputPhone.value), 'Ingresa un celular chileno (+56 9 XXXX XXXX) o un número internacional válido');
+    });
+
+    inputEmail.addEventListener('input', () => {
+        marcarCampo(inputEmail, 'err-email', validarEmail(inputEmail.value), 'Ingresa un correo válido');
+    });
+
+    inputName.addEventListener('input', () => {
+        marcarCampo(inputName, 'err-name', inputName.value.trim().length >= 3, 'Ingresa tu nombre completo');
+    });
+
+    /* =========================================================
+       Navegación entre pasos
+       ========================================================= */
+    function irAlPaso2() {
+        const nombreOk = inputName.value.trim().length >= 3;
+        const rutOk = validarRut(inputRut.value);
+        const phoneOk = validarTelefono(inputPhone.value);
+        const emailOk = validarEmail(inputEmail.value);
+
+        marcarCampo(inputName, 'err-name', nombreOk, 'Ingresa tu nombre completo');
+        marcarCampo(inputRut, 'err-rut', rutOk, 'RUT inválido, revisa el dígito verificador');
+        marcarCampo(inputPhone, 'err-phone', phoneOk, 'Ingresa un celular chileno (+56 9 XXXX XXXX) o un número internacional válido');
+        marcarCampo(inputEmail, 'err-email', emailOk, 'Ingresa un correo válido');
+
+        if (!nombreOk || !rutOk || !phoneOk || !emailOk) {
             return;
         }
 
@@ -169,6 +381,11 @@
         const metodo = document.getElementById('id_payment_method').value;
         if (!metodo) {
             alert('Por favor, selecciona un método de pago.');
+            return false;
+        }
+        if (esProbablementeBot()) {
+            // No revelamos que se detectó un bot: mensaje genérico
+            alert('No pudimos procesar tu solicitud. Intenta nuevamente.');
             return false;
         }
         return true;
