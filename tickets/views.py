@@ -4,47 +4,83 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, TemplateView
 from django.contrib import messages
 from .models import TicketType, Ticket
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from events.models import Event, Favorite
 from core.models import SiteSettings
-from core.models import SiteSettings
+import json
 
 @login_required
-def buy_ticket(request, ticket_type_id):
-    ticket_type = get_object_or_404(TicketType, id=ticket_type_id)
+def checkout(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
     settings = SiteSettings.get_settings()
-
+    
     if request.method == 'POST':
-        # Check quantities
-        if ticket_type.quantity_available <= 0:
-            messages.error(request, "Lo sentimos, los boletos están agotados.")
-            return redirect('event_detail', pk=ticket_type.event.id)
-
-        if settings.debug_bypass_payments:
-            # Bypass payment entirely
-            ticket = Ticket.objects.create(
-                ticket_type=ticket_type,
-                buyer=request.user
-            )
-            ticket_type.quantity_available -= 1
-            ticket_type.save()
-            messages.success(request, "¡Boleto generado exitosamente en modo Debug (Sin Pago)!")
-            return redirect('ticket_success', ticket_id=ticket.id)
+        # Recibir el carrito
+        cart_json = request.POST.get('cart_json')
+        if not cart_json:
+            messages.error(request, "El carrito está vacío.")
+            return redirect('event_detail', pk=event.id)
+            
+        try:
+            cart = json.loads(cart_json)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid cart JSON")
+            
+        # Validar y cargar tickets
+        cart_items = []
+        total = 0
+        for tt_id, qty in cart.items():
+            qty = int(qty)
+            if qty > 0:
+                tt = get_object_or_404(TicketType, id=tt_id, event=event)
+                if tt.quantity_available < qty:
+                    messages.error(request, f"No hay suficientes boletos '{tt.name}'. Disponibles: {tt.quantity_available}")
+                    return redirect('event_detail', pk=event.id)
+                cart_items.append({'ticket_type': tt, 'qty': qty, 'subtotal': tt.price * qty})
+                total += tt.price * qty
+                
+        if not cart_items:
+            messages.error(request, "El carrito está vacío.")
+            return redirect('event_detail', pk=event.id)
+            
+        # Guardar en sesión
+        request.session['cart'] = cart
+        request.session['checkout_event_id'] = event.id
         
-        # Payment flow logic
+        return render(request, 'tickets/buy_ticket_confirm.html', {
+            'event': event,
+            'cart_items': cart_items,
+            'total': total,
+        })
+    else:
+        # Si ya hay un cart en sesión, mostrar la página de confirmación, 
+        # pero es mejor requerir el POST. Si es GET, redirigir al evento.
+        return redirect('event_detail', pk=event.id)
+
+
+@login_required
+def process_payment(request):
+    if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
+        
+        # Validar cart en sesión
+        cart = request.session.get('cart')
+        if not cart:
+            messages.error(request, "Tu sesión de compra ha expirado.")
+            return redirect('/')
+            
         if payment_method == 'webpay':
-            return redirect('webpay_init', ticket_type_id=ticket_type.id)
+            return redirect('webpay_init')
         elif payment_method == 'crypto':
-            return redirect('crypto_init', ticket_type_id=ticket_type.id)
+            return redirect('crypto_init')
         elif payment_method == 'mp':
-            return redirect('mercadopago_init', ticket_type_id=ticket_type.id)
+            return redirect('mercadopago_init')
         else:
             messages.error(request, "Por favor seleccione un método de pago.")
-            return redirect('buy_ticket', ticket_type_id=ticket_type.id)
+            return redirect('/')
+    
+    return redirect('/')
 
-
-    return render(request, 'tickets/buy_ticket_confirm.html', {'ticket_type': ticket_type})
 
 @login_required
 def ticket_success(request, ticket_id):

@@ -19,9 +19,10 @@ class Ticket(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ticket_type = models.ForeignKey(TicketType, on_delete=models.CASCADE)
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    transaction = models.ForeignKey('payments.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='tickets')
     purchase_date = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
-    
+
     # Blockchain details
     eth_transaction_hash = models.CharField(max_length=100, blank=True, null=True)
     eth_token_id = models.CharField(max_length=100, blank=True, null=True)

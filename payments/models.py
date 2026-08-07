@@ -15,7 +15,6 @@ class PaymentMethod(models.Model):
 class Transaction(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    ticket = models.ForeignKey(Ticket, on_delete=models.SET_NULL, null=True)
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -29,6 +28,16 @@ class Transaction(models.Model):
         return f"Tx {self.id} - {self.status}"
 
 
+class TransactionDetail(models.Model):
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, related_name='details')
+    ticket_type = models.ForeignKey('tickets.TicketType', on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantity}x {self.ticket_type} (Tx: {self.transaction.id})"
+
+
 class PendingMPPayment(models.Model):
     """
     Registro persistente de cada sesión de pago de Mercado Pago.
@@ -39,9 +48,10 @@ class PendingMPPayment(models.Model):
     """
     preference_id = models.CharField(max_length=400, unique=True, db_index=True)
     mp_payment_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
-    ticket_type = models.ForeignKey(
-        'tickets.TicketType', on_delete=models.SET_NULL, null=True
-    )
+    
+    # Guarda el carrito (ej. {"1": 4, "2": 2}) -> ticket_type_id: qty
+    cart_data = models.JSONField(default=dict, blank=True)
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
@@ -49,10 +59,7 @@ class PendingMPPayment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     processed = models.BooleanField(default=False, db_index=True)
-    resulting_ticket = models.ForeignKey(
-        'tickets.Ticket', on_delete=models.SET_NULL,
-        null=True, blank=True, related_name='mp_payment_record'
-    )
+
 
     class Meta:
         ordering = ['-created_at']

@@ -90,7 +90,7 @@ class MercadoPagoInitViewTests(TestCase):
 
     def test_init_requires_login(self):
         """Usuarios no autenticados son redirigidos al login."""
-        url = reverse('mercadopago_init', args=[self.ticket_type.id])
+        url = reverse('mercadopago_init')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertIn('/accounts/login', response['Location'])
@@ -103,17 +103,16 @@ class MercadoPagoInitViewTests(TestCase):
         mock_get_sdk.return_value = mock_sdk
 
         self.client.login(username='mpinit', password='testpass123')
-        url = reverse('mercadopago_init', args=[self.ticket_type.id])
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
+        url = reverse('mercadopago_init')
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'payments/mercadopago_redirect.html')
         self.assertIn('init_point', response.context)
         self.assertIn('mercadopago', response.context['init_point'])
-
-        # Sesión debe guardar ticket_type_id
-        session = self.client.session
-        self.assertEqual(session.get('pending_ticket_type_id'), self.ticket_type.id)
 
     @patch('payments.views._get_mp_sdk')
     def test_init_sdk_exception_redirects_to_event(self, mock_get_sdk):
@@ -123,7 +122,10 @@ class MercadoPagoInitViewTests(TestCase):
         mock_get_sdk.return_value = mock_sdk
 
         self.client.login(username='mpinit', password='testpass123')
-        url = reverse('mercadopago_init', args=[self.ticket_type.id])
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
+        url = reverse('mercadopago_init')
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 302)
@@ -138,7 +140,10 @@ class MercadoPagoInitViewTests(TestCase):
         mock_get_sdk.return_value = mock_sdk
 
         self.client.login(username='mpinit', password='testpass123')
-        url = reverse('mercadopago_init', args=[self.ticket_type.id])
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
+        url = reverse('mercadopago_init')
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 302)
@@ -149,7 +154,10 @@ class MercadoPagoInitViewTests(TestCase):
         self.ticket_type.save()
 
         self.client.login(username='mpinit', password='testpass123')
-        url = reverse('mercadopago_init', args=[self.ticket_type.id])
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
+        url = reverse('mercadopago_init')
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 302)
@@ -175,14 +183,14 @@ class MercadoPagoSuccessViewTests(TestCase):
         from payments.models import PendingMPPayment
         pending = PendingMPPayment.objects.create(
             preference_id=self.preference_id,
-            ticket_type=self.ticket_type,
             user=self.user,
-            external_reference=str(self.ticket_type.id),
+            cart_data={str(self.ticket_type.id): 1},
+            external_reference=f"evt-{self.ticket_type.event.id}-{self.user.id}",
             amount=self.ticket_type.price,
         )
         self.client.login(username='mpsuccess', password='testpass123')
         session = self.client.session
-        session['pending_ticket_type_id'] = self.ticket_type.id
+        session['checkout_event_id'] = self.ticket_type.event.id
         session['mp_preference_id'] = self.preference_id
         session.save()
         return pending
@@ -197,7 +205,7 @@ class MercadoPagoSuccessViewTests(TestCase):
             'payment_id': 'PAY-001',
             'status': 'approved',
             'preference_id': self.preference_id,
-            'external_reference': str(self.ticket_type.id),
+            'external_reference': f"evt-{self.ticket_type.event.id}-{self.user.id}",
         })
 
         self.assertEqual(response.status_code, 302)
@@ -214,7 +222,7 @@ class MercadoPagoSuccessViewTests(TestCase):
         response = self.client.get(url, {
             'payment_id': 'PAY-002',
             'status': 'pending',
-            'external_reference': str(self.ticket_type.id),
+            'external_reference': f"evt-{self.ticket_type.event.id}-{self.user.id}",
         })
 
         self.assertEqual(response.status_code, 302)
@@ -229,7 +237,7 @@ class MercadoPagoSuccessViewTests(TestCase):
         response = self.client.get(url, {
             'payment_id': 'PAY-003',
             'status': 'rejected',
-            'external_reference': str(self.ticket_type.id),
+            'external_reference': f"evt-{self.ticket_type.event.id}-{self.user.id}",
         })
 
         self.assertEqual(response.status_code, 302)
@@ -368,28 +376,40 @@ class BuyTicketMPRoutingTests(TestCase):
 
     def test_post_mp_redirects_to_mercadopago_init(self):
         """payment_method='mp' → redirige a mercadopago_init."""
-        url = reverse('buy_ticket', args=[self.ticket_type.id])
+        url = reverse('process_payment')
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
         response = self.client.post(url, {'payment_method': 'mp'})
-        expected = reverse('mercadopago_init', args=[self.ticket_type.id])
+        expected = reverse('mercadopago_init')
         self.assertRedirects(response, expected, fetch_redirect_response=False)
 
     def test_post_webpay_still_works(self):
         """Webpay sigue funcionando sin cambios."""
-        url = reverse('buy_ticket', args=[self.ticket_type.id])
+        url = reverse('process_payment')
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
         response = self.client.post(url, {'payment_method': 'webpay'})
-        expected = reverse('webpay_init', args=[self.ticket_type.id])
+        expected = reverse('webpay_init')
         self.assertRedirects(response, expected, fetch_redirect_response=False)
 
     def test_post_crypto_still_works(self):
         """Crypto sigue funcionando sin cambios."""
-        url = reverse('buy_ticket', args=[self.ticket_type.id])
+        url = reverse('process_payment')
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
         response = self.client.post(url, {'payment_method': 'crypto'})
-        expected = reverse('crypto_init', args=[self.ticket_type.id])
+        expected = reverse('crypto_init')
         self.assertRedirects(response, expected, fetch_redirect_response=False)
 
     def test_post_unknown_method_shows_error(self):
         """Método desconocido → mensaje de error y redirige de vuelta."""
-        url = reverse('buy_ticket', args=[self.ticket_type.id])
+        url = reverse('process_payment')
+        session = self.client.session
+        session['cart'] = {str(self.ticket_type.id): 1}
+        session.save()
         response = self.client.post(url, {'payment_method': 'unknown'})
         self.assertEqual(response.status_code, 302)
         storage = list(response.wsgi_request._messages)

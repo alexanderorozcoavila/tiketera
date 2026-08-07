@@ -7,11 +7,12 @@ from transbank.common.integration_api_keys import IntegrationApiKeys
 from transbank.common.integration_type import IntegrationType
 from transbank.error.transbank_error import TransbankError
 from tickets.models import TicketType, Ticket
-from payments.models import PendingMPPayment
+from payments.models import PendingMPPayment, Transaction, TransactionDetail, PaymentMethod
 from django.contrib import messages
 from core.models import SiteSettings
 import uuid
 import logging
+import json
 import mercadopago
 from django.conf import settings as django_settings
 from django.views.decorators.csrf import csrf_exempt
@@ -34,25 +35,33 @@ def get_transaction_handler():
 
 
 @login_required
-def webpay_init(request, ticket_type_id):
-    ticket_type = get_object_or_404(TicketType, id=ticket_type_id)
-    if ticket_type.quantity_available <= 0:
-        messages.error(request, "Boletos agotados.")
-        return redirect('event_detail', pk=ticket_type.event.id)
+def webpay_init(request):
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.error(request, "El carrito está vacío.")
+        return redirect('/')
+
+    amount = 0
+    for tt_id, qty in cart.items():
+        qty = int(qty)
+        if qty > 0:
+            tt = get_object_or_404(TicketType, id=tt_id)
+            if tt.quantity_available < qty:
+                messages.error(request, f"Boletos agotados para {tt.name}.")
+                return redirect('event_detail', pk=tt.event.id)
+            amount += int(tt.price) * qty
 
     buy_order = str(uuid.uuid4())[:25]
     session_id = str(request.user.id)
-    amount = int(ticket_type.price)
     return_url = request.build_absolute_uri('/payments/webpay/return/')
 
     try:
         tx = get_transaction_handler()
         response = tx.create(buy_order, session_id, amount, return_url)
-        request.session['pending_ticket_type_id'] = ticket_type.id
         return render(request, 'payments/webpay_redirect.html', {'response': response})
     except TransbankError:
         messages.error(request, "Error al inicializar Webpay.")
-        return redirect('event_detail', pk=ticket_type.event.id)
+        return redirect('/')
 
 
 @login_required
@@ -66,14 +75,48 @@ def webpay_return(request):
         tx = get_transaction_handler()
         response = tx.commit(token)
         if response.get('status') == 'AUTHORIZED':
-            ticket_type_id = request.session.get('pending_ticket_type_id')
-            if ticket_type_id:
-                ticket_type = TicketType.objects.get(id=ticket_type_id)
-                ticket = Ticket.objects.create(ticket_type=ticket_type, buyer=request.user)
-                ticket_type.quantity_available -= 1
-                ticket_type.save()
+            cart = request.session.get('cart', {})
+            if cart:
+                pm, _ = PaymentMethod.objects.get_or_create(name='Webpay Plus')
+                # Calcular total
+                total_amount = sum(TicketType.objects.get(id=tt_id).price * int(qty) for tt_id, qty in cart.items() if int(qty) > 0)
+                
+                # Crear transacción
+                transaction = Transaction.objects.create(
+                    user=request.user,
+                    payment_method=pm,
+                    amount=total_amount,
+                    status='COMPLETED'
+                )
+
+                created_tickets = []
+                for tt_id, qty in cart.items():
+                    qty = int(qty)
+                    if qty > 0:
+                        tt = TicketType.objects.get(id=tt_id)
+                        # Crear Detalle de Transacción
+                        TransactionDetail.objects.create(
+                            transaction=transaction,
+                            ticket_type=tt,
+                            quantity=qty,
+                            price=tt.price
+                        )
+                        # Crear Tickets físicos
+                        for _ in range(qty):
+                            ticket = Ticket.objects.create(ticket_type=tt, buyer=request.user, transaction=transaction)
+                            created_tickets.append(ticket)
+                        
+                        tt.quantity_available -= qty
+                        tt.save()
+                
+                request.session.pop('cart', None)
+                request.session.pop('checkout_event_id', None)
                 messages.success(request, "Pago exitoso con Webpay Plus.")
-                return redirect('ticket_success', ticket_id=ticket.id)
+                if created_tickets:
+                    return redirect('ticket_success', ticket_id=created_tickets[0].id)
+                else:
+                    return redirect('my_tickets')
+
         messages.error(request, "El pago ha sido rechazado.")
         return redirect('/')
     except TransbankError:
@@ -86,28 +129,66 @@ def webpay_return(request):
 # =====================================================================
 
 @login_required
-def crypto_init(request, ticket_type_id):
-    ticket_type = get_object_or_404(TicketType, id=ticket_type_id)
-    if ticket_type.quantity_available <= 0:
-        messages.error(request, "Boletos agotados.")
-        return redirect('event_detail', pk=ticket_type.event.id)
+def crypto_init(request):
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.error(request, "El carrito está vacío.")
+        return redirect('/')
 
-    request.session['pending_ticket_type_id'] = ticket_type.id
-    return render(request, 'payments/crypto_payment.html', {'ticket_type': ticket_type})
+    # Solo para renderizar algo relacionado al evento (asumimos el primer ticket_type)
+    first_tt = None
+    for tt_id, qty in cart.items():
+        if int(qty) > 0:
+            first_tt = TicketType.objects.get(id=tt_id)
+            break
+            
+    if not first_tt:
+        return redirect('/')
+        
+    return render(request, 'payments/crypto_payment.html', {'ticket_type': first_tt})
 
 
 @login_required
 def crypto_success(request):
     import random
     if random.choice([True, True, False]):
-        ticket_type_id = request.session.get('pending_ticket_type_id')
-        if ticket_type_id:
-            ticket_type = TicketType.objects.get(id=ticket_type_id)
-            ticket = Ticket.objects.create(ticket_type=ticket_type, buyer=request.user)
-            ticket_type.quantity_available -= 1
-            ticket_type.save()
+        cart = request.session.get('cart', {})
+        if cart:
+            pm, _ = PaymentMethod.objects.get_or_create(name='Crypto')
+            total_amount = sum(TicketType.objects.get(id=tt_id).price * int(qty) for tt_id, qty in cart.items() if int(qty) > 0)
+            
+            transaction = Transaction.objects.create(
+                user=request.user,
+                payment_method=pm,
+                amount=total_amount,
+                status='COMPLETED'
+            )
+
+            created_tickets = []
+            for tt_id, qty in cart.items():
+                qty = int(qty)
+                if qty > 0:
+                    tt = TicketType.objects.get(id=tt_id)
+                    TransactionDetail.objects.create(
+                        transaction=transaction,
+                        ticket_type=tt,
+                        quantity=qty,
+                        price=tt.price
+                    )
+                    for _ in range(qty):
+                        ticket = Ticket.objects.create(ticket_type=tt, buyer=request.user, transaction=transaction)
+                        created_tickets.append(ticket)
+                    
+                    tt.quantity_available -= qty
+                    tt.save()
+            
+            request.session.pop('cart', None)
+            request.session.pop('checkout_event_id', None)
             messages.success(request, "Pago en Criptomonedas confirmado en la red.")
-            return redirect('ticket_success', ticket_id=ticket.id)
+            if created_tickets:
+                return redirect('ticket_success', ticket_id=created_tickets[0].id)
+            else:
+                return redirect('my_tickets')
     messages.error(request, "Pago en cripto no detectado o fallido.")
     return redirect('/')
 
@@ -121,44 +202,75 @@ def _get_mp_sdk():
     return mercadopago.SDK(django_settings.MERCADOPAGO_ACCESS_TOKEN)
 
 
-def _create_ticket_from_pending(pending: PendingMPPayment, mp_payment_id: str = None) -> Ticket:
+def _create_ticket_from_pending(pending: PendingMPPayment, mp_payment_id: str = None):
     """
-    Crea el Ticket a partir de un PendingMPPayment de forma idempotente.
-    Si ya fue procesado, retorna el ticket existente sin crear duplicados.
+    Crea los Tickets a partir de un PendingMPPayment (carrito) de forma idempotente.
+    Retorna el primer ticket creado o una lista.
     """
-    if pending.processed and pending.resulting_ticket:
-        logger.info("MP: pago %s ya procesado → ticket %s", pending.preference_id, pending.resulting_ticket.id)
-        return pending.resulting_ticket
+    if pending.processed:
+        logger.info("MP: pago %s ya procesado", pending.preference_id)
+        # Buscar el primer ticket generado por esta preferencia (buscando en las tx)
+        # Pero como no tenemos un enlace directo entre PendingMPPayment y Transaction, 
+        # podríamos buscar los tickets del usuario más recientes, pero para mantenerlo simple,
+        # retornaremos None y la vista manejará la redirección a my_tickets.
+        return None
 
-    ticket_type = pending.ticket_type
-    if ticket_type.quantity_available <= 0:
-        raise ValueError("Boletos agotados.")
+    cart = pending.cart_data
+    if not cart:
+        raise ValueError("El carrito guardado está vacío.")
 
-    ticket = Ticket.objects.create(ticket_type=ticket_type, buyer=pending.user)
-    ticket_type.quantity_available -= 1
-    ticket_type.save()
+    # Validar existencias
+    for tt_id, qty in cart.items():
+        qty = int(qty)
+        if qty > 0:
+            tt = TicketType.objects.get(id=tt_id)
+            if tt.quantity_available < qty:
+                raise ValueError(f"Boletos agotados para {tt.name}.")
+
+    pm, _ = PaymentMethod.objects.get_or_create(name='Mercado Pago')
+    transaction = Transaction.objects.create(
+        user=pending.user,
+        payment_method=pm,
+        amount=pending.amount,
+        status='COMPLETED'
+    )
+
+    created_tickets = []
+    for tt_id, qty in cart.items():
+        qty = int(qty)
+        if qty > 0:
+            tt = TicketType.objects.get(id=tt_id)
+            TransactionDetail.objects.create(
+                transaction=transaction,
+                ticket_type=tt,
+                quantity=qty,
+                price=tt.price
+            )
+            for _ in range(qty):
+                ticket = Ticket.objects.create(ticket_type=tt, buyer=pending.user, transaction=transaction)
+                created_tickets.append(ticket)
+            
+            tt.quantity_available -= qty
+            tt.save()
 
     pending.processed = True
-    pending.resulting_ticket = ticket
     if mp_payment_id:
         pending.mp_payment_id = str(mp_payment_id)
     pending.save()
 
-    logger.info("MP: ticket %s creado para preferencia %s", ticket.id, pending.preference_id)
-    return ticket
+    logger.info("MP: %d tickets creados para preferencia %s", len(created_tickets), pending.preference_id)
+    return created_tickets[0] if created_tickets else None
 
 
 @login_required
-def mercadopago_init(request, ticket_type_id):
+def mercadopago_init(request):
     """
-    Crea una preferencia de pago en Mercado Pago (Checkout Pro) y la persiste
-    en la BD para recuperación ante cierre de navegador.
+    Crea una preferencia de pago en Mercado Pago (Checkout Pro) con múltiples items.
     """
-    ticket_type = get_object_or_404(TicketType, id=ticket_type_id)
-
-    if ticket_type.quantity_available <= 0:
-        messages.error(request, "Boletos agotados.")
-        return redirect('event_detail', pk=ticket_type.event.id)
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.error(request, "El carrito está vacío.")
+        return redirect('/')
 
     sdk = _get_mp_sdk()
 
@@ -166,17 +278,29 @@ def mercadopago_init(request, ticket_type_id):
     failure_url = request.build_absolute_uri('/payments/mp/failure/')
     pending_url = request.build_absolute_uri('/payments/mp/pending/')
 
-    preference_data = {
-        "items": [
-            {
-                "id": str(ticket_type.id),
-                "title": f"{ticket_type.event.title} — {ticket_type.name}",
-                "quantity": 1,
-                "unit_price": int(ticket_type.price),
+    items = []
+    total_amount = 0
+    event_ref = None
+    for tt_id, qty in cart.items():
+        qty = int(qty)
+        if qty > 0:
+            tt = TicketType.objects.get(id=tt_id)
+            if tt.quantity_available < qty:
+                messages.error(request, f"Boletos agotados para {tt.name}.")
+                return redirect('event_detail', pk=tt.event.id)
+            event_ref = tt.event.id
+            items.append({
+                "id": str(tt.id),
+                "title": f"{tt.event.title} — {tt.name}",
+                "quantity": qty,
+                "unit_price": int(tt.price),
                 "currency_id": "CLP",
-                "description": f"Boleto para {ticket_type.event.title}",
-            }
-        ],
+                "description": f"Boleto para {tt.event.title}",
+            })
+            total_amount += int(tt.price) * qty
+
+    preference_data = {
+        "items": items,
         "payer": {
             "name": request.user.first_name or request.user.username,
             "surname": request.user.last_name or "",
@@ -197,7 +321,7 @@ def mercadopago_init(request, ticket_type_id):
             ],
         },
         "binary_mode": True,
-        "external_reference": str(ticket_type_id),
+        "external_reference": f"evt-{event_ref}-{request.user.id}",
         "statement_descriptor": "TIKETERA",
     }
 
@@ -222,20 +346,21 @@ def mercadopago_init(request, ticket_type_id):
         PendingMPPayment.objects.get_or_create(
             preference_id=preference_id,
             defaults={
-                'ticket_type': ticket_type,
                 'user': request.user,
-                'external_reference': str(ticket_type_id),
-                'amount': ticket_type.price,
+                'cart_data': cart,
+                'external_reference': f"evt-{event_ref}-{request.user.id}",
+                'amount': total_amount,
             }
         )
 
-        # También guardar en sesión (fallback rápido)
-        request.session['pending_ticket_type_id'] = ticket_type.id
         request.session['mp_preference_id'] = preference_id
+        
+        # Para el frontend render
+        first_tt = TicketType.objects.get(id=list(cart.keys())[0])
 
         return render(request, 'payments/mercadopago_redirect.html', {
             'init_point': init_point,
-            'ticket_type': ticket_type,
+            'ticket_type': first_tt,
             'preference_id': preference_id,
             'mp_public_key': django_settings.MERCADOPAGO_PUBLIC_KEY,
         })
@@ -243,7 +368,7 @@ def mercadopago_init(request, ticket_type_id):
     except Exception as e:
         logger.exception("Error inesperado al crear preferencia MP: %s", e)
         messages.error(request, "Error inesperado con Mercado Pago.")
-        return redirect('event_detail', pk=ticket_type.event.id)
+        return redirect('/')
 
 
 @login_required
@@ -272,21 +397,25 @@ def mercadopago_success(request):
             pending = PendingMPPayment.objects.filter(preference_id=preference_id).first()
         if not pending:
             # Fallback: buscar por usuario + external_reference
-            ticket_type_id = request.session.get('pending_ticket_type_id') or external_reference
-            if ticket_type_id:
+            ext_ref = external_reference or f"evt-{request.session.get('checkout_event_id')}-{request.user.id}"
+            if ext_ref:
                 pending = PendingMPPayment.objects.filter(
                     user=request.user,
-                    external_reference=str(ticket_type_id),
+                    external_reference=ext_ref,
                     processed=False,
                 ).order_by('-created_at').first()
 
         if pending:
             try:
                 ticket = _create_ticket_from_pending(pending, payment_id)
-                request.session.pop('pending_ticket_type_id', None)
+                request.session.pop('cart', None)
                 request.session.pop('mp_preference_id', None)
+                request.session.pop('checkout_event_id', None)
                 messages.success(request, "¡Pago aprobado con Mercado Pago!")
-                return redirect('ticket_success', ticket_id=ticket.id)
+                if ticket:
+                    return redirect('ticket_success', ticket_id=ticket.id)
+                else:
+                    return redirect('my_tickets')
             except ValueError as e:
                 messages.error(request, str(e))
                 return redirect('/')
@@ -320,20 +449,9 @@ def mercadopago_pending(request):
 
 @login_required
 def mercadopago_verify(request):
-    """
-    Endpoint de verificación automática consultando la API de MP server-side.
-
-    El frontend llama a este endpoint cada 5 segundos automáticamente mientras
-    el usuario está pagando en la otra pestaña. También sirve como recuperación
-    si el usuario vuelve más tarde.
-
-    Responde JSON con: {status: 'approved'|'pending'|'error', redirect?, message?}
-    """
-    # 1. Obtener preference_id y ticket_type_id desde sesión o BD
     preference_id = request.session.get('mp_preference_id')
-    ticket_type_id = request.session.get('pending_ticket_type_id')
+    event_id = request.session.get('checkout_event_id')
 
-    # Si no hay sesión, buscar el último pago pendiente del usuario en BD
     pending = None
     if preference_id:
         pending = PendingMPPayment.objects.filter(preference_id=preference_id).first()
@@ -344,78 +462,61 @@ def mercadopago_verify(request):
         ).order_by('-created_at').first()
         if pending:
             preference_id = pending.preference_id
-            ticket_type_id = pending.ticket_type_id
-
-    if not pending and not ticket_type_id:
+            
+    if not pending and not event_id:
         return JsonResponse({'status': 'error', 'message': 'No hay pago pendiente.'}, status=400)
 
-    # 2. Si ya fue procesado, redirigir al ticket existente (idempotencia)
-    if pending and pending.processed and pending.resulting_ticket:
+    if pending and pending.processed:
+        # Ya está procesado, redirigimos genéricamente
         return JsonResponse({
             'status': 'approved',
-            'redirect': f'/tickets/success/{pending.resulting_ticket.id}/'
+            'redirect': '/tickets/mis-boletos/'
         })
 
     sdk = _get_mp_sdk()
-
     try:
         approved_payment = None
-
-        # Estrategia 1: buscar por preference_id (más preciso)
         if preference_id:
             search_resp = sdk.payment().search({
                 "preference_id": preference_id,
                 "sort": "date_created",
                 "criteria": "desc",
             })
-            logger.info("MP verify search by preference_id status: %s", search_resp.get('status'))
             if search_resp.get('status') == 200:
                 for p in search_resp.get('response', {}).get('results', []):
                     if p.get('status') == 'approved':
                         approved_payment = p
                         break
 
-        # Estrategia 2: fallback por external_reference (ticket_type_id)
-        if not approved_payment and ticket_type_id:
+        if not approved_payment and event_id:
+            ext_ref = f"evt-{event_id}-{request.user.id}"
             search_resp2 = sdk.payment().search({
-                "external_reference": str(ticket_type_id),
+                "external_reference": ext_ref,
                 "sort": "date_created",
                 "criteria": "desc",
             })
-            logger.info("MP verify search by ext_ref status: %s", search_resp2.get('status'))
             if search_resp2.get('status') == 200:
                 for p in search_resp2.get('response', {}).get('results', []):
                     if p.get('status') == 'approved':
-                        # Verificar que coincide con nuestra preferencia o usuario
                         if not preference_id or p.get('preference_id') == preference_id:
                             approved_payment = p
                             break
 
         if approved_payment:
             mp_payment_id = str(approved_payment.get('id', ''))
-
-            # Obtener o crear el PendingMPPayment
+            
             if not pending:
-                try:
-                    pending = PendingMPPayment.objects.get(preference_id=preference_id)
-                except PendingMPPayment.DoesNotExist:
-                    # Crear desde sesión si no existe en BD (edge case)
-                    ticket_type = TicketType.objects.get(id=ticket_type_id)
-                    pending = PendingMPPayment.objects.create(
-                        preference_id=preference_id or f"recovered-{mp_payment_id}",
-                        ticket_type=ticket_type,
-                        user=request.user,
-                        external_reference=str(ticket_type_id),
-                        amount=ticket_type.price,
-                    )
+                # Caso extremo de recuperación sin pending existente y sin sesión...
+                return JsonResponse({'status': 'error', 'message': 'Pago no registrado localmente'}, status=400)
 
             ticket = _create_ticket_from_pending(pending, mp_payment_id)
-            request.session.pop('pending_ticket_type_id', None)
+            request.session.pop('cart', None)
             request.session.pop('mp_preference_id', None)
-
+            request.session.pop('checkout_event_id', None)
+            
             return JsonResponse({
                 'status': 'approved',
-                'redirect': f'/tickets/success/{ticket.id}/'
+                'redirect': f'/tickets/success/{ticket.id}/' if ticket else '/tickets/mis-boletos/'
             })
         else:
             return JsonResponse({
