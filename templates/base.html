@@ -2061,7 +2061,7 @@
         </svg>
          MIS TICKETS</a>
       <!-- <button class="nav-item" data-view="conciertos"><span class="icon">⌚</span> CALENDARIO</button> -->
-      <button class="nav-item" data-view="home"><span class="icon">⚐</span> NOTICIAS</button>
+      <!-- <button class="nav-item" data-view="home"><span class="icon">⚐</span> NOTICIAS</button> -->
       <!-- <button class="nav-item" data-view="home"><span class="icon">☠</span> CLUB VOLTAJE</button> -->
       <a href="{% url 'help' %}" class="nav-item" data-view="home"><span class="icon">?</span> AYUDA</a>
     </nav>
@@ -2079,7 +2079,7 @@
         <div class="account-wrapper">
           <div class="account-menu-dropdown">
             <a href="{% url 'profile' %}" class="dropdown-link">✦ Mi Perfil</a>
-            <a href="{% url 'my_tickets' %}" class="dropdown-link">▣ Mis Tickets</a>
+            <!-- <a href="{% url 'my_tickets' %}" class="dropdown-link">▣ Mis Tickets</a> -->
             <form action="{% url 'logout' %}" method="post" style="margin: 0; padding: 0;">
               {% csrf_token %}
               <button type="submit" class="dropdown-link logout-btn-action">⚡ Cerrar Sesión</button>
@@ -2110,15 +2110,15 @@
         <span class="search-icon">⌕</span>
         <input type="text" id="searchInput" placeholder="busca bandas, conciertos, festivales..." />
       </div>
-      <div class="header-actions">
+      <!-- <div class="header-actions"> -->
         <!-- <div class="header-pill"><span class="bolt">⚡</span> CLUB VOLTAJE</div> -->
-        <button class="icon-btn">♪</button>
-        <a class="icon-btn" href="{% url 'my_tickets' %}">
+        <!-- <button class="icon-btn">♪</button> -->
+        <!-- <a class="icon-btn" href="{% url 'my_tickets' %}">
             <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
                 <path fill-rule="evenodd" d="M13 2H1v2h12V2zM0 4a1 1 0 0 0 1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v2zm2 1h10v9H2V5zm2 3h6V7H4v1z" fill="white"/>
             </svg>
-        </a>
-      </div>
+        </a> -->
+      <!-- </div> -->
     </header>
 
    <div>
