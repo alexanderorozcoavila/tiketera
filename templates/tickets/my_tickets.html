@@ -5,7 +5,65 @@
         <h1 class="purchase-title" style="text-align:left; margin-bottom:0.3rem;">Mis tickets</h1>
         <p style="opacity:0.7; font-size:0.85rem;">Tus entradas compradas y próximos shows guardados.</p>
     </div>
-    
+
+    {% if pending_mp_payment %}
+    <!-- Banner de recuperación de pago MP pendiente -->
+    <div id="mp-recovery-banner" style="margin:1rem 2rem; padding:16px 20px;
+         background:linear-gradient(135deg,rgba(0,158,227,.12),rgba(0,200,200,.08));
+         border:1px solid rgba(0,158,227,.3); border-radius:14px;
+         display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <div style="font-size:1.8rem;">💳</div>
+        <div style="flex:1; min-width:200px;">
+            <div style="font-weight:700; font-size:.95rem; margin-bottom:3px;">
+                Tienes un pago pendiente de Mercado Pago
+            </div>
+            <div style="opacity:.65; font-size:.82rem;">
+                {{ pending_mp_payment.ticket_type.event.title }} —
+                {{ pending_mp_payment.ticket_type.name }} ·
+                ${{ pending_mp_payment.amount|floatformat:0 }} CLP
+            </div>
+        </div>
+        <button id="mp-recover-btn" onclick="recoverMPPayment()"
+                style="padding:10px 22px; background:linear-gradient(135deg,#009ee3,#00b3e6);
+                       border:none; border-radius:10px; cursor:pointer;
+                       font-weight:700; color:#fff; font-size:.9rem; white-space:nowrap;">
+            Verificar y obtener boleto
+        </button>
+    </div>
+    <script>
+    function recoverMPPayment() {
+        var btn = document.getElementById('mp-recover-btn');
+        btn.disabled = true;
+        btn.textContent = 'Verificando...';
+        fetch("{% url 'mercadopago_verify' %}", {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.status === 'approved') {
+                document.getElementById('mp-recovery-banner').style.background =
+                    'rgba(39,174,96,.12)';
+                btn.textContent = '✓ ¡Boleto obtenido! Redirigiendo...';
+                btn.style.background = '#27ae60';
+                setTimeout(function() { window.location.href = data.redirect; }, 1000);
+            } else if (data.status === 'pending') {
+                btn.disabled = false;
+                btn.textContent = 'Pago no confirmado aún. ¿Reintentar?';
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Error — intentar de nuevo';
+            }
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.textContent = 'Error de red — intentar de nuevo';
+        });
+    }
+    </script>
+    {% endif %}
+
     <div class="tabs">
         <button class="tab active" data-tab="comprados">Comprados</button>
         <!-- <button class="tab" data-tab="proximos">Próximos shows</button> CREAR SHOWS HORARIOS -->

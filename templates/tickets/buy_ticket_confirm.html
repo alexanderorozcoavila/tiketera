@@ -13,7 +13,7 @@
         </div>
 
         <div id="purchase-content">
-            <form method="post" action="" class="purchase-grid" id="purchase-form" onsubmit="return validarPaso2()" novalidate>
+            <form method="post" action="{% url 'process_payment' %}" class="purchase-grid" id="purchase-form" onsubmit="return validarPaso2()">
                 {% csrf_token %}
 
                 <!-- Honeypot: campo invisible para humanos, los bots suelen autocompletarlo -->
@@ -53,7 +53,7 @@
 
                     <div style="margin-top: 20px;">
                         <button type="button" class="btn-pay" onclick="irAlPaso2()">Continuar al pago ⚡</button>
-                        <a href="{% url 'event_detail' ticket_type.event.id %}" class="btn-back" style="display: inline-block; text-decoration: none; text-align: center; margin-top: 10px;">← volver</a>
+                        <a href="{% url 'event_detail' event.id %}" class="btn-back" style="display: inline-block; text-decoration: none; text-align: center; margin-top: 10px;">← volver</a>
                     </div>
                 </div>
 
@@ -91,7 +91,7 @@
                     <input type="hidden" name="payment_method" id="id_payment_method" value="webpay">
 
                     <div style="margin-top: 30px;">
-                        <button type="submit" class="btn-pay">Pagar ${{ ticket_type.price }} ⚡</button>
+                        <button type="submit" class="btn-pay">Pagar ${{ total }} ⚡</button>
                         <button type="button" class="btn-back" onclick="irAlPaso1()">← volver</button>
                     </div>
                 </div>
@@ -100,26 +100,28 @@
                     <div class="summary-event">
                         <div
                             class="summary-thumb event-image bg-1"
-                            {% if ticket_type.event.image %}
-                            style="background-image:url('{{ ticket_type.event.image.url }}'); background-size:cover; background-position:center;"
+                            {% if event.image %}
+                            style="background-image:url('{{ event.image.url }}'); background-size:cover; background-position:center;"
                             {% endif %}
                         >
                             <!-- <span>{{ ticket_type.event.title|slice:":12"|upper }}</span> -->
                         </div>
                         <div class="summary-event-info">
-                            <div class="band">{{ ticket_type.event.title }}</div>
+                            <div class="band">{{ event.title }}</div>
                             <div class="meta">
-                                {{ ticket_type.event.date|date:"d M Y" }} · {{ ticket_type.event.date|time:"H:i" }} hrs<br>
-                                {{ ticket_type.event.venue|default:"Movistar Arena" }}<br>
-                                {{ ticket_type.event.city|default:"Santiago, CL" }}
+                                {{ event.date|date:"d M Y" }} · {{ event.date|time:"H:i" }} hrs<br>
+                                {{ event.venue|default:"Movistar Arena" }}<br>
+                                {{ event.city|default:"Santiago, CL" }}
                             </div>
                         </div>
                     </div>
                     
+                    {% for item in cart_items %}
                     <div class="summary-line">
-                        <span>1× {{ ticket_type.name|upper }}</span>
-                        <span>${{ ticket_type.price }} CLP</span>
+                        <span>{{ item.qty }}× {{ item.ticket_type.name|upper }}</span>
+                        <span>${{ item.subtotal }} CLP</span>
                     </div>
+                    {% endfor %}
                     
                     <div class="summary-line">
                         <span>Cargo por servicio</span>
@@ -128,7 +130,7 @@
                     
                     <div class="summary-total">
                         <span class="label">Total</span>
-                        <span class="amount">${{ ticket_type.price }} CLP</span>
+                        <span class="amount">${{ total }} CLP</span>
                     </div>
                 </div>
             

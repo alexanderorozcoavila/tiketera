@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="view active" id="view-mp-redirect">
+    <div style="display:flex; align-items:center; justify-content:center; min-height:60vh; padding: 40px 20px;">
+        <div style="text-align:center; max-width:480px; width:100%;">
+            <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,#009ee3,#00cec9); display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:32px;">
+                💳
+            </div>
+            <h2 style="font-size:1.6rem; margin-bottom:10px; font-weight:700;">Redirigiendo a Mercado Pago</h2>
+            <p style="opacity:.7; margin-bottom:8px;">Serás enviado al entorno seguro de Mercado Pago para procesar tu pago de forma automática...</p>
+        </div>
+    </div>
+</div>
+<script>
+    // Redirección inmediata en la misma pestaña
+    window.location.replace("{{ init_point|escapejs }}");
+</script>
+{% endblock %}
