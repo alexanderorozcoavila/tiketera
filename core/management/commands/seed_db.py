@@ -65,4 +65,25 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f"Event {event.title} already exists.")
 
+        # Create TicketType
+        from tickets.models import TicketType
+        ticket_type, created = TicketType.objects.get_or_create(
+            event=event,
+            name='General',
+            defaults={
+                'price': 15000.00,
+                'quantity_available': 100
+            }
+        )
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created TicketType: {ticket_type.name} for {event.title}"))
+
+        # Create Payment Methods
+        from payments.models import PaymentMethod
+        for pm_name in ['Mercado Pago', 'Webpay Plus', 'Crypto']:
+            pm, created = PaymentMethod.objects.get_or_create(name=pm_name)
+            if created:
+                self.stdout.write(self.style.SUCCESS(f"Created PaymentMethod: {pm_name}"))
+
         self.stdout.write(self.style.SUCCESS("Database seeding completed successfully!"))
+

@@ -1,25 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col s12 m6 offset-m3">
-        <div class="card" style="margin-top: 50px;">
-            <div class="card-content">
-                <span class="card-title center-align">Mi Perfil</span>
-                <form method="post">
-                    {% csrf_token %}
+<div class="view active" id="view-profile">
+    <div style="padding: 1.5rem 2rem 0;">
+        <h1 class="purchase-title" style="text-align:left; margin-bottom:0.3rem;">
+            Mi Perfil
+        </h1>
+    </div>
+
+    <div class="saved-list">
+        <div class="saved-card" style="padding:1.5rem; display:block;">
+            <form method="post">
+                {% csrf_token %}
+                
+                {# El diseño se aplicará automáticamente gracias al CSS de abajo #}
+                <div class="custom-form-container">
                     {{ form.as_p }}
-                    <div class="center-align" style="margin-top: 20px;">
-                        <button class="btn waves-effect waves-light blue" type="submit">
-                            Actualizar Datos <i class="material-icons right">save</i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div class="card-action center-align">
-                <a href="{% url 'password_change' %}" class="btn-flat blue-text waves-effect">Cambiar Contraseña</a>
-            </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:1rem; margin-top:1rem; border:none; cursor:pointer;">
+                    Actualizar Datos ⚡
+                </button>
+            </form>
+        </div>
+
+        <div class="saved-card" style="padding:1.2rem; margin-top:1rem; text-align:center;">
+            <a href="{% url 'password_change' %}" style="color:white; text-decoration:none; opacity:0.7;">
+                Cambiar Contraseña
+            </a>
         </div>
     </div>
 </div>
+
 {% endblock %}

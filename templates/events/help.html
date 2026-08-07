@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="view active" id="view-help">
+
+    <div style="padding: 1.5rem 2rem 0;">
+        <h1 class="purchase-title" style="text-align:left; margin-bottom:0.3rem;">
+            Centro de Ayuda
+        </h1>
+
+        <p style="opacity:0.7; font-size:0.85rem;">
+            ¿Tienes problemas con una compra, ticket o evento? Envíanos tu consulta y te responderemos lo antes posible.
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast show" style="margin:1rem 2rem;">
+                ⚡ {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="saved-list">
+
+        <div class="saved-card" style="padding:1.5rem; display:block;">
+
+            <form method="POST" action="{% url 'enviar_consulta' %}">
+
+                {% csrf_token %}
+
+                <div style="margin-bottom:1rem;">
+                    <label class="s-meta" style="display:block; margin-bottom:0.5rem;">
+                        Nombre Completo
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nombre"
+                        required
+                        placeholder="Ingresa tu nombre"
+                        style="
+                            width:100%;
+                            padding:0.9rem;
+                            background:rgba(255,255,255,.04);
+                            border:1px solid rgba(255,255,255,.08);
+                            border-radius:12px;
+                            color:white;
+                            outline:none;
+                        "
+                    >
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label class="s-meta" style="display:block; margin-bottom:0.5rem;">
+                        Correo Electrónico
+                    </label>
+
+                    <input
+                        type="email"
+                        name="correo"
+                        required
+                        placeholder="correo@ejemplo.com"
+                        style="
+                            width:100%;
+                            padding:0.9rem;
+                            background:rgba(255,255,255,.04);
+                            border:1px solid rgba(255,255,255,.08);
+                            border-radius:12px;
+                            color:white;
+                            outline:none;
+                        "
+                    >
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label class="s-meta" style="display:block; margin-bottom:0.5rem;">
+                        Número de Celular
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="telefono"
+                        required
+                        placeholder="+56 9 1234 5678"
+                        style="
+                            width:100%;
+                            padding:0.9rem;
+                            background:rgba(255,255,255,.04);
+                            border:1px solid rgba(255,255,255,.08);
+                            border-radius:12px;
+                            color:white;
+                            outline:none;
+                        "
+                    >
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label class="s-meta" style="display:block; margin-bottom:0.5rem;">
+                        Describe tu consulta
+                    </label>
+
+                    <textarea
+                        name="mensaje"
+                        rows="6"
+                        required
+                        placeholder="Escribe aquí tu mensaje..."
+                        style="
+                            width:100%;
+                            padding:0.9rem;
+                            background:rgba(255,255,255,.04);
+                            border:1px solid rgba(255,255,255,.08);
+                            border-radius:12px;
+                            color:white;
+                            resize:vertical;
+                            outline:none;
+                        "
+                    ></textarea>
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    style="
+                        width:100%;
+                        justify-content:center;
+                        padding:1rem;
+                    "
+                >
+                    Enviar Consulta ⚡
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="saved-card" style="padding:1.2rem; margin-top:1rem;">
+            <div class="s-band">Información de soporte</div>
+
+            <div class="s-meta" style="margin-top:0.5rem;">
+                Nuestro equipo responderá tu consulta al correo indicado.
+            </div>
+
+            <div class="s-date" style="margin-top:1rem;">
+                <span>⚡ Tiempo estimado: 24 - 48 horas</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -133,18 +133,28 @@
   }
 
   function startPurchase() {
-    // Buscamos cuál ticket tiene cantidad mayor a 0
     const selectedTickets = Object.entries(cart).filter(([_, qty]) => qty > 0);
     
     if (selectedTickets.length > 0) {
-        const [ticketId, qty] = selectedTickets[0];
+        // Enviar como POST al endpoint de checkout
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'checkout' event.id %}";
         
-        let baseUrl = "{% url 'buy_ticket' 0 %}"; 
-        // Reemplazamos el '0' ficticio por el ID real seleccionado en el DOM
-        let finalUrl = baseUrl.replace('0', ticketId);
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+        form.appendChild(csrfInput);
         
-        // Redireccionamos pasando la cantidad elegida por parámetro GET (?qty=X)
-        window.location.href = `${finalUrl}?qty=${qty}`;
+        const cartInput = document.createElement('input');
+        cartInput.type = 'hidden';
+        cartInput.name = 'cart_json';
+        cartInput.value = JSON.stringify(cart);
+        form.appendChild(cartInput);
+        
+        document.body.appendChild(form);
+        form.submit();
     }
   }
 </script>

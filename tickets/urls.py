@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import buy_ticket, ticket_success, MyTicketsView, TicketScannerView, download_ticket_pdf, my_favorite
+from .views import process_payment, ticket_success, MyTicketsView, TicketScannerView, download_ticket_pdf, my_favorite, checkout
 from .api_views import ValidateTicketView
 from .views import toggle_favorite
 
 urlpatterns = [
-    path('buy/<int:ticket_type_id>/', buy_ticket, name='buy_ticket'),
+    path('checkout/<int:event_id>/', checkout, name='checkout'),
+    path('pay/', process_payment, name='process_payment'),
     path('success/<uuid:ticket_id>/', ticket_success, name='ticket_success'),
     path('mis-boletos/', MyTicketsView.as_view(), name='my_tickets'),
     path('api/validate/', ValidateTicketView.as_view(), name='api_validate_ticket'),
