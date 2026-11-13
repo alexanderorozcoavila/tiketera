@@ -5,7 +5,7 @@
   <div class="view active" id="view-home">
     
     <section class="hero">
-      <div class="hero-tag"><span class="dot"></span> SHOW EN VIVO · BIOBÍO · {% now "Y" %}</div>
+      <div class="hero-tag"><span class="dot"></span> SHOW EN VIVO · {% now "Y" %}</div>
       <div class="hero-title">
             <div class="row"><span class="w volt">vive</span> <span class="w outline">el</span></div>
             <div class="row"><span class="w mgm">movimiento.</span></div>
@@ -41,7 +41,7 @@
             <div class="event-info" data-url="{% url 'event_detail' event.id %}" onclick="window.location.href=this.dataset.url" style="cursor:pointer;">
               <div class="event-band">{{ event.title }}</div>
               <div class="event-venue">{{ event.venue.name }}</div>
-              <div class="event-city">{% if event.venue.city %}{{ event.venue.city }}{% else %}Biobío{% endif %}, CL</div>
+              <div class="event-city">{{ event.venue.address }}</div>
               
               <div class="event-action">
                 <div class="event-price">
@@ -170,7 +170,7 @@
           <div class="benefit-icon">☎</div>
           <div class="benefit-text">
             <div class="benefit-title">Atención 24/7</div>
-            <div class="benefit-desc">WhatsApp + email.</div>
+            <div class="benefit-desc">email</div>
           </div>
         </div>
       </div>

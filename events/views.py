@@ -32,6 +32,7 @@ class EventDetailView(DetailView):
     template_name = 'events/event_detail.html'
     context_object_name = 'event'
     
+
 class AllFilterEventView(ListView):
     model = Event
     template_name = 'events/all_filter_event.html'
@@ -44,7 +45,7 @@ class AllFilterEventView(ListView):
 
         category = self.request.GET.get('category')
         search = self.request.GET.get('search')
-        region = self.request.GET.get('region')  # 👈 NUEVO
+        region = self.request.GET.get('region')
 
         if category:
             queryset = queryset.filter(
@@ -58,11 +59,11 @@ class AllFilterEventView(ListView):
 
         if region:
             queryset = queryset.filter(
-                venue__name__iexact=region
+                venue__address__icontains=region
             )
-            
+
         return queryset
-    
+
     
     
 # ==========================

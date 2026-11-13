@@ -87,17 +87,8 @@
                         {{ event.title }}
                     </div>
 
-                    <div class="event-venue">
-                        {{ event.venue.name }}
-                    </div>
-
-                    <div class="event-city">
-                        {% if event.venue.city %}
-                        {{ event.venue.city }}
-                        {% else %}
-                        Biobío
-                        {% endif %}, CL
-                    </div>
+                    <div class="event-venue">{{ event.venue.name }}</div>
+                    <div class="event-city">{{ event.venue.address }}</div>
 
                     <div class="event-action">
 

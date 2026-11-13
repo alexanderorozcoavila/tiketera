@@ -100,6 +100,7 @@
                             data-id="{{ ticket.id }}"
                             data-title="{{ ticket.ticket_type.event.title }}"
                             data-venue="{{ ticket.ticket_type.event.venue }}"
+                            data-address="{{ ticket.ticket_type.event.venue.address }}"
                             data-date="{{ ticket.ticket_type.event.date_time|date:'d M Y'|upper }}"
                             data-time="{{ ticket.ticket_type.event.date_time|date:'H:i' }} hrs"
                             data-type="{{ ticket.ticket_type.name|upper }}"
@@ -372,10 +373,27 @@
         const lineasTitulo = lineasTexto(ctx, (t.title || '').toUpperCase(), splitX - padX - 60, 2);
         lineasTitulo.forEach((l, i) => ctx.fillText(l, padX, 185 + i * 84));
 
+        // Nombre del recinto
         ctx.fillStyle = T.muted;
         ctx.font = `400 32px ${T.font}`;
         const lineaLugar = lineasTexto(ctx, t.venue || '', splitX - padX - 60, 1);
-        ctx.fillText(lineaLugar[0] || '', padX, 185 + lineasTitulo.length * 84 + 20);
+
+        const lugarY = 185 + lineasTitulo.length * 84 + 20;
+        ctx.fillText(lineaLugar[0] || '', padX, lugarY);
+
+        // Dirección del recinto
+        ctx.fillStyle = T.muted;
+        ctx.font = `400 24px ${T.font}`;
+        const lineaDireccion = lineasTexto(
+            ctx,
+            t.address || '',
+            splitX - padX - 60,
+            2
+        );
+
+        lineaDireccion.forEach((linea, i) => {
+            ctx.fillText(linea, padX, lugarY + 45 + (i * 30));
+        });
 
         // Datos: fecha, hora, entrada
         const colY = 470;
@@ -501,7 +519,7 @@
     // Lee los datos del botón "Ver ticket"
     function ticketDesdeBoton(button) {
         const d = button.dataset;
-        return { id: d.id, title: d.title, venue: d.venue, date: d.date, time: d.time, type: d.type, qr: d.qr };
+        return { id: d.id, title: d.title, venue: d.venue, address: d.address, date: d.date, time: d.time, type: d.type, qr: d.qr };
     }
 
     /* =========================================================
@@ -533,6 +551,7 @@
                 grupos.set(key, {
                     title: d.title,
                     venue: d.venue,
+                    address: d.address,
                     date: d.date,
                     time: d.time,
                     type: d.type,
@@ -576,6 +595,7 @@
         const info = crearEl('div', 's-info');
         info.appendChild(crearEl('div', 's-band', grupo.title));
         info.appendChild(crearEl('div', 's-meta', grupo.venue || ''));
+        info.appendChild(crearEl('div', 's-meta', grupo.address || ''));
 
         const fecha = crearEl('div', 's-date');
         fecha.appendChild(crearEl('span', '', `⌚ ${grupo.date} · ${grupo.time}`));
@@ -657,6 +677,7 @@
         btn.dataset.id = t.id;
         btn.dataset.title = t.title;
         btn.dataset.venue = t.venue;
+        btn.dataset.address = t.address;
         btn.dataset.date = t.date;
         btn.dataset.time = t.time;
         btn.dataset.type = t.type;
