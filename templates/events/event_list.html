@@ -12,8 +12,8 @@
           </div>
       <p class="hero-desc">Bandas chilenas, gigantes internacionales y festivales pasando por tu ciudad. Compra rápido, sin vueltas, sin sustos.</p>
       <div class="hero-cta">
-        <a href="{% url 'all_filter_event' %}"class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">VER EVENTOS ⚡</a>
-        <!-- <a href="{% url 'all_filter_event' %}"  class="btn-ghost" style="display: inline-block; text-align: center; text-decoration: none;">→ festivales</a> -->
+        <a href="{% url 'all_filter_event' %}" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">VER EVENTOS ⚡</a>
+        <!-- <a href="{% url 'all_filter_event' %}" class="btn-ghost" style="display: inline-block; text-align: center; text-decoration: none;">→ festivales</a> -->
       </div>
     </section>
 
@@ -177,7 +177,36 @@
     </section>
 
     <div class="toast" id="toast"></div>
-  <script>
+  </div>
+</div>
+
+<!-- Popup de Bienvenida / Términos y Condiciones al cargar -->
+<div class="policy-modal-backdrop" id="welcome-terms-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-terms-title">
+  <div class="policy-modal">
+    <div class="policy-modal-header">
+      <h3 id="welcome-terms-title">Aviso Legal y Condiciones de Uso ⚡</h3>
+      <button type="button" class="policy-modal-close" onclick="acceptWelcomeTerms()" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="policy-modal-body">
+      <div class="policy-alert-box">
+        Al ingresar, navegar y utilizar la plataforma <strong>FASTICKET</strong>, declaras haber leído y aceptado nuestros <strong>Términos y Condiciones de Uso y Compra</strong> y nuestra <strong>Política de Privacidad</strong>.
+      </div>
+
+      <ul class="policy-summary-list">
+        <li><strong>Condiciones del servicio:</strong> Puedes revisar en detalle las reglas de uso, política de devoluciones y exclusión del derecho a retracto en <a href="{% url 'terminos_clientes' %}" class="section-link" target="_blank" rel="noopener">Términos y Condiciones</a>[cite: 1].</li>
+        <li><strong>Cookies y privacidad:</strong> Utilizamos cookies técnicas estrictamente necesarias para el funcionamiento del sitio, la sesión y la seguridad del proceso de compra, conforme a nuestra <a href="{% url 'privacidad' %}" class="section-link" target="_blank" rel="noopener">Política de Privacidad</a>[cite: 1].</li>
+      </ul>
+    </div>
+
+    <div class="policy-modal-footer">
+      <a href="{% url 'terminos_clientes' %}" class="btn-secondary-modal" target="_blank" rel="noopener">Ver términos</a>
+      <button type="button" class="btn-primary" onclick="acceptWelcomeTerms()">Aceptar y entrar ⚡</button>
+    </div>
+  </div>
+</div>
+
+<script>
     const toggleFavoriteUrl = "{% url 'toggle_favorite' %}";
 
     function getCookie(name) {
@@ -269,5 +298,29 @@
             showToast('⚠ Error al actualizar favoritos');
         });
     }
+
+    // Popup automático al cargar event_list
+    const WELCOME_TERMS_KEY = 'fasticket_welcome_terms_accepted_v1';
+
+    function openWelcomeTermsModal() {
+        const modal = document.getElementById('welcome-terms-modal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function acceptWelcomeTerms() {
+        localStorage.setItem(WELCOME_TERMS_KEY, '1');
+        const modal = document.getElementById('welcome-terms-modal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem(WELCOME_TERMS_KEY)) {
+            openWelcomeTermsModal();
+        }
+    });
+
+    document.getElementById('welcome-terms-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) acceptWelcomeTerms();
+    });
 </script>
-  {% endblock %}
+{% endblock %}
