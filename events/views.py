@@ -6,6 +6,17 @@ from .models import Event
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.shortcuts import redirect
+
+from django.shortcuts import render
+
+def terminos_clientes(request):
+    return render(request, "legal/terminos_clientes.html")
+
+def terminos_productores(request):
+    return render(request, "legal/terminos_productores.html")
+
+def politica_privacidad(request):
+    return render(request, "legal/politica_privacidad.html")
 class EventListView(ListView):
     model = Event
     template_name = 'events/event_list.html'

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+  <a href="/" class="detail-back" style="margin-bottom: 1rem;">← volver al inicio</a>
+
+  <div class="section-header">
+    <h1 class="section-title">Términos y Condiciones — Clientes<span class="bolt">⚡</span></h1>
+  </div>
+
+  <div class="tickets-section" style="margin-bottom: 1.5rem;">
+    <div class="title">FASTICKET (Servicios Tecnológicos CUPO SpA)</div>
+    <p style="font-size: 0.8rem; opacity: 0.8; line-height: 1.6;">
+      Versión 1.0 · Vigente desde el [FECHA DE PUBLICACIÓN][cite: 1].
+    </p>
+  </div>
+
+  <div class="benefits-bar" style="margin-bottom: 1.5rem;">
+    <div class="benefit">
+      <div class="benefit-icon">!</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Sin derecho a retracto</div>
+        <div class="benefit-desc">Art. 3 bis letra b) Ley N° 19.496: no aplica retracto ni cambios por arrepentimiento[cite: 1].</div>
+      </div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon">↺</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Devoluciones (15 días hábiles)</div>
+        <div class="benefit-desc">Ante cancelación o cambios sustanciales no aceptados, devolución íntegra en hasta 15 días hábiles[cite: 1].</div>
+      </div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon">QR</div>
+      <div class="benefit-text">
+        <div class="benefit-title">E-Ticket único</div>
+        <div class="benefit-desc">Enviado a tu correo y disponible en tu cuenta; un solo ingreso salvo indicación distinta[cite: 1].</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tickets-section" style="margin-bottom: 1.2rem;">
+    <div class="title">1. Identificación del Titular</div>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9;">
+      La plataforma web y servicios digitales denominados “Fasticket”, disponibles en [www.tudominio.cl] y sus subdominios, son operados por Servicios Tecnológicos CUPO SpA, RUT [XX.XXX.XXX-X], con domicilio en [DIRECCIÓN COMPLETA, COMUNA, REGIÓN DEL BIOBÍO], Chile, representada legalmente por [NOMBRE DEL REPRESENTANTE LEGAL], correo electrónico de atención al cliente [soporte@tudominio.cl] y teléfono de contacto [+56 9 XXXX XXXX][cite: 1].
+    </p>
+  </div>
+
+  <div class="tickets-section" style="margin-bottom: 1.2rem;">
+    <div class="title">2. Naturaleza del Servicio y Rol de Fasticket</div>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9;">
+      Fasticket presta un servicio de intermediación tecnológica y actúa exclusivamente en calidad de mandatario de venta, por cuenta y orden del Productor de cada Evento[cite: 1]. La organización, fijación de precios base, aforo, permisos, medidas de seguridad y realización efectiva del Evento corresponden única y exclusivamente al Productor[cite: 1].
+    </p>
+  </div>
+
+  <div class="tickets-section" style="margin-bottom: 1.2rem;">
+    <div class="title">3. Precios, Stock, Perfeccionamiento y Tributación</div>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9;">
+      Los valores se expresan en pesos chilenos (CLP) e incluyen los impuestos que correspondan[cite: 1]. Antes de confirmar el pago, la Plataforma informa por separado el Precio Base y el Cargo por Servicio de Fasticket[cite: 1]. El contrato se perfecciona cuando el pago es aprobado y se emite el correo electrónico de confirmación con tu E-Ticket[cite: 1].
+    </p>
+  </div>
+
+  <div class="tickets-section" style="margin-bottom: 1.2rem;">
+    <div class="title">4. Entrega y Uso de los E-Tickets</div>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9;">
+      Recibirás tu E-Ticket con código QR único en el correo electrónico registrado y podrás descargarlo nuevamente desde tu cuenta[cite: 1]. Salvo indicación expresa en contrario, los E-Tickets son al portador y cada código QR permite un solo ingreso al recinto; queda prohibida la reventa comercial o con sobreprecio[cite: 1].
+    </p>
+  </div>
+
+  <div class="tickets-section" style="margin-bottom: 1.2rem;">
+    <div class="title">5. Política de Cambios, Cancelaciones y Devoluciones</div>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9; margin-bottom: 0.8rem;">
+      <strong>Exclusión del derecho a retracto:</strong> Conforme al artículo 3 bis letra b) de la Ley N° 19.496, en esta compra de entradas NO opera el derecho a retracto, por lo que no proceden cambios ni devoluciones por arrepentimiento o errores del Comprador al elegir[cite: 1].
+    </p>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9;">
+      <strong>Cancelación o cambios sustanciales:</strong> Si el Evento se cancela definitivamente o sufre modificaciones sustanciales que no aceptes, tendrás derecho a la devolución íntegra del monto pagado (Precio Base más Cargo por Servicio)[cite: 1]. El plazo máximo para emitir la orden de reversa o realizar la transferencia es de 15 días hábiles desde la solicitud válida o confirmación oficial, según corresponda[cite: 1].
+    </p>
+  </div>
+
+  <div class="tickets-section">
+    <div class="title">6. Protección de Datos y Contacto</div>
+    <p style="font-size: 0.82rem; line-height: 1.65; opacity: 0.9;">
+      El tratamiento de tus datos personales se rige por la <a href="{% url 'privacidad' %}" class="section-link">Política de Privacidad</a>[cite: 1]. Para consultas, soporte o reclamos, escribe a [soporte@tudominio.cl] o llama al [+56 9 XXXX XXXX] en horario de [lunes a viernes, de 09:00 a 18:00 horas][cite: 1].
+    </p>
+  </div>
+</section>
+{% endblock %}

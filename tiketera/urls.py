@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from events import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +27,9 @@ urlpatterns = [
     path('', include('events.urls')),
     path('tickets/', include('tickets.urls')),
     path('payments/', include('payments.urls')),
+    path("terminos-clientes/", views.terminos_clientes, name="terminos_clientes"),
+    path("terminos-productores/", views.terminos_productores, name="terminos_productores"),
+    path("privacidad/", views.politica_privacidad, name="privacidad"),
 ]
 
 if settings.DEBUG:

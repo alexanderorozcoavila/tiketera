@@ -59,7 +59,7 @@
           </div>
           
           {% if user.is_authenticated %}
-            <button id="btn-submit-purchase" class="btn-primary" onclick="startPurchase()" disabled style="opacity:0.4;cursor:not-allowed;">Continuar ⚡</button>
+            <button id="btn-submit-purchase" class="btn-primary" onclick="openPolicyModal()" disabled style="opacity:0.4;cursor:not-allowed;">Continuar ⚡</button>
           {% else %}
             <button class="btn-primary"
                 onclick="window.location.href=`{% url 'login' %}?next={% url 'event_detail' event.id %}`">
@@ -68,6 +68,52 @@
           {% endif %}
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Popup de Política de Compra -->
+<div class="policy-modal-backdrop" id="policy-modal" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title">
+  <div class="policy-modal">
+    <div class="policy-modal-header">
+      <h3 id="policy-modal-title">Política de Compra y Condiciones</h3>
+      <button type="button" class="policy-modal-close" onclick="closePolicyModal()" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="policy-modal-body">
+      <div class="policy-alert-box">
+        <strong>Importante:</strong> Conforme al artículo 3 bis letra b) de la Ley N° 19.496, esta compra de entradas <strong>NO tiene derecho a retracto</strong>. Verifica el evento, fecha, recinto, sector, cantidad y tu correo electrónico antes de confirmar el pago[cite: 1].
+      </div>
+
+      <ul class="policy-summary-list">
+        <li><strong>Sin retracto ni cambios por arrepentimiento:</strong> Una vez perfeccionada la compra no aplican cambios ni devoluciones por arrepentimiento o imposibilidad de asistir[cite: 1].</li>
+        <li><strong>Cancelación o cambios sustanciales:</strong> Si el evento se cancela definitivamente o sufre modificaciones sustanciales que no aceptes, podrás solicitar la devolución íntegra (Precio Base más Cargo por Servicio) dentro de un plazo máximo de 15 días hábiles desde la solicitud o confirmación oficial, según corresponda[cite: 1].</li>
+        <li><strong>E-Tickets y acceso:</strong> Recibirás tu código QR único en tu correo y en tu cuenta; salvo indicación expresa en contrario, los E-Tickets son al portador y de un solo ingreso[cite: 1].</li>
+        <li><strong>Desglose y tributación:</strong> Antes de confirmar el pago se informará por separado el Precio Base y el Cargo por Servicio en CLP[cite: 1].</li>
+      </ul>
+
+      <div class="policy-checkbox-group">
+        <label class="policy-checkbox-label">
+          <input type="checkbox" id="accept-policy-checkbox" onchange="toggleConfirmPurchaseBtn()">
+          <span>
+            He leído y acepto los <a href="/terminos-condiciones/" target="_blank" rel="noopener">Términos y Condiciones de Uso y Compra</a> (incluyendo la exclusión del derecho a retracto y la política de devoluciones) y la <a href="/privacidad/" target="_blank" rel="noopener">Política de Privacidad</a> de Fasticket[cite: 1].
+          </span>
+        </label>
+
+        <label class="policy-checkbox-label">
+          <input type="checkbox" id="promo-optin-checkbox">
+          <span>
+            Autorizo a Fasticket a enviarme promociones, preventas y novedades de futuros eventos por correo electrónico (puedo revocar esta autorización en cualquier momento)[cite: 1].
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="policy-modal-footer">
+      <button type="button" class="btn-secondary-modal" onclick="closePolicyModal()">Volver</button>
+      <button type="button" id="btn-confirm-policy" class="btn-primary" onclick="confirmAndSubmitPurchase()" disabled style="opacity:0.4;cursor:not-allowed;">
+        Aceptar y continuar
+      </button>
     </div>
   </div>
 </div>
@@ -132,10 +178,56 @@
     }
   }
 
+  function hasSelectedTickets() {
+    return Object.values(cart).some(qty => qty > 0);
+  }
+
+  function openPolicyModal() {
+    if (!hasSelectedTickets()) return;
+
+    const acceptCheckbox = document.getElementById('accept-policy-checkbox');
+    if (acceptCheckbox) acceptCheckbox.checked = false;
+    toggleConfirmPurchaseBtn();
+
+    const modal = document.getElementById('policy-modal');
+    if (modal) modal.classList.add('active');
+  }
+
+  function closePolicyModal() {
+    const modal = document.getElementById('policy-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  function toggleConfirmPurchaseBtn() {
+    const acceptCheckbox = document.getElementById('accept-policy-checkbox');
+    const confirmBtn = document.getElementById('btn-confirm-policy');
+    if (!acceptCheckbox || !confirmBtn) return;
+
+    if (acceptCheckbox.checked) {
+      confirmBtn.removeAttribute('disabled');
+      confirmBtn.style.opacity = '1';
+      confirmBtn.style.cursor = 'pointer';
+    } else {
+      confirmBtn.setAttribute('disabled', '');
+      confirmBtn.style.opacity = '0.4';
+      confirmBtn.style.cursor = 'not-allowed';
+    }
+  }
+
+  function confirmAndSubmitPurchase() {
+    const acceptCheckbox = document.getElementById('accept-policy-checkbox');
+    if (!acceptCheckbox || !acceptCheckbox.checked) return;
+
+    closePolicyModal();
+    startPurchase();
+  }
+
   function startPurchase() {
     const selectedTickets = Object.entries(cart).filter(([_, qty]) => qty > 0);
     
     if (selectedTickets.length > 0) {
+        const promoChecked = document.getElementById('promo-optin-checkbox')?.checked ? '1' : '0';
+
         // Enviar como POST al endpoint de checkout
         const form = document.createElement('form');
         form.method = 'POST';
@@ -152,11 +244,30 @@
         cartInput.name = 'cart_json';
         cartInput.value = JSON.stringify(cart);
         form.appendChild(cartInput);
+
+        const acceptedInput = document.createElement('input');
+        acceptedInput.type = 'hidden';
+        acceptedInput.name = 'accepted_terms';
+        acceptedInput.value = '1';
+        form.appendChild(acceptedInput);
+
+        const promoInput = document.createElement('input');
+        promoInput.type = 'hidden';
+        promoInput.name = 'marketing_opt_in';
+        promoInput.value = promoChecked;
+        form.appendChild(promoInput);
         
         document.body.appendChild(form);
         form.submit();
     }
   }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePolicyModal();
+  });
+
+  document.getElementById('policy-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closePolicyModal();
+  });
 </script>
 {% endblock %}
-
